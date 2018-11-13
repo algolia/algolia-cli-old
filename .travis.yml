@@ -1,0 +1,19 @@
+language: node_js
+before_install:
+- curl -o- -L yarnpkg.com/install.sh | bash -s -- --version 1.7.0
+- export PATH=$HOME/.yarn/bin:$PATH
+- nvm install 10.10.0
+install:
+- yarn install
+script:
+- yarn lint
+- yarn jest
+branches:
+  only:
+  - master
+  - develop
+cache:
+  yarn: true
+notifications:
+  slack:
+    secure: jN7waAQY3mhIQ75n8M24Z8cnoHhl+tPYUsiwv87KmMavMTh/42Iw4lbpQPUq2HDkgwr/mN+NrQB8mmTbX0BanOM+Y/CmqvVLwQwcTm2Pc+TRsf7N11c90fCNOyl/sVl2l4AG4rmQFUKSKpU99KWY4Sa4hEvtpQ7J91CsOfpALEOqzzQc8obqMNbOlH/5aeRlV61o3+pXGSx/A39sHHTTXYxWBK11cwvkVI06wew9NJNM8kx0nUBXQLbiwpY/inWqzX3PlGmilXxixq2Yd6jkzT9c7XSxz0X7+0GgyQMG5Nt8SHZE+igqvl64kdkU4zUcgGn02HAP2VEu19KITb9/v8BsBK4+SBLqJWoccmE/lVBEya7qUrG7++d77b0b+iSPtTopXN3LvDh309Qcuko4B5S8r9t3AIdeb8OOU9MEiS7ECS6aY0NzmJXHLFjDxGcHTdXMAbUKl9lx8OKC+PKPJnTe8ATfTklAd7bePgcgjAFqQiTF4i/LN+NF02laPyShN9cSdiFuCR74BzVPsb0APAXSt5svQWx1zW9fTCQkQceOEQUEDlTq4iH42VmGvPaYgDvyuZ0xLygqKNkCsxF11t8d4+0dyKbtFGFNcI1LlkboNCK7H83DQUtdbR8H5kcfnSvt2bthQe5VzDIf8/VKwYcAwd45Kaqtg+oVULEuanU=

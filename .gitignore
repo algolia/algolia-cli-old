@@ -1,0 +1,11 @@
+
+# Git ignore files and directories
+
+.DS_Store
+node_modules/
+npm-debug.log
+.env
+package-lock.json
+transformations/*
+!transformations/example-transformations.js
+!transformations/example-line-transformations.js

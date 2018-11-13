@@ -1,0 +1,69 @@
+{
+  "name": "@algolia/cli",
+  "version": "2.2.0",
+  "description": "A Node CLI tools for manipulating data. Handy for day-to-day Algolia SE work.",
+  "license": "ISC",
+  "author": "Sepehr Fakour",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/algolia/algolia-cli.git"
+  },
+  "bin": {
+    "algolia": "./index.js"
+  },
+  "scripts": {
+    "test": "heroku local test",
+    "test:unit": "node_modules/.bin/jest /scripts/",
+    "test:unit:watch": "node_modules/.bin/jest --watch /scripts/",
+    "jest": "node_modules/.bin/jest --runInBand --forceExit",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "npm run lint -- --fix"
+  },
+  "engines": {
+    "node": ">=8.9.1"
+  },
+  "keywords": [
+    "data",
+    "json",
+    "csv",
+    "manipulate",
+    "transform",
+    "process",
+    "parse",
+    "import",
+    "index",
+    "solutions",
+    "se",
+    "cli"
+  ],
+  "dependencies": {
+    "JSONStream": "^1.3.2",
+    "agentkeepalive": "^3.3.0",
+    "algoliasearch": "^3.24.9",
+    "async": "^2.6.0",
+    "batch-stream": "^0.1.3",
+    "commander": "^2.18.0",
+    "csvtojson": "^1.1.9",
+    "event-stream": "^3.3.4",
+    "json-text-sequence": "^0.1.1",
+    "stream-json": "^0.5.2",
+    "stream-transform": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^9.0.0",
+    "babel-jest": "^23.6.0",
+    "eslint": "^5.6.0",
+    "eslint-config-algolia": "^13.2.3",
+    "eslint-config-prettier": "^3.0.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.22.0",
+    "eslint-plugin-prettier": "^2.6.2",
+    "jest": "^23.6.0",
+    "prettier": "^1.14.2"
+  },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/"
+  }
+}
