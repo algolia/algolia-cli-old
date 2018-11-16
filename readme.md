@@ -44,7 +44,7 @@ $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sou
 $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey>
 ```
 
-See also [additional examples](#command-usage-examples).
+See also [additional examples](#examples).
 
 # Commands
 
@@ -401,7 +401,7 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 ## Tests
 - `yarn test` to run full test suite locally
 - `yarn test:unit` to run unit test suite only
-- `test:unit:watch` to run unit test suite with interactive `--watch` flag
+- `yarn test:unit:watch` to run unit test suite with interactive `--watch` flag
 - `yarn jest` to run full test suite in staging environment with pre-set environment variables (eg. Travis)
 
 ## Lint

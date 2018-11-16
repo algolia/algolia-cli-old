@@ -31,7 +31,7 @@ const countLines = filePath =>
       .on('error', reject);
   });
 
-describe('Test: transformLines command OK', () => {
+describe('TransformLines command OK', () => {
   beforeAll(() => {
     // Make temp dir for test output
     if (fs.existsSync(tempDir)) {

@@ -36,7 +36,7 @@ const validProgram = {
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-describe('TransferIndex command OK', () => {
+describe('TransferIndexConfig command OK', () => {
   beforeAll(async done => {
     await altIndex.setSettings(defaultSettings);
     await index.setSettings(mockSettings);

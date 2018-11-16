@@ -24,7 +24,7 @@ const program = {
 
 global.console.log = jest.fn();
 
-describe('Test: setSettings command OK', () => {
+describe('SetSettings command OK', () => {
   beforeAll(async () => {
     // Make temp dir for test output
     if (fs.existsSync(tempDir)) {

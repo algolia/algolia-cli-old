@@ -1,6 +1,11 @@
 const Base = require('./Base.js');
 const path = require('path');
+const fs = require('fs');
 const exec = require('child_process').exec;
+const csvToJsonPath = path.join(
+  __dirname,
+  '../node_modules/csvtojson/bin/csvtojson'
+);
 
 class CsvToJsonScript extends Base {
   constructor() {
@@ -19,12 +24,17 @@ class CsvToJsonScript extends Base {
     if (isValid.flag) return console.log(isValid.output);
 
     // Config params
-    const sourceFilepath = program.sourcefilepath;
-    const outputFilepath = program.outputfilepath;
+    const sourceFilepath = this.normalizePath(program.sourcefilepath);
+    const outputFilepath = this.normalizePath(program.outputfilepath);
+
+    // Validate that source filepath exists
+    if (!fs.existsSync(sourceFilepath)) {
+      return console.log(`Cannot find file or directory: ${sourceFilepath}`);
+    }
 
     // Execute external CSV to JSON module
     exec(
-      `${path.join(__dirname, '../node_modules/csvtojson/bin/csvtojson')} ${sourceFilepath} > ${outputFilepath}`,
+      `${csvToJsonPath} ${sourceFilepath} > ${outputFilepath}`,
       (err, stdout, stderr) => {
         if (err) throw err;
         console.log(`stdout: ${stdout}`, `stderr: ${stderr}`);

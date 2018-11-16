@@ -16,7 +16,7 @@ const program = {
 
 global.console.log = jest.fn();
 
-describe('Test: getSettings command OK', () => {
+describe('GetSettings command OK', () => {
   test('getsettings returns settings object', async done => {
     // Get a baseline of the settings on the index
     const settings = await index.getSettings();
