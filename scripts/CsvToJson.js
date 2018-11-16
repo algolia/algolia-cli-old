@@ -1,4 +1,5 @@
 const Base = require('./Base.js');
+const path = require('path');
 const exec = require('child_process').exec;
 
 class CsvToJsonScript extends Base {
@@ -23,7 +24,7 @@ class CsvToJsonScript extends Base {
 
     // Execute external CSV to JSON module
     exec(
-      `./node_modules/csvtojson/bin/csvtojson ${sourceFilepath} > ${outputFilepath}`,
+      `${path.join(__dirname, '../node_modules/csvtojson/bin/csvtojson')} ${sourceFilepath} > ${outputFilepath}`,
       (err, stdout, stderr) => {
         if (err) throw err;
         console.log(`stdout: ${stdout}`, `stderr: ${stderr}`);
