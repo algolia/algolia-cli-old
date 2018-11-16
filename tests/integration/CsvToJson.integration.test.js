@@ -30,7 +30,7 @@ const countLines = filePath =>
       .on('error', reject);
   });
 
-describe('Test: csvToJson command OK', () => {
+describe('CsvToJson command OK', () => {
   beforeAll(() => {
     // Make temp dir for test output
     if (fs.existsSync(tempDir)) {

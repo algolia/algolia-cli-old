@@ -1,13 +1,19 @@
 const importToAlgolia = require(`${__dirname}/../../scripts/Import.js`);
 const algoliasearch = require('algoliasearch');
 const readLine = require('readline');
+const HttpsAgent = require('agentkeepalive').HttpsAgent;
+const keepaliveAgent = new HttpsAgent({
+  maxSockets: 1,
+  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
+  maxKeepAliveTime: 30000, // keepalive for 30 seconds
+});
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
 const apiKey = process.env.ALGOLIA_TEST_API_KEY;
 const indexName = process.env.ALGOLIA_TEST_INDEX_NAME;
 
-const client = algoliasearch(appId, apiKey);
+const client = algoliasearch(appId, apiKey, keepaliveAgent);
 const index = client.initIndex(indexName);
 
 // Configure test file/directory paths
@@ -27,7 +33,7 @@ const program = {
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-describe('Test: import command OK', () => {
+describe('Import command OK', () => {
   beforeAll(async done => {
     await index.clearIndex();
     await wait(5000);

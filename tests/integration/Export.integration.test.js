@@ -29,7 +29,7 @@ const program = {
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-describe('Test: export command OK', () => {
+describe('Export command OK', () => {
   beforeAll(async done => {
     // Make temp dir for test output
     if (fs.existsSync(tempDir)) {
