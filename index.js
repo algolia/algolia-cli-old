@@ -66,7 +66,7 @@ Commands:
   1. import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency>
   2. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputFilepath> -p <params>
   3. transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
-  4. csvtojson -s <sourceFilepath> -o <outputFilepath>
+  4. csvtojson -s <sourceFilepath> -o <outputFilepath> <optionalParams>
   5. getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
   6. setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
   7. transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -t <transformationFilepath>
@@ -79,7 +79,7 @@ Examples:
   $ algolia import -s ~/Desktop/example_source.json -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -b 5000 -t ~/Desktop/example_transformations.js -m 4
   $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p {'filters':['category:book']}
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
-  $ algolia csvtojson -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json
+  $ algolia csvtojson -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json --delimiter=,
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
   $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -t ~/Desktop/example_transformations.js

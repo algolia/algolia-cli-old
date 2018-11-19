@@ -33,7 +33,7 @@ $ algolia export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <
 
 $ algolia transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
 
-$ algolia csvtojson -s <sourceFilepath> -o <outputFilepath>
+$ algolia csvtojson -s <sourceFilepath> -o <outputFilepath> <optionalParams>
 
 $ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
@@ -210,19 +210,19 @@ Convert CSV file to JSON file.
 ##### Usage:
 
 ```shell
-algolia csvtojson -s <sourceFilepath> -o <outputFilepath>
+algolia csvtojson -s <sourceFilepath> -o <outputFilepath> <optionalParams>
 ```
 
 ##### Options:
 
 - `<sourceFilepath>` | Required | Path to a single `.csv` source file.
 - `<outputFilepath>` | Required | Path to output file that will be saved (including filename and extension).
+- `<optionalParams>` | Optional | Any additional options/parameters to be passed to [csvtojson](https://www.npmjs.com/package/csvtojson) module. Declare optional params without flag.
 
 ##### Notes:
 
 - `<sourceFilepath>` and `<outputFilepath>` arguments should be absolute paths.
-- Uses the `csvtojson` npm module; its additional CLI options could be exposed with minor adjustments to `./scripts/csvToJson.js`.
-- [csvtojson Github repo](https://github.com/Keyang/node-csvtojson).
+- Uses the `csvtojson` npm module. Read more documentation in the [csvtojson Github repo](https://github.com/Keyang/node-csvtojson) to see available options.
 
 ### 7. Get Settings | `getsettings`
 
@@ -362,7 +362,7 @@ $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~
 
 $ algolia transformlines -s ~/Desktop/example_source_file.json -o ~/Desktop/example_output_folder/ -t ~/Desktop/example_transformations.js
 
-$ algolia csvtojson -s ~/Desktop/example_source_file.json -o ~/Desktop/example_output_file.json
+$ algolia csvtojson -s ~/Desktop/example_source_file.json -o ~/Desktop/example_output_file.json --delimiter=,
 
 $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 

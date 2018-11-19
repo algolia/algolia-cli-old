@@ -16,11 +16,29 @@ jest.mock('child_process');
 const validProgram = {
   sourcefilepath: ordersPath,
   outputfilepath: outputPath,
+  rawArgs: [
+    'node',
+    'index.js',
+    'csvtojson',
+    '-s',
+    ordersPath,
+    '-o',
+    outputPath,
+  ],
 };
 
 const invalidProgram = {
   sourcefilepath: 'fake-command-input-1',
   outputfilepath: 'fake-command-input-2',
+  rawArgs: [
+    'node',
+    'index.js',
+    'csvtojson',
+    '-s',
+    'fake-command-input-1',
+    '-o',
+    'fake-command-input-2',
+  ],
 };
 
 describe('CsvToJson script OK', () => {
@@ -42,7 +60,7 @@ describe('CsvToJson script OK', () => {
     expect(execSpy).toBeCalledWith(
       `${csvToJsonPath} ${validProgram.sourcefilepath} > ${
         validProgram.outputfilepath
-      }`,
+      } `,
       expect.any(Function)
     );
     done();
