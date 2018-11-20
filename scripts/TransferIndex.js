@@ -105,7 +105,7 @@ class TransferIndexScript extends Base {
 
       // Export index
       const browse = this.sourceIndex.browseAll('', {
-        attributesToRetrieve: ['*']
+        attributesToRetrieve: ['*'],
       });
       let hitsCount = 0;
 
