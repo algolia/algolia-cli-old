@@ -43,7 +43,7 @@ describe('Export command OK', () => {
     const data = fs.readFileSync(dataPath, 'utf-8');
     await index.clearIndex();
     await index.addObjects(JSON.parse(data));
-    await wait(5000);
+    await wait(10000);
     done();
   }, 30000);
 
