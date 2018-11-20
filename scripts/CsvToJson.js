@@ -23,6 +23,11 @@ class CsvToJsonScript extends Base {
     const isValid = this.validate(program, this.message, this.params);
     if (isValid.flag) return console.log(isValid.output);
 
+    // Get any extra arguments and pass as params to csvToJson child process
+    const args = program.rawArgs;
+    const rest = args.slice(7);
+    const moduleParams = !rest.length ? rest.join(' ') : '';
+
     // Config params
     const sourceFilepath = this.normalizePath(program.sourcefilepath);
     const outputFilepath = this.normalizePath(program.outputfilepath);
@@ -34,10 +39,12 @@ class CsvToJsonScript extends Base {
 
     // Execute external CSV to JSON module
     exec(
-      `${csvToJsonPath} ${sourceFilepath} > ${outputFilepath}`,
+      `${csvToJsonPath} ${sourceFilepath} > ${outputFilepath} ${moduleParams}`,
       (err, stdout, stderr) => {
         if (err) throw err;
-        console.log(`stdout: ${stdout}`, `stderr: ${stderr}`);
+        if (stdout) console.log(`stdout: ${stdout}`);
+        if (stderr) console.log(`stderr: ${stderr}`);
+        console.log(`CSV to JSON conversion complete: ${outputFilepath}`);
       }
     );
     return false;

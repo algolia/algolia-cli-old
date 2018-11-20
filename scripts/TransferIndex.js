@@ -104,7 +104,9 @@ class TransferIndexScript extends Base {
       this.setTransformations(OPTIONS);
 
       // Export index
-      const browse = this.sourceIndex.browseAll('');
+      const browse = this.sourceIndex.browseAll('', {
+        attributesToRetrieve: ['*'],
+      });
       let hitsCount = 0;
 
       browse.on('result', async result => {

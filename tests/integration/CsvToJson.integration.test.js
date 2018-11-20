@@ -11,6 +11,15 @@ const transformedOrdersData = `${tempDir}/${transformedFilename}`;
 const program = {
   sourcefilepath: ordersData,
   outputfilepath: transformedOrdersData,
+  rawArgs: [
+    'node',
+    'index.js',
+    'csvtojson',
+    '-s',
+    ordersData,
+    '-o',
+    transformedOrdersData,
+  ],
 };
 
 const countLines = filePath =>

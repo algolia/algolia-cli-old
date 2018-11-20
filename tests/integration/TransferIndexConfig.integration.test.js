@@ -40,7 +40,7 @@ describe('TransferIndexConfig command OK', () => {
   beforeAll(async done => {
     await altIndex.setSettings(defaultSettings);
     await index.setSettings(mockSettings);
-    await wait(5000);
+    await wait(10000);
     done();
   }, 30000);
 
