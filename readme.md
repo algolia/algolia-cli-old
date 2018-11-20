@@ -33,7 +33,7 @@ $ algolia export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <
 
 $ algolia transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
 
-$ algolia csvtojson -s <sourceFilepath> -o <outputFilepath> <optionalParams>
+$ algolia csvtojson -s <sourceFilepath> -o <outputFilepath> <options>
 
 $ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
@@ -210,14 +210,14 @@ Convert CSV file to JSON file.
 ##### Usage:
 
 ```shell
-algolia csvtojson -s <sourceFilepath> -o <outputFilepath> <optionalParams>
+algolia csvtojson -s <sourceFilepath> -o <outputFilepath> <options>
 ```
 
 ##### Options:
 
 - `<sourceFilepath>` | Required | Path to a single `.csv` source file.
 - `<outputFilepath>` | Required | Path to output file that will be saved (including filename and extension).
-- `<optionalParams>` | Optional | Any additional options/parameters to be passed to [csvtojson](https://www.npmjs.com/package/csvtojson) module. Declare optional params without flag.
+- `<options>` | Optional | Any additional options to be passed to [csvtojson](https://www.npmjs.com/package/csvtojson) module. Declare optional params without flag.
 
 ##### Notes:
 

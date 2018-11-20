@@ -66,7 +66,7 @@ Commands:
   1. import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency>
   2. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputFilepath> -p <params>
   3. transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
-  4. csvtojson -s <sourceFilepath> -o <outputFilepath> <optionalParams>
+  4. csvtojson -s <sourceFilepath> -o <outputFilepath> <options>
   5. getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
   6. setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
   7. transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -t <transformationFilepath>

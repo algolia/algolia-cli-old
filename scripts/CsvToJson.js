@@ -26,7 +26,7 @@ class CsvToJsonScript extends Base {
     // Get any extra arguments and pass as params to csvToJson child process
     const args = program.rawArgs;
     const rest = args.slice(7);
-    const moduleParams = rest.length > 0 ? rest.join(' ') : '';
+    const moduleParams = !rest.length ? rest.join(' ') : '';
 
     // Config params
     const sourceFilepath = this.normalizePath(program.sourcefilepath);
@@ -44,7 +44,7 @@ class CsvToJsonScript extends Base {
         if (err) throw err;
         if (stdout) console.log(`stdout: ${stdout}`);
         if (stderr) console.log(`stderr: ${stderr}`);
-        console.log('CSV to JSON data conversion complete.');
+        console.log(`CSV to JSON conversion complete: ${outputFilepath}`);
       }
     );
     return false;
