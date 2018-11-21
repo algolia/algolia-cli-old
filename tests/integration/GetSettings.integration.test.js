@@ -1,4 +1,3 @@
-require('dotenv').config();
 const getSettingsScript = require(`${__dirname}/../../scripts/GetSettings.js`);
 const algolia = require('algoliasearch');
 

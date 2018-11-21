@@ -1,4 +1,3 @@
-require('dotenv').config();
 const importToAlgolia = require(`${__dirname}/../../scripts/Import.js`);
 const algoliasearch = require('algoliasearch');
 const readLine = require('readline');
