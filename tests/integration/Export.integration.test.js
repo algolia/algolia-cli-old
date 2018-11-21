@@ -45,7 +45,7 @@ describe('Export command OK', () => {
     await index.addObjects(JSON.parse(data));
     await wait(10000);
     done();
-  }, 30000);
+  }, 60000);
 
   test(
     'export retrieves correct records',
@@ -56,7 +56,7 @@ describe('Export command OK', () => {
       // If it is done, read newly written files to test data integrity
       global.console.log = jest.fn(async msg => {
         if (msg.match(doneMsg)) {
-          await wait(5000);
+          await wait(10000);
           const hits = JSON.parse(fs.readFileSync(hitsPath, 'utf-8'));
           const hitsBaseline = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
           const found = hits.find(hit => hit.email === hitsBaseline[0].email);
@@ -69,7 +69,7 @@ describe('Export command OK', () => {
       // Execute export
       exportScript.start(program);
     },
-    45000
+    60000
   );
 
   afterAll(async done => {
@@ -82,5 +82,5 @@ describe('Export command OK', () => {
 
     // Clear Algolia index
     await index.clearIndex(done);
-  }, 30000);
+  }, 60000);
 });
