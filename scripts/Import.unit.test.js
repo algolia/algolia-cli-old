@@ -5,11 +5,15 @@ const readLine = require('readline');
 const path = require('path');
 const fs = require('fs');
 const { Readable } = require('stream');
+const transform = require('stream-transform');
+const csv = require('csvtojson');
 
 jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 jest.mock('readline');
 jest.mock('fs');
+jest.mock('stream-transform');
+jest.mock('csvtojson');
 
 // Mock fs
 const isDirectory = jest.fn().mockReturnValueOnce(false);
@@ -54,7 +58,7 @@ describe('Import script OK', () => {
     importScript.writeProgress(count);
     expect(readLine.cursorTo).toHaveBeenCalled();
     expect(process.stdout.write).toHaveBeenCalledWith(
-      `Records indexed: ~ ${count}`
+      `Records indexed: ${count}`
     );
     done();
   });
@@ -102,6 +106,22 @@ describe('Import script OK', () => {
     const options = { TRANSFORMATIONS };
     importScript.setTransformations(options);
     expect(importScript.formatRecord).toEqual(method);
+    done();
+  });
+
+  /* conditionallyParseCsv */
+
+  test('Should return correct writestream for JSON filetype', done => {
+    importScript.conditionallyParseCsv(false);
+    expect(transform).toBeCalledWith(
+      importScript.defaultTransformations
+    );
+    done();
+  });
+
+  test('Should return correct writestream for CSV filetype', done => {
+    importScript.conditionallyParseCsv(true);
+    expect(csv).toBeCalled();
     done();
   });
 

@@ -5,6 +5,7 @@ const transform = require('stream-transform');
 const Batch = require('batch-stream');
 const readLine = require('readline');
 const async = require('async');
+const csv = require('csvtojson');
 const algolia = require('algoliasearch');
 const HttpsAgent = require('agentkeepalive').HttpsAgent;
 const keepaliveAgent = new HttpsAgent({
@@ -22,6 +23,7 @@ class ImportScript extends Base {
     this.writeProgress = this.writeProgress.bind(this);
     this.setIndex = this.setIndex.bind(this);
     this.setTransformations = this.setTransformations.bind(this);
+    this.conditionallyParseCsv = this.conditionallyParseCsv.bind(this);
     this.importToAlgolia = this.importToAlgolia.bind(this);
     this.indexFiles = this.indexFiles.bind(this);
     this.start = this.start.bind(this);
@@ -42,7 +44,7 @@ class ImportScript extends Base {
 
   writeProgress(count) {
     readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Records indexed: ~ ${count}`);
+    process.stdout.write(`Records indexed: ${count}`);
   }
 
   setIndex(options) {
@@ -66,14 +68,21 @@ class ImportScript extends Base {
     this.formatRecord = valid ? transformations : this.defaultTransformations;
   }
 
+  conditionallyParseCsv(isCsv) {
+    // Return the appropriate writestream for piping depending on filetype
+    return isCsv
+      ? csv() // Convert from CSV to JSON
+      : transform(this.defaultTransformations); // Do nothing
+  }
+
   async importToAlgolia(data, callback) {
     // Method to index batches of records in Algolia
     // Outputs estimated number of records processed to console
     // Invokes callback when finished so queue can continue processing
     try {
       await this.index.addObjects(data);
-      this.importCount++;
-      this.writeProgress(this.importCount * this.CHUNK_SIZE);
+      this.importCount += data.length;
+      this.writeProgress(this.importCount);
       callback(null);
     } catch (e) {
       throw e;
@@ -86,13 +95,14 @@ class ImportScript extends Base {
     // them, batch them, index them in Algolia) while imposing a queue so that only so many
     // indexing threads will be run in parallel
     if (filenames.length <= 0) {
-      console.log('Done reading files\n');
+      console.log('Done reading files');
       return;
     }
     // Start new file read stream
     // Note: filenames is a reference to the mutable class instance variable this.filenames
     const filename = filenames.pop();
     const file = `${this.directory}/${filename}`;
+    const isCsv = filename.split('.').pop() === 'csv';
     const fileStream = fs.createReadStream(file, {
       autoclose: true,
       flags: 'r',
@@ -107,7 +117,6 @@ class ImportScript extends Base {
 
     fileStream.on('end', () => {
       // File complete, process next file
-      console.log('\n-');
       this.indexFiles(filenames);
     });
 
@@ -116,10 +125,12 @@ class ImportScript extends Base {
       fileStream.resume();
     };
 
+    // Handle parsing, transforming, batching, and indexing JSON and CSV files
     console.log(`Importing [${filename}]`);
-    // Handle parsing, transforming, batching, and indexing all JSON files
+    const jsonStreamOption = isCsv ? null : '*';
     fileStream
-      .pipe(JSONStream.parse('*'))
+      .pipe(this.conditionallyParseCsv(isCsv))
+      .pipe(JSONStream.parse(jsonStreamOption))
       .pipe(transform(this.formatRecord))
       .pipe(new Batch({ size: this.CHUNK_SIZE }))
       .pipe(
