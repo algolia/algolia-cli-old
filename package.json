@@ -13,7 +13,7 @@
     "algolia": "./index.js"
   },
   "scripts": {
-    "test": "heroku local test",
+    "test": "nf start test",
     "test:unit": "node_modules/.bin/jest /scripts/",
     "test:unit:watch": "node_modules/.bin/jest --watch /scripts/",
     "jest": "node_modules/.bin/jest --runInBand --forceExit",

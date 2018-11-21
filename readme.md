@@ -381,7 +381,7 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 
 - Node: `brew install node` or [Node docs](https://nodejs.org/en/)
 - Yarn: `brew install yarn` or [Yarn docs](https://yarnpkg.com/lang/en/)
-- Heroku CLI: `brew install heroku` or [Heroku CLI docs](https://devcenter.heroku.com/articles/heroku-cli)
+- Foreman: `npm i -g foreman` or [Foreman docs](https://www.npmjs.com/package/foreman)
 
 ## Install
 
