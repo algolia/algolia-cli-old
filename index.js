@@ -1,6 +1,7 @@
 #!/usr/bin/env node --max_old_space_size=4096
 const program = require('commander');
 const { version } = require('./package.json');
+const chalk = require('chalk');
 
 // Scripts
 const importScript = require('./scripts/Import.js');
@@ -123,6 +124,23 @@ Examples:
   })
   .parse(process.argv);
 
+function registerDefaultProcessEventListeners() {
+  // Handle node process exit
+  process.on('exit', code => {
+    if (code === 0) console.log(chalk.white.bgGreen('\nDone'));
+  })
+  // Handle ctrl+c event
+  process.on('SIGINT', () => {
+    process.exitCode = 2;
+    console.log(chalk.white.bgYellow('\nCancelled'));
+  });
+  //Handle uncaught exceptions
+  process.on('uncaughtException', () => {
+    process.exitCode = 1;
+    console.log(chalk.white.bgRed('\nError'));
+  });
+}
+
 function defaultCommand(command) {
   console.error(`Unknown command "${command}".`);
   console.error('Run "algolia --help" to view options.');
@@ -135,4 +153,5 @@ function noCommand() {
   process.exit(1);
 }
 
+registerDefaultProcessEventListeners();
 if (program.args.length === 0) noCommand();
