@@ -393,6 +393,8 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 - `ALGOLIA_TEST_APP_ID`
 - `ALGOLIA_TEST_API_KEY`
 - `ALGOLIA_TEST_INDEX_NAME`
+- `ALGOLIA_TEST_ALT_APP_ID`
+- `ALGOLIA_TEST_ALT_API_KEY`
 
 ## Develop
 - Run `node index.js <command_name> [options]` to test various commands/options.
