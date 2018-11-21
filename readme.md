@@ -381,7 +381,6 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 
 - Node: `brew install node` or [Node docs](https://nodejs.org/en/)
 - Yarn: `brew install yarn` or [Yarn docs](https://yarnpkg.com/lang/en/)
-- Foreman: `npm i -g foreman` or [Foreman docs](https://www.npmjs.com/package/foreman)
 
 ## Install
 
@@ -404,7 +403,7 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 - `yarn test` to run full test suite locally
 - `yarn test:unit` to run unit test suite only
 - `yarn test:unit:watch` to run unit test suite with interactive `--watch` flag
-- `yarn jest` to run full test suite in staging environment with pre-set environment variables (eg. Travis)
+- `yarn test` to run full test suite in staging environment with pre-set environment variables (eg. Travis)
 
 ## Lint
 - `yarn lint` to run eslint

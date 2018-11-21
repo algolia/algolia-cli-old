@@ -13,10 +13,9 @@
     "algolia": "./index.js"
   },
   "scripts": {
-    "test": "nf start test",
-    "test:unit": "node_modules/.bin/jest /scripts/",
-    "test:unit:watch": "node_modules/.bin/jest --watch /scripts/",
-    "jest": "node_modules/.bin/jest --runInBand --forceExit",
+    "test": "jest --runInBand --forceExit",
+    "test:unit": "jest /scripts/",
+    "test:unit:watch": "jest --watch /scripts/",
     "lint": "eslint . --ext .js",
     "lint:fix": "npm run lint -- --fix"
   },
