@@ -1,3 +1,4 @@
+require('dotenv').config();
 const transferIndexConfigScript = require(`${__dirname}/../../scripts/TransferIndexConfig.js`);
 const algoliasearch = require('algoliasearch');
 const readLine = require('readline');

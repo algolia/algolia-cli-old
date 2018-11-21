@@ -1,3 +1,4 @@
+require('dotenv').config();
 const exportScript = require(`${__dirname}/../../scripts/Export.js`);
 const fs = require('fs');
 const algolia = require('algoliasearch');
