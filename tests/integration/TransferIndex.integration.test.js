@@ -44,7 +44,7 @@ describe('TransferIndex command OK', () => {
     await index.addObjects(JSON.parse(data));
     await wait(10000);
     done();
-  }, 30000);
+  }, 60000);
 
   test(
     'TransferIndex moves data and settings',
@@ -56,7 +56,7 @@ describe('TransferIndex command OK', () => {
       // If it is done, query newly populated index to test data integrity
       global.console.log = jest.fn(async msg => {
         if (msg.match(endMsg)) {
-          await wait(5000);
+          await wait(10000);
           const hits = await altIndex.search({ query: '', hitsPerPage: 3 });
           const hasName = hits.hits[0].hasOwnProperty('name');
           const hasGender = hits.hits[0].hasOwnProperty('gender');
@@ -76,12 +76,12 @@ describe('TransferIndex command OK', () => {
       // Execute transfer
       transferIndexScript.start(validProgram);
     },
-    30000
+    60000
   );
 
   afterAll(async done => {
     await index.clearIndex();
     await altIndex.clearIndex();
     done();
-  }, 30000);
+  }, 60000);
 });

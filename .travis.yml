@@ -8,10 +8,6 @@ install:
 script:
 - yarn lint
 - yarn jest
-branches:
-  only:
-  - master
-  - develop
 cache:
   yarn: true
 notifications:

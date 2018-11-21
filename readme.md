@@ -88,7 +88,7 @@ algolia -v
 
 ##### Description:
 
-Import JSON data from a file or directory of files into Algolia index. Optionally apply transformations to each JSON object.
+Import JSON or CSV data into Algolia index, from a file or directory of files. CSV files will automatically be converted to JSON. You may also optionally apply transformations to each JSON object.
 
 Will handle arbitrarily large files without performance issues.
 
@@ -100,7 +100,7 @@ algolia import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algo
 
 ##### Options:
 
-- `<sourceFilepath>` | Required | Path to a single `.js` or `.json` file OR a directory of such files.
+- `<sourceFilepath>` | Required | Path to a JSON or CSV file, or to a directory of such files.
 - `<algoliaAppId>` | Required
 - `<algoliaApiKey>` | Required
 - `<algoliaIndexName>` | Required
@@ -126,7 +126,9 @@ module.exports = (data,cb) => {
 
 - `<sourceFilepath>` and `<transformationFilepath>` arguments can be absolute or relative paths.
 - If your system has limited memory resources or if you run into heap allocation errors, consider reducing `<maxconcurrency>`.
-- Make sure you only import JSON files. Don't accidentally try to import invisible files like `.DS_Store`, log files, etc. as they will likely throw an error.
+- Make sure you only import JSON or CSV files. Don't accidentally try to import invisible files like `.DS_Store`, log files, etc. as they will likely throw an error.
+- Script assumes each file contains an array of JSON records unless the file extension ends with `.csv`.
+- CSV to JSON conversion performed using [csvtojson](https://www.npmjs.com/package/csvtojson).
 
 ### 4. Export | `export`
 
@@ -379,7 +381,6 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 
 - Node: `brew install node` or [Node docs](https://nodejs.org/en/)
 - Yarn: `brew install yarn` or [Yarn docs](https://yarnpkg.com/lang/en/)
-- Heroku CLI: `brew install heroku` or [Heroku CLI docs](https://devcenter.heroku.com/articles/heroku-cli)
 
 ## Install
 
@@ -402,7 +403,7 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 - `yarn test` to run full test suite locally
 - `yarn test:unit` to run unit test suite only
 - `yarn test:unit:watch` to run unit test suite with interactive `--watch` flag
-- `yarn jest` to run full test suite in staging environment with pre-set environment variables (eg. Travis)
+- `yarn test` to run full test suite in staging environment with pre-set environment variables (eg. Travis)
 
 ## Lint
 - `yarn lint` to run eslint

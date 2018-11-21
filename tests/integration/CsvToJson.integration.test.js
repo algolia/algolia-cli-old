@@ -64,7 +64,7 @@ describe('CsvToJson command OK', () => {
 
       expect(exists).toBe(true);
       expect(isFile).toBe(true);
-      expect(lines).toBe(5);
+      expect(lines).toBe(6);
       expect(title).toBe('meow');
       expect(score).toBe('115');
       done();

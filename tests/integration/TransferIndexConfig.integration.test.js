@@ -42,7 +42,7 @@ describe('TransferIndexConfig command OK', () => {
     await index.setSettings(mockSettings);
     await wait(10000);
     done();
-  }, 30000);
+  }, 60000);
 
   test(
     'TransferIndexConfig moves settings, synonyms, and rules',
@@ -55,7 +55,7 @@ describe('TransferIndexConfig command OK', () => {
       // If it is done, query newly populated index to test data integrity
       global.console.log = jest.fn(async msg => {
         if (msg.match(endMsg)) {
-          await wait(5000);
+          await wait(10000);
           const settings = await altIndex.getSettings();
           const hitsPerPage = settings.hitsPerPage;
           // Expectations
@@ -70,12 +70,12 @@ describe('TransferIndexConfig command OK', () => {
       // Execute transfer
       transferIndexConfigScript.start(validProgram);
     },
-    30000
+    60000
   );
 
   afterAll(async done => {
     await altIndex.setSettings(defaultSettings);
     await index.setSettings(defaultSettings);
     done();
-  }, 30000);
+  }, 60000);
 });
