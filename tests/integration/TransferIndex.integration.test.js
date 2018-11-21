@@ -83,5 +83,5 @@ describe('TransferIndex command OK', () => {
     await index.clearIndex();
     await altIndex.clearIndex();
     done();
-  },60000);
+  }, 60000);
 });

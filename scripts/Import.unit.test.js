@@ -113,9 +113,7 @@ describe('Import script OK', () => {
 
   test('Should return correct writestream for JSON filetype', done => {
     importScript.conditionallyParseCsv(false);
-    expect(transform).toBeCalledWith(
-      importScript.defaultTransformations
-    );
+    expect(transform).toBeCalledWith(importScript.defaultTransformations);
     done();
   });
 
