@@ -44,7 +44,7 @@ describe('Import command OK', () => {
     'Import directory of users files to Algolia',
     done => {
       const endMsg = 'Done reading files';
-      // Mock globabl console.log() function
+      // Mock global console.log() function
       // Each time it's called check if import is logging "Done" message
       // If it is done, query newly populated index to test data integrity
       global.console.log = jest.fn(async msg => {

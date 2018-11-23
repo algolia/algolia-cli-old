@@ -6,22 +6,22 @@ const chalk = require('chalk');
 // Scripts
 const importScript = require('./scripts/Import.js');
 const exportScript = require('./scripts/Export.js');
-const transformLinesScript = require('./scripts/TransformLines.js');
-const csvToJsonScript = require('./scripts/CsvToJson.js');
 const getSettingsScript = require('./scripts/GetSettings.js');
 const setSettingsScript = require('./scripts/SetSettings.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
 const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
+const transformLinesScript = require('./scripts/TransformLines.js');
+const csvToJsonScript = require('./scripts/CsvToJson.js');
 
 program
   .arguments('<command>')
   .option(
     '-s, --sourcefilepath <sourceFilepath>',
-    'Source filepath | Required for: "import" & "transformlines" & "csvtojson" commands'
+    'Source filepath | Required for: "import" and "transformlines" commands'
   )
   .option(
     '-o, --outputfilepath <outputFilepath>',
-    'Output filepath | Required for: "transformlines" & "csvtojson" commands'
+    'Output filepath | Required for: "transformlines" command'
   )
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
@@ -29,64 +29,71 @@ program
   )
   .option(
     '-a, --algoliaappid <algoliaAppId>',
-    'Algolia app ID | Required for: "import" command only'
+    'Algolia app ID | Required for: "import" command'
   )
   .option(
     '-k, --algoliaapikey <algoliaApiKey>',
-    'Algolia API key | Required for: "import" command only'
+    'Algolia API key | Required for: "import" command'
   )
   .option(
     '-n, --algoliaindexname <algoliaIndexName>',
-    'Algolia index name | Required for: "import" command only'
+    'Algolia index name | Required for: "import" command'
   )
   .option(
     '-b, --batchsize <batchSize>',
-    'Number of objects to import per batch | Optional for: "import" command only'
+    'Number of objects to import per batch | Optional for: "import" command'
   )
   .option(
     '-p, --params <params>',
-    'Params to pass with Algolia search query | Optional for: "export" command only'
+    'Optional params to pass to dependency (eg. <csvToJsonParams> or <algoliaParams>) | Optional for: "import" and "export" commands'
   )
   .option(
     '-m, --maxconcurrency <maxConcurrency>',
-    'Maximum number of concurrent filestreams to process | Optional for: "import" command only'
+    'Maximum number of concurrent filestreams to process | Optional for: "import" command'
   )
   .option(
     '-d, --destinationalgoliaappid <destinationAlgoliaAppId>',
-    'Destination Algolia app ID | Required for: "transferindex" command only'
+    'Destination Algolia app ID | Required for: "transferindex" command'
   )
   .option(
     '-y, --destinationalgoliaapikey <destinationAlgoliaApiKey>',
-    'Destination Algolia API key | Required for: "transferindex" command only'
+    'Destination Algolia API key | Required for: "transferindex" command'
   )
   .version(version, '-v, --version')
   .on('--help', () => {
     const message = `
+Usage:
+
+  $ algolia <COMMAND NAME> [OPTIONS]
+
 Commands:
 
-  1. import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency>
-  2. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputFilepath> -p <params>
-  3. transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
-  4. csvtojson -s <sourceFilepath> -o <outputFilepath> <options>
+  1. --help
+  2. --version
+
+  3. import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency> -p <csvToJsonParams>
+  4. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputFilepath> -p <algoliaParams>
+
   5. getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
   6. setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
+
   7. transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -t <transformationFilepath>
   8. transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey>
-  9. --help
-  10. --version
+
+  9. transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
+  10. csvtojson -s <sourceFilepath> -o <outputFilepath> <csvToJsonParams>
 
 Examples:
 
-  $ algolia import -s ~/Desktop/example_source.json -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -b 5000 -t ~/Desktop/example_transformations.js -m 4
-  $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p {'filters':['category:book']}
-  $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
-  $ algolia csvtojson -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json --delimiter=,
+  $ algolia --help
+  $ algolia --version
+  $ algolia import -s ~/Desktop/example_data.json -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -b 5000 -t ~/Desktop/example_transformations.js -m 4 -p '{"delimiter":[":"]}'
+  $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p '{"filters":["category:book"]}'
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
   $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -t ~/Desktop/example_transformations.js
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY
-  $ algolia --help
-  $ algolia --version
+  $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
 `;
     console.log(message);
   })
@@ -96,11 +103,8 @@ Examples:
       case 'import':
         importScript.start(program);
         break;
-      case 'transformlines':
-        transformLinesScript.start(program);
-        break;
-      case 'csvtojson':
-        csvToJsonScript.start(program);
+      case 'export':
+        exportScript.start(program);
         break;
       case 'getsettings':
         getSettingsScript.start(program);
@@ -108,14 +112,17 @@ Examples:
       case 'setsettings':
         setSettingsScript.start(program);
         break;
-      case 'export':
-        exportScript.start(program);
-        break;
       case 'transferindex':
         transferIndexScript.start(program);
         break;
       case 'transferindexconfig':
         transferIndexConfigScript.start(program);
+        break;
+      case 'transformlines':
+        transformLinesScript.start(program);
+        break;
+      case 'csvtojson':
+        csvToJsonScript.start(program);
         break;
       default:
         defaultCommand(command);
