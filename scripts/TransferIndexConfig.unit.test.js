@@ -53,6 +53,44 @@ describe('Transfer Index script OK', () => {
     done();
   });
 
+  /* setConfigOptions */
+
+  test('setConfigOptions should set default params for batchSynonyms and batchRules', done => {
+    const mockOptions = {
+      configParams: undefined,
+    };
+    const result = transferIndexConfigScript.setConfigOptions(mockOptions);
+    expect(result).toEqual(undefined);
+    expect(transferIndexConfigScript.sOptions).toEqual(expect.any(Object));
+    expect(transferIndexConfigScript.rOptions).toEqual(expect.any(Object));
+    done();
+  });
+
+  test('setConfigOptions should set input params for batchSynonyms and batchRules', done => {
+    const configParams = {
+      batchSynonymsParams: {
+        forwardToReplicas: true,
+        replaceExistingSynonyms: true,
+      },
+      batchRulesParams: {
+        forwardToReplicas: true,
+        clearExistingRules: true,
+      },
+    };
+    const mockOptions = {
+      configParams: JSON.stringify(configParams),
+    };
+    const result = transferIndexConfigScript.setConfigOptions(mockOptions);
+    expect(result).toEqual(undefined);
+    expect(transferIndexConfigScript.sOptions).toEqual(
+      configParams.batchSynonymsParams
+    );
+    expect(transferIndexConfigScript.rOptions).toEqual(
+      configParams.batchRulesParams
+    );
+    done();
+  });
+
   /* transferIndexConfig */
 
   test('transferIndexConfig should set algolia clients and indices', async done => {
@@ -90,7 +128,7 @@ describe('Transfer Index script OK', () => {
 
   /* start */
 
-  test('Services should be called with valid params', done => {
+  test('Services should be called with valid params', async done => {
     global.console.log = jest.fn();
 
     // Mock Algolia
@@ -114,7 +152,7 @@ describe('Transfer Index script OK', () => {
     algolia.mockReturnValue(client);
 
     // Execute method
-    const result = transferIndexConfigScript.start(validProgram);
+    const result = await transferIndexConfigScript.start(validProgram);
 
     // Use timeout to defer execution of test assertions
     setTimeout(() => {
@@ -142,7 +180,7 @@ describe('Transfer Index script OK', () => {
     }, 0);
   });
 
-  test('Transfer Index Config catches exceptions', done => {
+  test('Transfer Index Config catches exceptions', async done => {
     const message = 'fgctry6y7u8ioj';
     try {
       // Mock error during execution
@@ -150,7 +188,7 @@ describe('Transfer Index script OK', () => {
         throw new Error(message);
       });
       // Execute method
-      transferIndexConfigScript.start(validProgram);
+      await transferIndexConfigScript.start(validProgram);
       throw new Error('This error should not be reached');
     } catch (e) {
       expect(e.message).toEqual(message);

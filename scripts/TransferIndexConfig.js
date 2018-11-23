@@ -13,10 +13,11 @@ class TransferIndexConfigScript extends Base {
     // Bind class methods
     this.start = this.start.bind(this);
     this.setIndices = this.setIndices.bind(this);
+    this.setConfigOptions = this.setConfigOptions.bind(this);
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey\n\n';
+      '\nUsage: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -p configParams\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
@@ -43,25 +44,35 @@ class TransferIndexConfigScript extends Base {
     this.destinationIndex = destinationClient.initIndex(options.indexName);
   }
 
-  async transferIndexConfig() {
-    // Transfer settings, synonyms, and query rules
-    const settings = await this.sourceIndex.getSettings();
-    const synonyms = await this.sourceIndex.exportSynonyms();
-    const rules = await this.sourceIndex.exportRules();
-    const sOptions = {
-      forwardToReplicas: true,
-      replaceExistingSynonyms: true,
-    };
-    const rOptions = {
-      forwardToReplicas: true,
-      clearExistingRules: true,
-    };
-    await this.destinationIndex.setSettings(settings);
-    await this.destinationIndex.batchSynonyms(synonyms, sOptions);
-    await this.destinationIndex.batchRules(rules, rOptions);
+  setConfigOptions(options) {
+    this.sOptions = {};
+    this.rOptions = {};
+    if (!options.configParams) return;
+    const configParams = JSON.parse(options.configParams);
+    if (configParams.batchSynonymsParams)
+      this.sOptions = configParams.batchSynonymsParams;
+    if (configParams.batchRulesParams)
+      this.rOptions = configParams.batchRulesParams;
   }
 
-  start(program) {
+  transferIndexConfig() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Transfer settings, synonyms, and query rules
+        const settings = await this.sourceIndex.getSettings();
+        const synonyms = await this.sourceIndex.exportSynonyms();
+        const rules = await this.sourceIndex.exportRules();
+        await this.destinationIndex.setSettings(settings);
+        await this.destinationIndex.batchSynonyms(synonyms, this.sOptions);
+        await this.destinationIndex.batchRules(rules, this.rOptions);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async start(program) {
     try {
       // Validate command
       const isValid = this.validate(program, this.message, this.params);
@@ -74,12 +85,15 @@ class TransferIndexConfigScript extends Base {
         indexName: program.algoliaindexname,
         destinationAppId: program.destinationalgoliaappid,
         destinationApiKey: program.destinationalgoliaapikey,
+        configParams: program.params || null,
       };
 
       // Configure Algolia clients/indices
       this.setIndices(OPTIONS);
+      // Configure batchSynonyms and batchRules options
+      this.setConfigOptions(OPTIONS);
       // Transfer index configuration
-      this.transferIndexConfig();
+      await this.transferIndexConfig();
 
       return console.log(
         'Index settings, synonyms, and query rules transferred successfully.'

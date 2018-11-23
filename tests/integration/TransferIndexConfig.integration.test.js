@@ -47,7 +47,7 @@ describe('TransferIndexConfig command OK', () => {
 
   test(
     'TransferIndexConfig moves settings, synonyms, and rules',
-    done => {
+    async done => {
       const endMsg =
         'Index settings, synonyms, and query rules transferred successfully.';
 
@@ -69,7 +69,7 @@ describe('TransferIndexConfig command OK', () => {
       });
 
       // Execute transfer
-      transferIndexConfigScript.start(validProgram);
+      await transferIndexConfigScript.start(validProgram);
     },
     60000
   );

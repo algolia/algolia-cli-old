@@ -37,7 +37,7 @@ $ algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
 $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -t <transformationFilepath>
 
-$ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey>
+$ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -p <configParams>
 
 $ algolia transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
 ```
@@ -107,7 +107,7 @@ algolia import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algo
 - `<batchSize>` | Optional | Number of JSON objects to be included in each batch for indexing. Default is `5000`.
 - `<transformationFilepath>` | Optional | The path to any file that exports a function which (1) takes 2 arguments; an object and a callback, then (2) ends by calling said callback with the 2 arguments `null` and `<YOUR_TRANSFORMED_OBJECT>`.
 - `<maxConcurrency>` | Optional | Maximum number of concurrent filestreams to process. Default is `2`.
-- `<csvToJsonParams>` | Optional | [Parser parameters](https://github.com/Keyang/node-csvtojson#parameters) passed to [csvtojson](https://www.npmjs.com/package/csvtojson) module.
+- `<csvToJsonParams>` | Optional | Stringified [Parser parameters](https://github.com/Keyang/node-csvtojson#parameters) object passed to [csvtojson](https://www.npmjs.com/package/csvtojson) module.
 
 ##### Example Transformation File:
 
@@ -149,7 +149,7 @@ algolia export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <ou
 - `<algoliaApiKey>` | Required
 - `<algoliaIndexName>` | Required
 - `<outputFilepath>` | Required | Must be an existing local directory.
-- `<algoliaParams>` | Optional | [Search params](https://www.algolia.com/doc/api-reference/search-api-parameters/) to be sent with `browseAll()` query to Algolia.
+- `<algoliaParams>` | Optional | Stringified [Search params](https://www.algolia.com/doc/api-reference/search-api-parameters/) object to be sent with `browseAll()` query to Algolia.
 
 ### 5. Get Settings | `getsettings`
 
@@ -262,7 +262,7 @@ Transfer an index's settings, synonyms, and query rules to another index. Works 
 ##### Usage:
 
 ```shell
-algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey>
+algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -p <configParams>
 ```
 
 ##### Options:
@@ -272,10 +272,11 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 - `<sourceAlgoliaIndexName>` | Required
 - `<destinationAlgoliaAppId>` | Required
 - `<destinationAlgoliaApiKey>` | Required
+- `<configParams>` | Optional | Stringified object containing one or both of the following two properties: `batchSynonymsParams` and `batchRulesParams`. Each of those property values may contain a parameters object to be passed to the [batchSynonyms](https://www.algolia.com/doc/api-reference/api-methods/batch-synonyms/) and [batchRules](https://www.algolia.com/doc/api-reference/api-methods/batch-rules/) respectively.
 
 ##### Notes:
 
-- When transferring synonyms and query rules: `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will be set to true.
+- When transferring synonyms and query rules, `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will default to false, unless you specify `<configParams>`.
 
 ### 9. Transform Lines | `transformlines`
 
@@ -348,7 +349,7 @@ $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 
 $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -t ~/Desktop/example_transformations.js
 
-$ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY
+$ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -p '{"batchSynonymsParams":{"forwardToReplicas":true,"replaceExistingSynonyms":true},"batchRulesParams":{"forwardToReplicas":true,"clearExistingRules":true}}'
 ```
 
 # Contribute
