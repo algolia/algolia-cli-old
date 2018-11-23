@@ -1,6 +1,6 @@
 {
   "name": "@algolia/cli",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "A Node CLI tools for manipulating data. Handy for day-to-day Algolia SE work.",
   "license": "ISC",
   "author": "Sepehr Fakour",
@@ -13,9 +13,10 @@
     "algolia": "./index.js"
   },
   "scripts": {
-    "test": "jest --runInBand --forceExit",
-    "test:unit": "jest /scripts/",
-    "test:unit:watch": "jest --watch /scripts/",
+    "test": "jest --runInBand",
+    "test:unit": "jest scripts/",
+    "test:unit:watch": "jest --watch scripts/",
+    "test:integration": "jest --runInBand tests/integration/",
     "lint": "eslint . --ext .js",
     "lint:fix": "npm run lint -- --fix"
   },

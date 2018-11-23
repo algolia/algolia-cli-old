@@ -23,13 +23,14 @@ class ImportScript extends Base {
     this.writeProgress = this.writeProgress.bind(this);
     this.setIndex = this.setIndex.bind(this);
     this.setTransformations = this.setTransformations.bind(this);
+    this.setCsvOptions = this.setCsvOptions.bind(this);
     this.conditionallyParseCsv = this.conditionallyParseCsv.bind(this);
     this.importToAlgolia = this.importToAlgolia.bind(this);
     this.indexFiles = this.indexFiles.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia import -s sourcefilepath -a algoliaappid -k algoliaapikey -n algoliaindexname -b batchsize -t transformationfilepath -m maxconcurrency\n\n';
+      '\nUsage: $ algolia import -s sourcefilepath -a algoliaappid -k algoliaapikey -n algoliaindexname -b batchsize -t transformationfilepath -m maxconcurrency -p csvtojsonparams\n\n';
     this.params = [
       'sourcefilepath',
       'algoliaappid',
@@ -68,10 +69,20 @@ class ImportScript extends Base {
     this.formatRecord = valid ? transformations : this.defaultTransformations;
   }
 
+  setCsvOptions(options) {
+    try {
+      this.csvOptions = options.CSV_TO_JSON_PARAMS
+        ? JSON.parse(options.CSV_TO_JSON_PARAMS)
+        : null;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   conditionallyParseCsv(isCsv) {
     // Return the appropriate writestream for piping depending on filetype
     return isCsv
-      ? csv() // Convert from CSV to JSON
+      ? csv(this.csvOptions) // Convert from CSV to JSON
       : transform(this.defaultTransformations); // Do nothing
   }
 
@@ -157,6 +168,7 @@ class ImportScript extends Base {
       OBJECTS_PER_BATCH: program.batchsize || 5000,
       TRANSFORMATIONS: program.transformationfilepath || null,
       MAX_CONCURRENCY: program.maxconcurrency || 2,
+      CSV_TO_JSON_PARAMS: program.params || null,
     };
     // Configure Algolia (this.client, this.index)
     this.setIndex(OPTIONS);
@@ -164,6 +176,8 @@ class ImportScript extends Base {
     this.setSource(OPTIONS);
     // Configure transformations (this.formatRecord)
     this.setTransformations(OPTIONS);
+    // Configure optional csvtojson params (this.csvOptions)
+    this.setCsvOptions(OPTIONS);
     // Configure data upload parameters
     this.MAX_CONCURRENCY = OPTIONS.MAX_CONCURRENCY;
     // Configure number of records to index per batch

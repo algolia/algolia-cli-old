@@ -42,8 +42,8 @@ describe('Export command OK', () => {
     // Clear Algolia index, then add users objects
     const data = fs.readFileSync(dataPath, 'utf-8');
     await index.clearIndex();
-    await index.addObjects(JSON.parse(data));
-    await wait(10000);
+    const content = await index.addObjects(JSON.parse(data));
+    await index.waitTask(content.taskID);
     done();
   }, 60000);
 
