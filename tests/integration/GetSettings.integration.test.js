@@ -14,21 +14,15 @@ const program = {
   algoliaindexname: indexName,
 };
 
-global.console.log = jest.fn();
-
 describe('GetSettings command OK', () => {
   test('getsettings returns settings object', async done => {
+    global.console.log = jest.fn();
     // Get a baseline of the settings on the index
     const settings = await index.getSettings();
-    getSettingsScript.start(program);
-    setTimeout(() => {
-      // Check if settings we just retrieved match ones retrieved by script
-      expect(global.console.log).toHaveBeenLastCalledWith(settings);
-      done();
-    }, 1000);
-  });
-
-  afterAll(() => {
-    jest.resetAllMocks();
+    // Execute GetSettings
+    await getSettingsScript.start(program);
+    // Check if settings we just retrieved match ones retrieved by script
+    expect(global.console.log).toHaveBeenLastCalledWith(settings);
+    done();
   });
 });

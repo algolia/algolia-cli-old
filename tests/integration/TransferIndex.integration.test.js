@@ -41,8 +41,8 @@ describe('TransferIndex command OK', () => {
     const data = fs.readFileSync(dataPath, 'utf-8');
     await altIndex.clearIndex();
     await index.clearIndex();
-    await index.addObjects(JSON.parse(data));
-    await wait(10000);
+    const content = await index.addObjects(JSON.parse(data));
+    await index.waitTask(content.taskID);
     done();
   }, 60000);
 

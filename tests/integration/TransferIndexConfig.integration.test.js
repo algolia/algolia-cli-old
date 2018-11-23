@@ -38,9 +38,10 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('TransferIndexConfig command OK', () => {
   beforeAll(async done => {
-    await altIndex.setSettings(defaultSettings);
-    await index.setSettings(mockSettings);
-    await wait(10000);
+    const altContent = await altIndex.setSettings(defaultSettings);
+    const content = await index.setSettings(mockSettings);
+    await index.waitTask(altContent.taskID);
+    await index.waitTask(content.taskID);
     done();
   }, 60000);
 

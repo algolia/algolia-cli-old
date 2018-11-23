@@ -35,8 +35,8 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('Import command OK', () => {
   beforeAll(async done => {
-    await index.clearIndex();
-    await wait(10000);
+    const content = await index.clearIndex();
+    await index.waitTask(content.taskID);
     done();
   }, 60000);
 

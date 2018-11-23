@@ -20,50 +20,41 @@ const program = {
   sourcefilepath: settingsPath,
 };
 
-// let output = '';
-
-global.console.log = jest.fn();
-
 describe('SetSettings command OK', () => {
-  beforeAll(async () => {
+  beforeAll(async done => {
     // Make temp dir for test output
     if (fs.existsSync(tempDir)) {
       if (fs.existsSync(settingsPath)) fs.unlinkSync(settingsPath);
       fs.rmdirSync(tempDir);
     }
     fs.mkdirSync(tempDir);
-    // Write settings file to be read by setSettings script
+    // Get sample index settings
     const settings = await index.getSettings();
+    // Write settings file to be read by setSettings script
     fs.writeFileSync(
       settingsPath,
       `module.exports = ${JSON.stringify(settings)};`
     );
+    done();
   });
 
-  test(
-    'setsettings gets successful response',
-    done => {
-      // Get a baseline of the settings on the index
-      setSettingsScript.start(program);
-      setTimeout(() => {
-        // Check if setSettings response indicate success
-        expect(global.console.log).toHaveBeenLastCalledWith({
-          taskID: expect.anything(),
-          updatedAt: expect.anything(),
-        });
-        done();
-      }, 1000);
-    },
-    2000
-  );
+  test('setsettings gets successful response', async done => {
+    global.console.log = jest.fn();
+    // Get a baseline of the settings on the index
+    await setSettingsScript.start(program);
+    expect(global.console.log).toHaveBeenLastCalledWith({
+      taskID: expect.anything(),
+      updatedAt: expect.anything(),
+    });
+    done();
+  });
 
-  afterAll(() => {
+  afterAll(done => {
     // Remove temp dir for test output
     if (fs.existsSync(tempDir)) {
       if (fs.existsSync(settingsPath)) fs.unlinkSync(settingsPath);
       fs.rmdirSync(tempDir);
     }
-
-    jest.resetAllMocks();
+    done();
   });
 });
