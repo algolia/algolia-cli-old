@@ -46,7 +46,7 @@
     "chalk": "^2.4.1",
     "commander": "^2.18.0",
     "csvtojson": "^2.0.8",
-    "event-stream": "^3.3.4",
+    "event-stream": "3.3.4",
     "json-text-sequence": "^0.1.1",
     "stream-json": "^0.5.2",
     "stream-transform": "^1.0.0"
