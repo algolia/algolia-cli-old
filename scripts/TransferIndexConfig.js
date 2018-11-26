@@ -55,21 +55,14 @@ class TransferIndexConfigScript extends Base {
       this.rOptions = configParams.batchRulesParams;
   }
 
-  transferIndexConfig() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Transfer settings, synonyms, and query rules
-        const settings = await this.sourceIndex.getSettings();
-        const synonyms = await this.sourceIndex.exportSynonyms();
-        const rules = await this.sourceIndex.exportRules();
-        await this.destinationIndex.setSettings(settings);
-        await this.destinationIndex.batchSynonyms(synonyms, this.sOptions);
-        await this.destinationIndex.batchRules(rules, this.rOptions);
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
-    });
+  async transferIndexConfig() {
+    // Transfer settings, synonyms, and query rules
+    const settings = await this.sourceIndex.getSettings();
+    const synonyms = await this.sourceIndex.exportSynonyms();
+    const rules = await this.sourceIndex.exportRules();
+    await this.destinationIndex.setSettings(settings);
+    await this.destinationIndex.batchSynonyms(synonyms, this.sOptions);
+    await this.destinationIndex.batchRules(rules, this.rOptions);
   }
 
   async start(program) {
