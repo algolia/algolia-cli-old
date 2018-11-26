@@ -65,9 +65,9 @@ class TransferIndexConfigScript extends Base {
         await this.destinationIndex.setSettings(settings);
         await this.destinationIndex.batchSynonyms(synonyms, this.sOptions);
         await this.destinationIndex.batchRules(rules, this.rOptions);
-        resolve();
+        return resolve();
       } catch (e) {
-        reject(e);
+        return reject(e);
       }
     });
   }
