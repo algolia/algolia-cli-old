@@ -20,8 +20,8 @@ program
     'Source filepath | Required for: "import" and "transformlines" commands'
   )
   .option(
-    '-o, --outputfilepath <outputFilepath>',
-    'Output filepath | Required for: "transformlines" command'
+    '-o, --outputpath <outputPath>',
+    'Output filepath | Required for: "export" and "transformlines" commands'
   )
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
@@ -72,7 +72,7 @@ Commands:
   2. --version
 
   3. import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency> -p <csvToJsonParams>
-  4. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputFilepath> -p <algoliaParams>
+  4. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath> -p <algoliaParams>
 
   5. getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
   6. setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
@@ -80,8 +80,8 @@ Commands:
   7. transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -t <transformationFilepath>
   8. transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -p <configParams>
 
-  9. transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
-  10. csvtojson -s <sourceFilepath> -o <outputFilepath> <csvToJsonParams>
+  9. transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
+  10. csvtojson -s <sourceFilepath> -o <outputPath> <csvToJsonParams>
 
 Examples:
 

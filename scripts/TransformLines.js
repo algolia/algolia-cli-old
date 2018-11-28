@@ -15,8 +15,8 @@ class TransformLinesScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia transformlines -s sourcefilepath -o outputfilepath -t transformationfilepath \n\n';
-    this.params = ['sourcefilepath', 'outputfilepath'];
+      '\nUsage: $ algolia transformlines -s sourcefilepath -o outputpath -t transformationfilepath \n\n';
+    this.params = ['sourcefilepath', 'outputpath'];
   }
 
   defaultLineTransformation(line) {
@@ -35,12 +35,12 @@ class TransformLinesScript extends Base {
     process.stdout.write(`Line ${count}...`);
   }
 
-  setOutput(outputFilepath) {
-    // Trim any trailing "/" from outputFilepath
+  setOutput(outputpath) {
+    // Trim any trailing "/" from outputpath
     this.outputDir =
-      outputFilepath[outputFilepath.length - 1] === '/'
-        ? outputFilepath.slice(0, outputFilepath.length - 1)
-        : outputFilepath;
+      outputpath[outputpath.length - 1] === '/'
+        ? outputpath.slice(0, outputpath.length - 1)
+        : outputpath;
   }
 
   setTransformations(transformationFilepath) {
@@ -110,19 +110,19 @@ class TransformLinesScript extends Base {
     const isValid = this.validate(program, this.message, this.params);
     if (isValid.flag) return console.log(isValid.output);
 
-    // Ensure outputfilepath is a directory
-    if (!fs.lstatSync(program.outputfilepath).isDirectory())
+    // Ensure outputpath is a directory
+    if (!fs.lstatSync(program.outputpath).isDirectory())
       return console.log('Output filepath must be a directory.');
 
     // Config params
     this.sourceFilepath = program.sourcefilepath;
-    this.outputFilepath = program.outputfilepath;
+    this.outputpath = program.outputpath;
     this.transformationFilepath = program.transformationfilepath || null;
 
     // Configure source paths (this.directory, this.filenames)
     this.setSource({ SOURCE_FILEPATH: this.sourceFilepath });
     // Configure output path (this.outputDir)
-    this.setOutput(this.outputFilepath);
+    this.setOutput(this.outputpath);
     // Configure transformations (this.lineTransformation)
     this.setTransformations(this.transformationFilepath);
 

@@ -25,7 +25,7 @@ const validProgram = {
   algoliaappid: 'fake-command-input-1',
   algoliaapikey: 'fake-command-input-2',
   algoliaindexname: 'fake-command-input-3',
-  outputfilepath: 'fake-command-input-4',
+  outputpath: 'fake-command-input-4',
 };
 
 describe('Export script OK', () => {
