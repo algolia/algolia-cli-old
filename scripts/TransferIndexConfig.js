@@ -80,7 +80,8 @@ class TransferIndexConfigScript extends Base {
         indexName: program.algoliaindexname,
         destinationAppId: program.destinationalgoliaappid,
         destinationApiKey: program.destinationalgoliaapikey,
-        destinationIndexName: program.destinationindexname || program.algoliaindexname,
+        destinationIndexName:
+          program.destinationindexname || program.algoliaindexname,
         configParams: program.params || null,
       };
 

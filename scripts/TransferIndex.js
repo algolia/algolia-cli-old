@@ -95,7 +95,8 @@ class TransferIndexScript extends Base {
         indexName: program.algoliaindexname,
         destinationAppId: program.destinationalgoliaappid,
         destinationApiKey: program.destinationalgoliaapikey,
-        destinationIndexName: program.destinationindexname || program.algoliaindexname,
+        destinationIndexName:
+          program.destinationindexname || program.algoliaindexname,
         transformations: program.transformationfilepath,
       };
 
