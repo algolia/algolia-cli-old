@@ -35,12 +35,12 @@ class TransformLinesScript extends Base {
     process.stdout.write(`Line ${count}...`);
   }
 
-  setOutput(outputpath) {
+  setOutput(outputPath) {
     // Trim any trailing "/" from outputpath
     this.outputDir =
-      outputpath[outputpath.length - 1] === '/'
-        ? outputpath.slice(0, outputpath.length - 1)
-        : outputpath;
+      outputPath[outputPath.length - 1] === '/'
+        ? outputPath.slice(0, outputPath.length - 1)
+        : outputPath;
   }
 
   setTransformations(transformationFilepath) {
