@@ -25,7 +25,7 @@ fs.lstatSync = jest.fn().mockReturnValue({ isDirectory });
 // Mock user input
 const validProgram = {
   sourcefilepath: 'fake-command-input-1',
-  outputfilepath: 'fake-command-input-2',
+  outputpath: 'fake-command-input-2',
 };
 
 describe('TransformLines script OK', () => {
@@ -54,9 +54,9 @@ describe('TransformLines script OK', () => {
   /* setOutput */
 
   test('Should remove trailing "/" and set outputDir', done => {
-    const outputFilepath = 'test/output/file/path.js';
-    transformLinesScript.setOutput(`${outputFilepath}/`);
-    expect(transformLinesScript.outputDir).toEqual(outputFilepath);
+    const outputPath = 'test/output/file/path.js';
+    transformLinesScript.setOutput(`${outputPath}/`);
+    expect(transformLinesScript.outputDir).toEqual(outputPath);
     done();
   });
 

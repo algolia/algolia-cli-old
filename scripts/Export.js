@@ -18,12 +18,12 @@ class ExportScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia export -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputfilepath -p params\n\n';
+      '\nUsage: $ algolia export -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath -p params\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
       'algoliaindexname',
-      'outputfilepath',
+      'outputpath',
     ];
   }
 
@@ -42,7 +42,7 @@ class ExportScript extends Base {
       const appId = program.algoliaappid;
       const apiKey = program.algoliaapikey;
       const indexName = program.algoliaindexname;
-      const outputFilepath = this.normalizePath(program.outputfilepath);
+      const outputPath = this.normalizePath(program.outputpath);
       const params = program.params || {};
       params.hitsPerPage = 1000;
 
@@ -65,7 +65,7 @@ class ExportScript extends Base {
           // Write batch of 10,000 records to file
           fileCount++;
           const filename = `algolia-index-${indexName}-${fileCount}.json`;
-          const filePath = path.resolve(outputFilepath, filename);
+          const filePath = path.resolve(outputPath, filename);
           fs.writeFileSync(filePath, JSON.stringify(hits), 'utf8', () =>
             console.log(`Done writing ${filename}`)
           );
@@ -79,13 +79,13 @@ class ExportScript extends Base {
           // Write remaining records to file
           fileCount++;
           const filename = `algolia-index-${indexName}-${fileCount}.json`;
-          const filePath = path.resolve(outputFilepath, filename);
+          const filePath = path.resolve(outputPath, filename);
           fs.writeFileSync(filePath, JSON.stringify(hits), 'utf8', () =>
             console.log(`Done writing ${filename}`)
           );
         }
         return console.log(
-          `\nDone exporting index.\nSee your data here: ${outputFilepath}`
+          `\nDone exporting index.\nSee your data here: ${outputPath}`
         );
       });
 

@@ -24,7 +24,7 @@ const program = {
   algoliaappid: appId,
   algoliaapikey: apiKey,
   algoliaindexname: indexName,
-  outputfilepath: tempDir,
+  outputpath: tempDir,
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));

@@ -19,7 +19,7 @@ class TransferIndexScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia transferindex -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -t transformationfilepath\n\n';
+      '\nUsage: $ algolia transferindex -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -t transformationfilepath\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
@@ -48,7 +48,9 @@ class TransferIndexScript extends Base {
       options.destinationApiKey,
       keepaliveAgent
     );
-    this.destinationIndex = destinationClient.initIndex(options.indexName);
+    this.destinationIndex = destinationClient.initIndex(
+      options.destinationIndexName
+    );
   }
 
   async transferIndexConfig() {
@@ -93,6 +95,8 @@ class TransferIndexScript extends Base {
         indexName: program.algoliaindexname,
         destinationAppId: program.destinationalgoliaappid,
         destinationApiKey: program.destinationalgoliaapikey,
+        destinationIndexName:
+          program.destinationindexname || program.algoliaindexname,
         transformations: program.transformationfilepath,
       };
 

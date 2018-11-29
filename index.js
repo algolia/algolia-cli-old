@@ -20,8 +20,8 @@ program
     'Source filepath | Required for: "import" and "transformlines" commands'
   )
   .option(
-    '-o, --outputfilepath <outputFilepath>',
-    'Output filepath | Required for: "transformlines" command'
+    '-o, --outputpath <outputPath>',
+    'Output filepath | Required for: "export" and "transformlines" commands'
   )
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
@@ -59,6 +59,10 @@ program
     '-y, --destinationalgoliaapikey <destinationAlgoliaApiKey>',
     'Destination Algolia API key | Required for: "transferindex" command'
   )
+  .option(
+    '-i, --destinationindexname <destinationIndexName>',
+    'Destination Algolia index name | Optional for: "transferindex" and "transferindexconfig" commands'
+  )
   .version(version, '-v, --version')
   .on('--help', () => {
     const message = `
@@ -72,16 +76,16 @@ Commands:
   2. --version
 
   3. import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency> -p <csvToJsonParams>
-  4. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputFilepath> -p <algoliaParams>
+  4. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath> -p <algoliaParams>
 
   5. getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
   6. setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
 
-  7. transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -t <transformationFilepath>
-  8. transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -p <configParams>
+  7. transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
+  8. transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
 
-  9. transformlines -s <sourceFilepath> -o <outputFilepath> -t <transformationFilepath>
-  10. csvtojson -s <sourceFilepath> -o <outputFilepath> <csvToJsonParams>
+  9. transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
+  10. csvtojson -s <sourceFilepath> -o <outputPath> <csvToJsonParams>
 
 Examples:
 
@@ -91,8 +95,8 @@ Examples:
   $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p '{"filters":["category:book"]}'
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
   $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js
-  $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -t ~/Desktop/example_transformations.js
-  $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
+  $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
+  $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
 `;
     console.log(message);

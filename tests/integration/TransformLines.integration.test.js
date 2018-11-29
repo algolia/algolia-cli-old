@@ -10,7 +10,7 @@ const transformations = `${mocksDir}/users-line-transformation.js`;
 
 const program = {
   sourcefilepath: usersData,
-  outputfilepath: tempDir,
+  outputpath: tempDir,
   transformationfilepath: transformations,
 };
 
