@@ -15,6 +15,7 @@ const validProgram = {
   algoliaindexname: 'fake-command-input-3',
   destinationalgoliaappid: 'fake-command-input-4',
   destinationalgoliaapikey: 'fake-command-input-5',
+  destinationindexname: 'fake-command-input-6',
 };
 
 describe('Transfer Index script OK', () => {
@@ -27,6 +28,7 @@ describe('Transfer Index script OK', () => {
       indexName: validProgram.algoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
+      destinationIndexName: validProgram.destinationindexname,
     };
     // Mock Algolia
     const initIndex = jest.fn();
@@ -49,7 +51,7 @@ describe('Transfer Index script OK', () => {
     );
     expect(initIndex).toBeCalledTimes(2);
     expect(initIndex).nthCalledWith(1, mockOptions.indexName);
-    expect(initIndex).nthCalledWith(2, mockOptions.indexName);
+    expect(initIndex).nthCalledWith(2, mockOptions.destinationIndexName);
     done();
   });
 
