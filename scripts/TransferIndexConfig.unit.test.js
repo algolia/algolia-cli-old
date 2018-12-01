@@ -19,23 +19,23 @@ const validProgram = {
 };
 
 describe('Transfer Index script OK', () => {
-  /* setIndices */
+  /* getIndices */
 
-  test('setIndices should set algolia clients and indices', done => {
+  test('getIndices should return algolia indices', done => {
     const mockOptions = {
       sourceAppId: validProgram.algoliaappid,
       sourceApiKey: validProgram.algoliaapikey,
-      indexName: validProgram.algoliaindexname,
+      sourceindexName: validProgram.algoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
     };
     // Mock Algolia
-    const initIndex = jest.fn();
+    const initIndex = jest.fn(str => str);
     const client = { initIndex };
     algolia.mockReturnValue(client);
 
-    transferIndexConfigScript.setIndices(mockOptions);
+    const result = transferIndexConfigScript.getIndices(mockOptions);
     expect(algolia).toBeCalledTimes(2);
     expect(algolia).nthCalledWith(
       1,
@@ -50,25 +50,30 @@ describe('Transfer Index script OK', () => {
       expect.any(Object)
     );
     expect(initIndex).toBeCalledTimes(2);
-    expect(initIndex).nthCalledWith(1, mockOptions.indexName);
+    expect(initIndex).nthCalledWith(1, mockOptions.sourceIndexName);
     expect(initIndex).nthCalledWith(2, mockOptions.destinationIndexName);
+    expect(result).toEqual({
+      sourceIndex: mockOptions.sourceIndexName,
+      destinationIndex: mockOptions.destinationIndexName,
+    });
     done();
   });
 
-  /* setConfigOptions */
+  /* getConfigOptions */
 
-  test('setConfigOptions should set default params for batchSynonyms and batchRules', done => {
+  test('getConfigOptions should return default config if no config params provided', done => {
     const mockOptions = {
       configParams: undefined,
     };
-    const result = transferIndexConfigScript.setConfigOptions(mockOptions);
-    expect(result).toEqual(undefined);
-    expect(transferIndexConfigScript.sOptions).toEqual(expect.any(Object));
-    expect(transferIndexConfigScript.rOptions).toEqual(expect.any(Object));
+    const result = transferIndexConfigScript.getConfigOptions(mockOptions);
+    expect(result).toEqual({
+      sOptions: expect.any(Object),
+      rOptions: expect.any(Object),
+    });
     done();
   });
 
-  test('setConfigOptions should set input params for batchSynonyms and batchRules', done => {
+  test('getConfigOptions should return correct config when provided valid params', done => {
     const configParams = {
       batchSynonymsParams: {
         forwardToReplicas: true,
@@ -82,21 +87,18 @@ describe('Transfer Index script OK', () => {
     const mockOptions = {
       configParams: JSON.stringify(configParams),
     };
-    const result = transferIndexConfigScript.setConfigOptions(mockOptions);
-    expect(result).toEqual(undefined);
-    expect(transferIndexConfigScript.sOptions).toEqual(
-      configParams.batchSynonymsParams
-    );
-    expect(transferIndexConfigScript.rOptions).toEqual(
-      configParams.batchRulesParams
-    );
+    const result = transferIndexConfigScript.getConfigOptions(mockOptions);
+    expect(result).toEqual({
+      sOptions: configParams.batchSynonymsParams,
+      rOptions: configParams.batchRulesParams,
+    });
     done();
   });
 
   /* transferIndexConfig */
 
   test('transferIndexConfig should set algolia clients and indices', async done => {
-    // Mock configuration
+    // Mock Data
     const settings = 'mock_settings';
     const synonyms = 'mock_synonyms';
     const rules = 'mock_rules';
@@ -104,24 +106,34 @@ describe('Transfer Index script OK', () => {
     const getSettings = jest.fn(() => settings);
     const exportSynonyms = jest.fn(() => synonyms);
     const exportRules = jest.fn(() => rules);
-    transferIndexConfigScript.sourceIndex = {
-      getSettings,
-      exportSynonyms,
-      exportRules,
-    };
-
     // Mock Algolia destination index instance methods
     const setSettings = jest.fn();
     const batchSynonyms = jest.fn();
     const batchRules = jest.fn();
-    transferIndexConfigScript.destinationIndex = {
-      setSettings,
-      batchSynonyms,
-      batchRules,
+    // Mock indices
+    const indices = {
+      sourceIndex: {
+        getSettings,
+        exportSynonyms,
+        exportRules,
+      },
+      destinationIndex: {
+        setSettings,
+        batchSynonyms,
+        batchRules,
+      },
+    };
+    // Mock config
+    const config = {
+      sOptions: {},
+      rOptions: {},
     };
 
     // Execute transfer
-    await transferIndexConfigScript.transferIndexConfig();
+    await transferIndexConfigScript.transferIndexConfig(indices, config);
+    expect(getSettings).toBeCalled();
+    expect(exportSynonyms).toBeCalled();
+    expect(exportRules).toBeCalled();
     expect(setSettings).toBeCalledWith(settings);
     expect(batchSynonyms).toBeCalledWith(synonyms, expect.any(Object));
     expect(batchRules).toBeCalledWith(rules, expect.any(Object));

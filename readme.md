@@ -128,7 +128,7 @@ module.exports = (data,cb) => {
 - `<sourceFilepath>` and `<transformationFilepath>` arguments can be absolute or relative paths.
 - If your system has limited memory resources or if you run into heap allocation errors, consider reducing `<maxconcurrency>`.
 - Make sure you only import JSON or CSV files. Don't accidentally try to import hidden files like `.DS_Store`, log files, etc. as they will throw an error.
-- Script assumes each file contains an array of JSON objects unless the file extension ends with `.csv`.
+- Command assumes each file contains an array of JSON objects unless the file extension ends with `.csv`.
 - CSV to JSON conversion performed using [csvtojson](https://www.npmjs.com/package/csvtojson).
 
 ### 4. Export | `export`
@@ -256,6 +256,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 
 ##### Notes:
 
+- Command duplicates data and extended settings; does not delete or affect source index.
 - When transferring synonyms and query rules: `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will be set to true.
 
 ### 8. Transfer Index Config | `transferindexconfig`
@@ -334,7 +335,7 @@ module.exports = (line) => {
 ##### Notes:
 
 - `<outputPath>` must be a directory.
-- Running the `transform_lines` command without providing optional `<transformationFilepath>` param will cause it to assume it's parsing a `.json-seq` file; thus, it will apply the `defaultLineTransformation` method in `transformLines.js` to each line. This checks each line for the ASCII Record Separator character `\u001e` and replaces it with a `,`. It will _also_ cause it to enclose the whole file in "[" and "]" square brackets to make it a valid JS array. Providing a custom transformation method via the optional `<transformationFilepath>` param will make it exclusively run your transformation function instead of the default one (and in this case it will also omit adding enclosing square brackets).
+- Running `transformlines` command without providing optional `<transformationFilepath>` param will cause it to assume it's parsing a `.json-seq` file; thus, it will apply the `defaultLineTransformation` method in `transformLines.js` to each line. This checks each line for the ASCII Record Separator character `\u001e` and replaces it with a `,`. It will _also_ cause it to enclose the whole file in "[" and "]" square brackets to make it a valid JS array. Providing a custom transformation method via the optional `<transformationFilepath>` param will make it exclusively run your transformation function instead of the default one (and in this case it will also omit adding enclosing square brackets).
 
 # Examples
 ```bash
