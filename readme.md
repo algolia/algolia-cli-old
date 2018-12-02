@@ -257,7 +257,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 ##### Notes:
 
 - Command duplicates data and extended settings; does not delete or affect source index.
-- When transferring synonyms and query rules: `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will be set to true.
+- Replica indices and settings not transferred.
 
 ### 8. Transfer Index Config | `transferindexconfig`
 
