@@ -13,9 +13,10 @@ class TransferIndexScript extends Base {
     super();
     // Bind class methods
     this.writeProgress = this.writeProgress.bind(this);
-    this.setIndices = this.setIndices.bind(this);
+    this.getIndices = this.getIndices.bind(this);
+    this.getTransformations = this.getTransformations.bind(this);
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
-    this.setTransformations = this.setTransformations.bind(this);
+    this.transferData = this.transferData.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
@@ -34,106 +35,102 @@ class TransferIndexScript extends Base {
     process.stdout.write(`Records transferred: ~ ${count}`);
   }
 
-  setIndices(options) {
+  getIndices(options) {
     // Instantiate Algolia indices
     const sourceClient = algolia(
       options.sourceAppId,
       options.sourceApiKey,
       keepaliveAgent
     );
-    this.sourceIndex = sourceClient.initIndex(options.indexName);
+    const sourceIndex = sourceClient.initIndex(options.sourceIndexName);
 
     const destinationClient = algolia(
       options.destinationAppId,
       options.destinationApiKey,
       keepaliveAgent
     );
-    this.destinationIndex = destinationClient.initIndex(
+    const destinationIndex = destinationClient.initIndex(
       options.destinationIndexName
     );
+
+    return { sourceIndex, destinationIndex };
   }
 
-  async transferIndexConfig() {
-    // Transfer settings, synonyms, and query rules
-    const settings = await this.sourceIndex.getSettings();
-    const synonyms = await this.sourceIndex.exportSynonyms();
-    const rules = await this.sourceIndex.exportRules();
-    const sOptions = {
-      forwardToReplicas: true,
-      replaceExistingSynonyms: true,
-    };
-    const rOptions = {
-      forwardToReplicas: true,
-      clearExistingRules: true,
-    };
-    await this.destinationIndex.setSettings(settings);
-    await this.destinationIndex.batchSynonyms(synonyms, sOptions);
-    await this.destinationIndex.batchRules(rules, rOptions);
-  }
-
-  setTransformations(options) {
+  getTransformations(options) {
     // Set JSON record transformations
     const transformations = options.transformations
       ? require(options.transformations)
       : null;
     // Validate transformations function input param
     const valid = transformations && typeof transformations === 'function';
-    // Assign our transformations function using provided custom transformations file if exists
-    this.formatRecord = valid ? transformations : null;
+    // Return provided transformation function if exists
+    return valid ? transformations : null;
   }
 
-  start(program) {
-    try {
-      // Validate command
-      const isValid = this.validate(program, this.message, this.params);
-      if (isValid.flag) return console.log(isValid.output);
+  async transferIndexConfig(indices) {
+    // Transfer settings, synonyms, and query rules
+    const settings = await indices.sourceIndex.getSettings();
+    const synonyms = await indices.sourceIndex.exportSynonyms();
+    const rules = await indices.sourceIndex.exportRules();
+    await indices.destinationIndex.setSettings(settings);
+    await indices.destinationIndex.batchSynonyms(synonyms);
+    await indices.destinationIndex.batchRules(rules);
+  }
 
-      // Config params
-      const OPTIONS = {
-        sourceAppId: program.algoliaappid,
-        sourceApiKey: program.algoliaapikey,
-        indexName: program.algoliaindexname,
-        destinationAppId: program.destinationalgoliaappid,
-        destinationApiKey: program.destinationalgoliaapikey,
-        destinationIndexName:
-          program.destinationindexname || program.algoliaindexname,
-        transformations: program.transformationfilepath,
-      };
-
-      // Configure Algolia clients/indices
-      this.setIndices(OPTIONS);
-      // Transfer index configuration
-      this.transferIndexConfig();
-      // Configure transformations
-      this.setTransformations(OPTIONS);
-
+  transferData(indices, formatRecord) {
+    return new Promise((resolve, reject) => {
       // Export index
-      const browse = this.sourceIndex.browseAll('', {
+      const browse = indices.sourceIndex.browseAll('', {
         attributesToRetrieve: ['*'],
       });
       let hitsCount = 0;
-
+      // Set browseAll event handlers
       browse.on('result', async result => {
         // Push hits to destination index
         try {
-          const hits = this.formatRecord
-            ? result.hits.map(this.formatRecord)
+          const hits = formatRecord
+            ? result.hits.map(formatRecord)
             : result.hits;
-          await this.destinationIndex.addObjects(hits);
+          await indices.destinationIndex.addObjects(hits);
           hitsCount += result.hits.length;
           this.writeProgress(hitsCount);
         } catch (e) {
           throw e;
         }
       });
+      browse.on('end', () => resolve('\nDone transferring index.\n'));
+      browse.on('error', err => reject(err));
+    });
+  }
 
-      browse.on('end', () => console.log('\nDone transferring index.\n'));
+  async start(program) {
+    try {
+      // Validate command
+      const isValid = this.validate(program, this.message, this.params);
+      if (isValid.flag) return console.log(isValid.output);
 
-      browse.on('error', err => {
-        throw err;
-      });
+      // Config params
+      const options = {
+        sourceAppId: program.algoliaappid,
+        sourceApiKey: program.algoliaapikey,
+        sourceIndexName: program.algoliaindexname,
+        destinationAppId: program.destinationalgoliaappid,
+        destinationApiKey: program.destinationalgoliaapikey,
+        destinationIndexName:
+          program.destinationindexname || program.algoliaindexname,
+        transformations: program.transformationfilepath || null,
+      };
 
-      return false;
+      // Configure Algolia clients/indices
+      const indices = this.getIndices(options);
+      // Configure transformations
+      const formatRecord = this.getTransformations(options);
+      // Transfer index configuration
+      await this.transferIndexConfig(indices);
+      // Transfer data
+      const result = await this.transferData(indices, formatRecord);
+
+      return console.log(result);
     } catch (e) {
       throw e;
     }

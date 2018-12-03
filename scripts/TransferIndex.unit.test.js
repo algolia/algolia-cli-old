@@ -37,23 +37,23 @@ describe('Transfer Index script OK', () => {
     done();
   });
 
-  /* setIndices */
+  /* getIndices */
 
-  test('setIndices should set algolia clients and indices', done => {
+  test('getIndices should set algolia clients and indices', done => {
     const mockOptions = {
       sourceAppId: validProgram.algoliaappid,
       sourceApiKey: validProgram.algoliaapikey,
-      indexName: validProgram.algoliaindexname,
+      sourceIndexName: validProgram.algoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
     };
     // Mock Algolia
-    const initIndex = jest.fn();
+    const initIndex = jest.fn(str => str);
     const client = { initIndex };
     algolia.mockReturnValue(client);
 
-    transferIndexScript.setIndices(mockOptions);
+    const result = transferIndexScript.getIndices(mockOptions);
     expect(algolia).toBeCalledTimes(2);
     expect(algolia).nthCalledWith(
       1,
@@ -68,8 +68,12 @@ describe('Transfer Index script OK', () => {
       expect.any(Object)
     );
     expect(initIndex).toBeCalledTimes(2);
-    expect(initIndex).nthCalledWith(1, mockOptions.indexName);
+    expect(initIndex).nthCalledWith(1, mockOptions.sourceIndexName);
     expect(initIndex).nthCalledWith(2, mockOptions.destinationIndexName);
+    expect(result).toEqual({
+      sourceIndex: mockOptions.sourceIndexName,
+      destinationIndex: mockOptions.destinationIndexName,
+    });
     done();
   });
 
@@ -84,88 +88,38 @@ describe('Transfer Index script OK', () => {
     const getSettings = jest.fn(() => settings);
     const exportSynonyms = jest.fn(() => synonyms);
     const exportRules = jest.fn(() => rules);
-    transferIndexScript.sourceIndex = {
-      getSettings,
-      exportSynonyms,
-      exportRules,
-    };
-
     // Mock Algolia destination index instance methods
     const setSettings = jest.fn();
     const batchSynonyms = jest.fn();
     const batchRules = jest.fn();
-    transferIndexScript.destinationIndex = {
-      setSettings,
-      batchSynonyms,
-      batchRules,
+    // Mock indices
+    const indices = {
+      sourceIndex: {
+        getSettings,
+        exportSynonyms,
+        exportRules,
+      },
+      destinationIndex: {
+        setSettings,
+        batchSynonyms,
+        batchRules,
+      },
     };
 
     // Execute transfer
-    await transferIndexScript.transferIndexConfig();
+    await transferIndexScript.transferIndexConfig(indices);
+    expect(getSettings).toBeCalled();
+    expect(exportSynonyms).toBeCalled();
+    expect(exportRules).toBeCalled();
     expect(setSettings).toBeCalledWith(settings);
-    expect(batchSynonyms).toBeCalledWith(synonyms, expect.any(Object));
-    expect(batchRules).toBeCalledWith(rules, expect.any(Object));
+    expect(batchSynonyms).toBeCalledWith(synonyms);
+    expect(batchRules).toBeCalledWith(rules);
     done();
   });
 
-  /* start */
+  /* transferData */
 
-  test('Services should be called with valid params', done => {
-    // Mock Algolia
-    const on = jest.fn();
-    const browseAll = jest.fn(() => ({ on }));
-    const getSettings = jest.fn().mockResolvedValue('settings');
-    const exportSynonyms = jest.fn().mockResolvedValue('synonyms');
-    const exportRules = jest.fn().mockResolvedValue('rules');
-    const setSettings = jest.fn();
-    const batchSynonyms = jest.fn();
-    const batchRules = jest.fn();
-    const index = {
-      browseAll,
-      getSettings,
-      exportSynonyms,
-      exportRules,
-      setSettings,
-      batchSynonyms,
-      batchRules,
-    };
-    const client = {
-      initIndex: jest.fn().mockReturnValue(index),
-    };
-    algolia.mockReturnValue(client);
-
-    // Execute method
-    const result = transferIndexScript.start(validProgram);
-
-    // Use timeout to defer execution of test assertions
-    setTimeout(() => {
-      expect(algolia).toBeCalledWith(
-        validProgram.algoliaappid,
-        validProgram.algoliaapikey,
-        expect.any(Object)
-      );
-      expect(algolia).toBeCalledWith(
-        validProgram.destinationalgoliaappid,
-        validProgram.destinationalgoliaapikey,
-        expect.any(Object)
-      );
-      expect(client.initIndex).toBeCalledWith(validProgram.algoliaindexname);
-      expect(client.initIndex).toBeCalledWith(validProgram.algoliaindexname);
-      expect(getSettings).toBeCalled();
-      expect(exportSynonyms).toBeCalled();
-      expect(exportRules).toBeCalled();
-      expect(setSettings).toBeCalledWith('settings');
-      expect(batchSynonyms).toBeCalledWith('synonyms', expect.any(Object));
-      expect(batchRules).toBeCalledWith('rules', expect.any(Object));
-      expect(on).toBeCalledWith('result', expect.any(Function));
-      expect(on).toBeCalledWith('end', expect.any(Function));
-      expect(on).toBeCalledWith('error', expect.any(Function));
-      expect(result).toEqual(false);
-      done();
-    }, 0);
-  });
-
-  test('Browser should respond to data stream result event', done => {
+  test('Browser should respond to data stream result event', async done => {
     // Mock Algolia hits
     const mockResults = {
       hits: [{ name: 'fake-hit-1' }, { name: 'fake-hit-2' }],
@@ -174,114 +128,74 @@ describe('Transfer Index script OK', () => {
     const browser = new EventEmitter();
     const browseAll = jest.fn(() => browser);
     const addObjects = jest.fn().mockResolvedValue('Objects added');
-    const getSettings = jest.fn().mockResolvedValue('settings');
-    const exportSynonyms = jest.fn().mockResolvedValue('synonyms');
-    const exportRules = jest.fn().mockResolvedValue('rules');
-    const setSettings = jest.fn();
-    const batchSynonyms = jest.fn();
-    const batchRules = jest.fn();
     const index = {
       browseAll,
       addObjects,
-      getSettings,
-      exportSynonyms,
-      exportRules,
-      setSettings,
-      batchSynonyms,
-      batchRules,
     };
-    const client = {
-      initIndex: jest.fn().mockReturnValue(index),
+    const indices = {
+      sourceIndex: Object.assign({}, index),
+      destinationIndex: Object.assign({}, index),
     };
-    algolia.mockReturnValue(client);
     // Mock writeProgress method
     transferIndexScript.writeProgress = jest.fn();
 
     // Execute method
-    transferIndexScript.start(validProgram);
+    const promise = transferIndexScript.transferData(indices, null);
     // Test onResult event handler
     browser.emit('result', mockResults);
-
-    // Use timeout to defer execution of test assertions
-    setTimeout(() => {
-      // Expect script to import data to destination Algolia index in onResult handler
-      expect(addObjects).toBeCalledWith(expect.any(Array));
-      // Expect script to output progress in onResult handler
-      expect(transferIndexScript.writeProgress).toBeCalledWith(2);
-      done();
-    }, 0);
+    browser.emit('end');
+    // Resolve/reject
+    await promise;
+    // Expect script to import data to destination Algolia index in onResult handler
+    expect(addObjects).toBeCalledWith(expect.any(Array));
+    // Expect script to output progress in onResult handler
+    expect(transferIndexScript.writeProgress).toBeCalledWith(2);
+    done();
   });
 
-  test('Browser should respond to data stream end event', done => {
-    const consoleLogSpy = jest.spyOn(global.console, 'log');
+  test('Browser should respond to data stream end event', async done => {
     // Mock browser event emitter
     const browser = new EventEmitter();
     const browseAll = jest.fn(() => browser);
-    const getSettings = jest.fn().mockResolvedValue('settings');
-    const exportSynonyms = jest.fn().mockResolvedValue('synonyms');
-    const exportRules = jest.fn().mockResolvedValue('rules');
-    const setSettings = jest.fn();
-    const batchSynonyms = jest.fn();
-    const batchRules = jest.fn();
     const index = {
       browseAll,
-      getSettings,
-      exportSynonyms,
-      exportRules,
-      setSettings,
-      batchSynonyms,
-      batchRules,
     };
-    const client = {
-      initIndex: jest.fn().mockReturnValue(index),
+    const indices = {
+      sourceIndex: Object.assign({}, index),
+      destinationIndex: Object.assign({}, index),
     };
-    algolia.mockReturnValue(client);
-    // Mock writeProgress method
-    transferIndexScript.writeProgress = jest.fn();
 
     // Execute method
-    transferIndexScript.start(validProgram);
-    // Test onResult event handler
+    const promise = transferIndexScript.transferData(indices, null);
+    // Test onEnd event handler
     browser.emit('end');
-    // Use hack to defer execution of test assertions
-    setTimeout(() => {
-      // Expect script to import data to destination Algolia index in onResult handler
-      expect(consoleLogSpy).toBeCalledWith(expect.any(String));
-      done();
-    }, 0);
+    // Resolve/reject
+    const result = await promise;
+    // Expect console output
+    expect(result).toEqual(expect.any(String));
+    done();
   });
 
-  test('Browser should respond to data stream error event', done => {
+  test('Browser should respond to data stream error event', async done => {
     try {
       // Mock browser event emitter
       const browser = new EventEmitter();
       const browseAll = jest.fn(() => browser);
-      const getSettings = jest.fn().mockResolvedValue('settings');
-      const exportSynonyms = jest.fn().mockResolvedValue('synonyms');
-      const exportRules = jest.fn().mockResolvedValue('rules');
-      const setSettings = jest.fn();
-      const batchSynonyms = jest.fn();
-      const batchRules = jest.fn();
       const index = {
         browseAll,
-        getSettings,
-        exportSynonyms,
-        exportRules,
-        setSettings,
-        batchSynonyms,
-        batchRules,
       };
-      const client = {
-        initIndex: jest.fn().mockReturnValue(index),
+      const indices = {
+        sourceIndex: Object.assign({}, index),
+        destinationIndex: Object.assign({}, index),
       };
-      algolia.mockReturnValue(client);
-      // Mock writeProgress method
-      transferIndexScript.writeProgress = jest.fn();
 
       // Execute method
-      transferIndexScript.start(validProgram);
-      // Test onResult event handler
+      const promise = transferIndexScript.transferData(indices, null);
+      // Test onError event handler
       browser.emit('error', 'Right error');
+      // Resolve/reject
+      await promise;
+      // Set a final error that should never be reached
       setTimeout(() => {
         throw new Error('Wrong error');
       }, 0);
@@ -293,5 +207,40 @@ describe('Transfer Index script OK', () => {
         done();
       }, 0);
     }
+  });
+
+  /* start */
+
+  test('Services should be called with valid params', async done => {
+    const logSpy = jest.spyOn(global.console, 'log');
+    // Mock options
+    const options = {
+      sourceAppId: validProgram.algoliaappid,
+      sourceApiKey: validProgram.algoliaapikey,
+      sourceIndexName: validProgram.algoliaindexname,
+      destinationAppId: validProgram.destinationalgoliaappid,
+      destinationApiKey: validProgram.destinationalgoliaapikey,
+      destinationIndexName: validProgram.destinationindexname,
+      transformations: null,
+    };
+    // Mock instance methods
+    transferIndexScript.getIndices = jest.fn(() => 'indices');
+    transferIndexScript.getTransformations = jest.fn(() => 'transformations');
+    transferIndexScript.transferIndexConfig = jest
+      .fn()
+      .mockResolvedValue('settings set');
+    transferIndexScript.transferData = jest.fn().mockResolvedValue('result');
+    // Execute method
+    const result = await transferIndexScript.start(validProgram);
+    expect(transferIndexScript.getIndices).toBeCalledWith(options);
+    expect(transferIndexScript.getTransformations).toBeCalledWith(options);
+    expect(transferIndexScript.transferIndexConfig).toBeCalled();
+    expect(transferIndexScript.transferData).toBeCalledWith(
+      'indices',
+      'transformations'
+    );
+    expect(logSpy).toBeCalledWith('result');
+    expect(result).toEqual(undefined);
+    done();
   });
 });
