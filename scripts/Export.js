@@ -15,6 +15,8 @@ class ExportScript extends Base {
     super();
     // Bind class methods
     this.writeProgress = this.writeProgress.bind(this);
+    this.writeFile = this.writeFile.bind(this);
+    this.exportData = this.exportData.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
@@ -32,26 +34,21 @@ class ExportScript extends Base {
     process.stdout.write(`Records browsed: ~ ${count}`);
   }
 
-  start(program) {
-    try {
-      // Validate command
-      const isValid = this.validate(program, this.message, this.params);
-      if (isValid.flag) return console.log(isValid.output);
+  writeFile(hits, options, fileCount) {
+    const filename = `algolia-index-${options.indexName}-${fileCount}.json`;
+    const filePath = path.resolve(options.outputPath, filename);
+    fs.writeFileSync(filePath, JSON.stringify(hits));
+    return console.log(`Done writing ${filename}`);
+  }
 
-      // Config params
-      const appId = program.algoliaappid;
-      const apiKey = program.algoliaapikey;
-      const indexName = program.algoliaindexname;
-      const outputPath = this.normalizePath(program.outputpath);
-      const params = program.params || {};
-      params.hitsPerPage = 1000;
-
+  exportData(options) {
+    return new Promise((resolve, reject) => {
       // Instantiate Algolia index
-      const client = algolia(appId, apiKey, keepaliveAgent);
-      const index = client.initIndex(indexName);
+      const client = algolia(options.appId, options.apiKey, keepaliveAgent);
+      const index = client.initIndex(options.indexName);
 
       // Export index
-      const browse = index.browseAll('', params);
+      const browse = index.browseAll('', options.params);
       let hits = [];
       let hitsCount = 0;
       let fileCount = 0;
@@ -64,11 +61,7 @@ class ExportScript extends Base {
         if (hits.length >= 10000) {
           // Write batch of 10,000 records to file
           fileCount++;
-          const filename = `algolia-index-${indexName}-${fileCount}.json`;
-          const filePath = path.resolve(outputPath, filename);
-          fs.writeFileSync(filePath, JSON.stringify(hits), 'utf8', () =>
-            console.log(`Done writing ${filename}`)
-          );
+          this.writeFile(hits, options, fileCount);
           // Clear array
           hits = [];
         }
@@ -78,22 +71,35 @@ class ExportScript extends Base {
         if (hits.length > 0) {
           // Write remaining records to file
           fileCount++;
-          const filename = `algolia-index-${indexName}-${fileCount}.json`;
-          const filePath = path.resolve(outputPath, filename);
-          fs.writeFileSync(filePath, JSON.stringify(hits), 'utf8', () =>
-            console.log(`Done writing ${filename}`)
-          );
+          this.writeFile(hits, options, fileCount);
         }
-        return console.log(
-          `\nDone exporting index.\nSee your data here: ${outputPath}`
+        return resolve(
+          `\nDone exporting index.\nSee your data here: ${options.outputPath}`
         );
       });
 
-      browse.on('error', err => {
-        throw err;
-      });
+      browse.on('error', err => reject(err));
+    });
+  }
 
-      return false;
+  async start(program) {
+    try {
+      // Validate command
+      const isValid = this.validate(program, this.message, this.params);
+      if (isValid.flag) return console.log(isValid.output);
+
+      // Config params
+      const options = {
+        appId: program.algoliaappid,
+        apiKey: program.algoliaapikey,
+        indexName: program.algoliaindexname,
+        outputPath: this.normalizePath(program.outputpath),
+        params: program.params || { hitsPerPage: 1000 },
+      };
+
+      // Export data
+      const result = await this.exportData(options);
+      return console.log(result);
     } catch (e) {
       throw e;
     }

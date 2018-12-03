@@ -4,11 +4,13 @@ const readLine = require('readline');
 const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 const fs = require('fs');
+const path = require('path');
 
 jest.mock('readline');
 jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 jest.mock('fs');
+jest.mock('path');
 
 // Mock Readline
 readLine.cursorTo = jest.fn();
@@ -38,32 +40,73 @@ describe('Export script OK', () => {
     done();
   });
 
-  /* start */
+  /* writeFile */
 
-  test('Services should be called with valid params', done => {
-    // Mock Algolia
-    const on = jest.fn();
-    const browseAll = jest.fn(() => ({ on }));
-    const index = { browseAll };
-    const client = {
-      initIndex: jest.fn().mockReturnValue(index),
+  test('writeFile should call fs.writeFileSync', done => {
+    const hits = [{ name: 'fake-hit-1' }, { name: 'fake-hit-2' }];
+    const options = {
+      appId: validProgram.algoliaappid,
+      apiKey: validProgram.algoliaapikey,
+      indexName: validProgram.algoliaindexname,
+      outputPath: validProgram.outputpath,
+      params: { hitsPerPage: 1000 },
     };
-    algolia.mockReturnValueOnce(client);
-    const result = exportScript.start(validProgram);
-    expect(algolia).toBeCalledWith(
-      validProgram.algoliaappid,
-      validProgram.algoliaapikey,
-      expect.any(Object)
+    const fileCount = 1;
+    const filename = `algolia-index-${options.indexName}-${fileCount}.json`;
+    fs.writeFileSync = jest.fn();
+    path.resolve = jest.fn((str, str2) => `${str}/${str2}`);
+
+    // Execute method
+    exportScript.writeFile(hits, options, fileCount);
+    // Expect fs.writeFileSync to be called with correct params
+    expect(fs.writeFileSync).toBeCalledWith(
+      `${options.outputPath}/${filename}`,
+      JSON.stringify(hits)
     );
-    expect(client.initIndex).toBeCalledWith(validProgram.algoliaindexname);
-    expect(on).toBeCalledWith('result', expect.any(Function));
-    expect(on).toBeCalledWith('end', expect.any(Function));
-    expect(on).toBeCalledWith('error', expect.any(Function));
-    expect(result).toEqual(false);
     done();
   });
 
-  test('Browser should respond to data stream result event', done => {
+  /* exportData */
+
+  test('Services should be called with valid params', async done => {
+    // Mock config
+    const options = {
+      appId: validProgram.algoliaappid,
+      apiKey: validProgram.algoliaapikey,
+      indexName: validProgram.algoliaindexname,
+      outputPath: validProgram.outputpath,
+      params: { hitsPerPage: 1000 },
+    };
+    // Mock Algolia
+    const browser = new EventEmitter();
+    const browseAll = jest.fn(() => browser);
+    const index = { browseAll };
+    const initIndex = jest.fn().mockReturnValue(index);
+    const client = { initIndex };
+    algolia.mockReturnValueOnce(client);
+    const browserSpy = jest.spyOn(browser, 'on');
+
+    // Execute method
+    const promise = exportScript.exportData(options);
+    // Trigger promise resolution
+    browser.emit('end');
+    const result = await promise;
+    // Assertions
+    expect(algolia).toBeCalledWith(
+      options.appId,
+      options.apiKey,
+      expect.any(Object)
+    );
+    expect(client.initIndex).toBeCalledWith(options.indexName);
+    expect(browseAll).toBeCalledWith('', options.params);
+    expect(browserSpy).toBeCalledWith('result', expect.any(Function));
+    expect(browserSpy).toBeCalledWith('end', expect.any(Function));
+    expect(browserSpy).toBeCalledWith('error', expect.any(Function));
+    expect(result).toEqual(expect.any(String));
+    done();
+  });
+
+  test('Browser should respond to data stream result event', async done => {
     // Mock Algolia
     const mockResults = {
       hits: [{ name: 'fake-hit-1' }, { name: 'fake-hit-2' }],
@@ -74,29 +117,30 @@ describe('Export script OK', () => {
     const browser = new EventEmitter();
     const browseAll = jest.fn(() => browser);
     const index = { browseAll };
-    const client = {
-      initIndex: jest.fn().mockReturnValue(index),
-    };
+    const initIndex = jest.fn().mockReturnValue(index);
+    const client = { initIndex };
     algolia.mockReturnValueOnce(client);
-    // Mock writeProgress method
+    // Mock instance method
     exportScript.writeProgress = jest.fn();
+    exportScript.writeFile = jest.fn();
     // Execute method
-    exportScript.start(validProgram);
+    const promise = exportScript.exportData(validProgram);
     // Test onResult event handler
     browser.emit('result', mockResults);
+    browser.emit('end');
+    await promise;
     // Expect script to output progress in onResult handler
     expect(exportScript.writeProgress).toBeCalledWith(expect.any(Number));
     // Expect script to write data to file in onResult handler
-    expect(fs.writeFileSync).toBeCalledWith(
-      expect.any(String),
-      expect.any(String),
-      'utf8',
-      expect.any(Function)
+    expect(exportScript.writeFile).toBeCalledWith(
+      expect.any(Array),
+      expect.any(Object),
+      expect.any(Number)
     );
     done();
   });
 
-  test('Browser should respond to data stream end event', done => {
+  test('Browser should respond to data stream end event', async done => {
     // Mock Algolia
     const mockResults = {
       hits: [{ name: 'fake-hit-1' }, { name: 'fake-hit-2' }],
@@ -105,27 +149,47 @@ describe('Export script OK', () => {
     const browser = new EventEmitter();
     const browseAll = jest.fn(() => browser);
     const index = { browseAll };
-    const client = {
-      initIndex: jest.fn().mockReturnValue(index),
-    };
+    const initIndex = jest.fn().mockReturnValue(index);
+    const client = { initIndex };
     algolia.mockReturnValueOnce(client);
-    // Mock writeProgress method
+    // Mock instance method
     exportScript.writeProgress = jest.fn();
+    exportScript.writeFile = jest.fn();
     // Execute method
-    exportScript.start(validProgram);
+    const promise = exportScript.exportData(validProgram);
     // Test onResult event handler
     browser.emit('result', mockResults);
-    // Test onEnd event handler
     browser.emit('end');
-    // Expect script to output progress in onResult handler
-    expect(exportScript.writeProgress).toBeCalledWith(2);
-    // Expect script to write remaining data in onEnd handler
-    expect(fs.writeFileSync).toBeCalledWith(
-      expect.any(String),
-      JSON.stringify(mockResults.hits),
-      'utf8',
-      expect.any(Function)
+    const result = await promise;
+    // Expect script to write data to file in onEnd handler
+    expect(exportScript.writeFile).toBeCalledWith(
+      mockResults.hits,
+      expect.any(Object),
+      1
     );
+    expect(result).toEqual(expect.any(String));
+    done();
+  });
+
+  /* start */
+
+  test('Should set options and export data', async done => {
+    const logSpy = jest.spyOn(global.console, 'log');
+    // Mock config
+    const mockOptions = {
+      appId: validProgram.algoliaappid,
+      apiKey: validProgram.algoliaapikey,
+      indexName: validProgram.algoliaindexname,
+      outputPath: validProgram.outputpath,
+      params: { hitsPerPage: 1000 },
+    };
+    exportScript.normalizePath = jest.fn(str => str);
+    exportScript.exportData = jest.fn().mockResolvedValue('result');
+
+    // Execute method
+    await exportScript.start(validProgram);
+    expect(exportScript.exportData).toBeCalledWith(mockOptions);
+    expect(logSpy).toBeCalledWith('result');
     done();
   });
 });

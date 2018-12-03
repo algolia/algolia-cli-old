@@ -12,8 +12,8 @@ class TransferIndexConfigScript extends Base {
     super();
     // Bind class methods
     this.start = this.start.bind(this);
-    this.setIndices = this.setIndices.bind(this);
-    this.setConfigOptions = this.setConfigOptions.bind(this);
+    this.getIndices = this.getIndices.bind(this);
+    this.getConfigOptions = this.getConfigOptions.bind(this);
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
     // Define validation constants
     this.message =
@@ -27,44 +27,55 @@ class TransferIndexConfigScript extends Base {
     ];
   }
 
-  setIndices(options) {
+  getIndices(options) {
     // Instantiate Algolia indices
     const sourceClient = algolia(
       options.sourceAppId,
       options.sourceApiKey,
       keepaliveAgent
     );
-    this.sourceIndex = sourceClient.initIndex(options.indexName);
+    const sourceIndex = sourceClient.initIndex(options.sourceIndexName);
 
     const destinationClient = algolia(
       options.destinationAppId,
       options.destinationApiKey,
       keepaliveAgent
     );
-    this.destinationIndex = destinationClient.initIndex(
+    const destinationIndex = destinationClient.initIndex(
       options.destinationIndexName
     );
+
+    return { sourceIndex, destinationIndex };
   }
 
-  setConfigOptions(options) {
-    this.sOptions = {};
-    this.rOptions = {};
-    if (!options.configParams) return;
-    const configParams = JSON.parse(options.configParams);
-    if (configParams.batchSynonymsParams)
-      this.sOptions = configParams.batchSynonymsParams;
-    if (configParams.batchRulesParams)
-      this.rOptions = configParams.batchRulesParams;
+  getConfigOptions(options) {
+    // Default config
+    const config = {
+      sOptions: {},
+      rOptions: {},
+    };
+    // No params provided, exit early
+    if (!options.configParams) return config;
+
+    const params = JSON.parse(options.configParams);
+
+    // Set provided options
+    if (params.batchSynonymsParams)
+      config.sOptions = Object.assign({}, params.batchSynonymsParams);
+    if (params.batchRulesParams)
+      config.rOptions = Object.assign({}, params.batchRulesParams);
+
+    return config;
   }
 
-  async transferIndexConfig() {
+  async transferIndexConfig(indices, config) {
     // Transfer settings, synonyms, and query rules
-    const settings = await this.sourceIndex.getSettings();
-    const synonyms = await this.sourceIndex.exportSynonyms();
-    const rules = await this.sourceIndex.exportRules();
-    await this.destinationIndex.setSettings(settings);
-    await this.destinationIndex.batchSynonyms(synonyms, this.sOptions);
-    await this.destinationIndex.batchRules(rules, this.rOptions);
+    const settings = await indices.sourceIndex.getSettings();
+    const synonyms = await indices.sourceIndex.exportSynonyms();
+    const rules = await indices.sourceIndex.exportRules();
+    await indices.destinationIndex.setSettings(settings);
+    await indices.destinationIndex.batchSynonyms(synonyms, config.sOptions);
+    await indices.destinationIndex.batchRules(rules, config.rOptions);
   }
 
   async start(program) {
@@ -74,10 +85,10 @@ class TransferIndexConfigScript extends Base {
       if (isValid.flag) return console.log(isValid.output);
 
       // Config params
-      const OPTIONS = {
+      const options = {
         sourceAppId: program.algoliaappid,
         sourceApiKey: program.algoliaapikey,
-        indexName: program.algoliaindexname,
+        sourceIndexName: program.algoliaindexname,
         destinationAppId: program.destinationalgoliaappid,
         destinationApiKey: program.destinationalgoliaapikey,
         destinationIndexName:
@@ -86,11 +97,11 @@ class TransferIndexConfigScript extends Base {
       };
 
       // Configure Algolia clients/indices
-      this.setIndices(OPTIONS);
+      const indices = this.getIndices(options);
       // Configure batchSynonyms and batchRules options
-      this.setConfigOptions(OPTIONS);
+      const config = this.getConfigOptions(options);
       // Transfer index configuration
-      await this.transferIndexConfig();
+      await this.transferIndexConfig(indices, config);
 
       return console.log(
         'Index settings, synonyms, and query rules transferred successfully.'
