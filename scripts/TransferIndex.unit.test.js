@@ -31,7 +31,7 @@ describe('Transfer Index script OK', () => {
   test('writeProgress should output number of records transferred', done => {
     const random = Math.floor(Math.random() * 10);
     transferIndexScript.writeProgress(random);
-    expect(process.stdout.write).toBeCalledWith(
+    expect(process.stdout.write).toHaveBeenCalledWith(
       `Records transferred: ~ ${random}`
     );
     done();
@@ -54,22 +54,25 @@ describe('Transfer Index script OK', () => {
     algolia.mockReturnValue(client);
 
     const result = transferIndexScript.getIndices(mockOptions);
-    expect(algolia).toBeCalledTimes(2);
-    expect(algolia).nthCalledWith(
+    expect(algolia).toHaveBeenCalledTimes(2);
+    expect(algolia).toHaveBeenNthCalledWith(
       1,
       mockOptions.sourceAppId,
       mockOptions.sourceApiKey,
       expect.any(Object)
     );
-    expect(algolia).nthCalledWith(
+    expect(algolia).toHaveBeenNthCalledWith(
       2,
       mockOptions.destinationAppId,
       mockOptions.destinationApiKey,
       expect.any(Object)
     );
-    expect(initIndex).toBeCalledTimes(2);
-    expect(initIndex).nthCalledWith(1, mockOptions.sourceIndexName);
-    expect(initIndex).nthCalledWith(2, mockOptions.destinationIndexName);
+    expect(initIndex).toHaveBeenCalledTimes(2);
+    expect(initIndex).toHaveBeenNthCalledWith(1, mockOptions.sourceIndexName);
+    expect(initIndex).toHaveBeenNthCalledWith(
+      2,
+      mockOptions.destinationIndexName
+    );
     expect(result).toEqual({
       sourceIndex: mockOptions.sourceIndexName,
       destinationIndex: mockOptions.destinationIndexName,
@@ -108,12 +111,12 @@ describe('Transfer Index script OK', () => {
 
     // Execute transfer
     await transferIndexScript.transferIndexConfig(indices);
-    expect(getSettings).toBeCalled();
-    expect(exportSynonyms).toBeCalled();
-    expect(exportRules).toBeCalled();
-    expect(setSettings).toBeCalledWith(settings);
-    expect(batchSynonyms).toBeCalledWith(synonyms);
-    expect(batchRules).toBeCalledWith(rules);
+    expect(getSettings).toHaveBeenCalled();
+    expect(exportSynonyms).toHaveBeenCalled();
+    expect(exportRules).toHaveBeenCalled();
+    expect(setSettings).toHaveBeenCalledWith(settings);
+    expect(batchSynonyms).toHaveBeenCalledWith(synonyms);
+    expect(batchRules).toHaveBeenCalledWith(rules);
     done();
   });
 
@@ -147,9 +150,9 @@ describe('Transfer Index script OK', () => {
     // Resolve/reject
     await promise;
     // Expect script to import data to destination Algolia index in onResult handler
-    expect(addObjects).toBeCalledWith(expect.any(Array));
+    expect(addObjects).toHaveBeenCalledWith(expect.any(Array));
     // Expect script to output progress in onResult handler
-    expect(transferIndexScript.writeProgress).toBeCalledWith(2);
+    expect(transferIndexScript.writeProgress).toHaveBeenCalledWith(2);
     done();
   });
 
@@ -232,14 +235,16 @@ describe('Transfer Index script OK', () => {
     transferIndexScript.transferData = jest.fn().mockResolvedValue('result');
     // Execute method
     const result = await transferIndexScript.start(validProgram);
-    expect(transferIndexScript.getIndices).toBeCalledWith(options);
-    expect(transferIndexScript.getTransformations).toBeCalledWith(options);
-    expect(transferIndexScript.transferIndexConfig).toBeCalled();
-    expect(transferIndexScript.transferData).toBeCalledWith(
+    expect(transferIndexScript.getIndices).toHaveBeenCalledWith(options);
+    expect(transferIndexScript.getTransformations).toHaveBeenCalledWith(
+      options
+    );
+    expect(transferIndexScript.transferIndexConfig).toHaveBeenCalled();
+    expect(transferIndexScript.transferData).toHaveBeenCalledWith(
       'indices',
       'transformations'
     );
-    expect(logSpy).toBeCalledWith('result');
+    expect(logSpy).toHaveBeenCalledWith('result');
     expect(result).toEqual(undefined);
     done();
   });

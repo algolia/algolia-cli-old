@@ -47,7 +47,7 @@ describe('TransformLines script OK', () => {
   test('writeProgress should output number of lines browsed', done => {
     const random = Math.floor(Math.random() * 10);
     transformLinesScript.writeProgress(random);
-    expect(process.stdout.write).toBeCalledWith(`Line ${random}...`);
+    expect(process.stdout.write).toHaveBeenCalledWith(`Line ${random}...`);
     done();
   });
 
@@ -99,9 +99,11 @@ describe('TransformLines script OK', () => {
     transformLinesScript.transformationFilepath = 'not-null';
     // Execute method
     transformLinesScript.transformFile(filename);
-    expect(fs.createWriteStream).toBeCalledWith(`${outputDir}/${filename}`);
-    expect(fs.createReadStream).toBeCalled();
-    expect(readLine.createInterface).toBeCalledWith({
+    expect(fs.createWriteStream).toHaveBeenCalledWith(
+      `${outputDir}/${filename}`
+    );
+    expect(fs.createReadStream).toHaveBeenCalled();
+    expect(readLine.createInterface).toHaveBeenCalledWith({
       input: `${directory}/${filename}`,
     });
     done();
@@ -137,15 +139,17 @@ describe('TransformLines script OK', () => {
     // Test onClose event handler
     lineReader.emit('close');
     // Expect script to apply given transformation to each line
-    expect(transformLinesScript.lineTransformation).toBeCalledWith(mockedLine);
+    expect(transformLinesScript.lineTransformation).toHaveBeenCalledWith(
+      mockedLine
+    );
     // Expect insertion of enclosing array brackets when no transformation filepath provided
-    expect(writeStream.write).toBeCalledTimes(3);
-    expect(writeStream.write).nthCalledWith(1, '[');
-    expect(writeStream.write).nthCalledWith(2, `${mockedLine}-t`);
-    expect(writeStream.write).nthCalledWith(3, ']');
+    expect(writeStream.write).toHaveBeenCalledTimes(3);
+    expect(writeStream.write).toHaveBeenNthCalledWith(1, '[');
+    expect(writeStream.write).toHaveBeenNthCalledWith(2, `${mockedLine}-t`);
+    expect(writeStream.write).toHaveBeenNthCalledWith(3, ']');
     // Expect script to execute logic in onClose event handler
-    expect(logSpy).toBeCalledWith('Done writing!');
-    expect(writeStream.end).toBeCalled();
+    expect(logSpy).toHaveBeenCalledWith('Done writing!');
+    expect(writeStream.end).toHaveBeenCalled();
     done();
   });
 
@@ -174,9 +178,15 @@ describe('TransformLines script OK', () => {
     const filenames = ['test.js', 'test-2.js'];
     transformLinesScript.transformFile = jest.fn();
     await transformLinesScript.init(filenames);
-    expect(transformLinesScript.transformFile).toBeCalledTimes(2);
-    expect(transformLinesScript.transformFile).nthCalledWith(1, 'test.js');
-    expect(transformLinesScript.transformFile).nthCalledWith(2, 'test-2.js');
+    expect(transformLinesScript.transformFile).toHaveBeenCalledTimes(2);
+    expect(transformLinesScript.transformFile).toHaveBeenNthCalledWith(
+      1,
+      'test.js'
+    );
+    expect(transformLinesScript.transformFile).toHaveBeenNthCalledWith(
+      2,
+      'test-2.js'
+    );
     done();
   });
 
@@ -189,7 +199,7 @@ describe('TransformLines script OK', () => {
     transformLinesScript.setSource = jest.fn();
     transformLinesScript.init = jest.fn();
     transformLinesScript.start(validProgram);
-    expect(transformLinesScript.init).toBeCalledWith([filename]);
+    expect(transformLinesScript.init).toHaveBeenCalledWith([filename]);
     done();
   });
 });
