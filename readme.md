@@ -43,7 +43,10 @@ $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sou
 
 $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
 
+$ algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' -x <true|false>
+
 $ algolia transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
+
 ```
 
 See also [additional examples](#examples).
@@ -341,7 +344,38 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 
 - When transferring synonyms and query rules, `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will default to false, unless you specify `<configParams>`.
 
-### 11. Transform Lines | `transformlines`
+### 11. Delete Indices Pattern | `deleteindicespattern`
+
+##### Description:
+
+Delete multiple indices at once (main or replica indices included) using a regular expression.
+
+##### Usage:
+
+```shell
+algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' -x <dryrun>
+```
+
+##### Options:
+
+- `<algoliaAppId>` | Required
+- `<algoliaApiKey>` | Required
+- `<regexp>` | Required | Provide regexes without the leading and trailing slashes
+- `<dryrun>` | Required | This is a boolean, when true it will run in dry mode and show what will be deleted, when false it will really delete the indices. Careful!
+
+##### Notes:
+
+- The command handles replicas. First it update the settings of all main indices removing any replica that will match the regular expression. Then it will delete all matching indices (main and replica indices).
+
+#### Example:
+
+```shell
+algolia deleteindicespattern -a someAppId -k someApiKey -r '^staging__' -x false
+```
+
+This will delete all indices of the application that are starting with "staging__".
+
+### 12. Transform Lines | `transformlines`
 
 ##### Description:
 
@@ -403,8 +437,6 @@ $ algolia import -s ~/Desktop/example_source_directory/ -a EXAMPLE_APP_ID -k EXA
 
 $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/example_output_folder/ -p '{"filters":["category:book"]}'
 
-$ algolia transformlines -s ~/Desktop/example_source_file.json -o ~/Desktop/example_output_folder/ -t ~/Desktop/example_transformations.js
-
 $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 
 $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.json
@@ -416,6 +448,10 @@ $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
 
 $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true,"replaceExistingSynonyms":true},"batchRulesParams":{"forwardToReplicas":true,"clearExistingRules":true}}'
+
+$ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
+
+$ algolia transformlines -s ~/Desktop/example_source_file.json -o ~/Desktop/example_output_folder/ -t ~/Desktop/example_transformations.js
 ```
 
 # Contribute
