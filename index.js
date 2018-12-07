@@ -12,6 +12,7 @@ const transferIndexScript = require('./scripts/TransferIndex.js');
 const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
 const transformLinesScript = require('./scripts/TransformLines.js');
 const csvToJsonScript = require('./scripts/CsvToJson.js');
+const deleteIndicesPatternScript = require('./scripts/DeleteIndicesPattern.js');
 
 program
   .arguments('<command>')
@@ -63,6 +64,11 @@ program
     '-i, --destinationindexname <destinationIndexName>',
     'Destination Algolia index name | Optional for: "transferindex" and "transferindexconfig" commands'
   )
+  .option('-r, --regexp <regexp>', 'Regexp to use for filtering')
+  .option(
+    '-x, --dryrun <boolean>',
+    'Dry run, will only output what would be done'
+  )
   .version(version, '-v, --version')
   .on('--help', () => {
     const message = `
@@ -87,6 +93,8 @@ Commands:
   9. transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
   10. csvtojson -s <sourceFilepath> -o <outputPath> <csvToJsonParams>
 
+  11. deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regex>' -x
+
 Examples:
 
   $ algolia --help
@@ -98,6 +106,7 @@ Examples:
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
+  $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x
 `;
     console.log(message);
   })
@@ -127,6 +136,9 @@ Examples:
         break;
       case 'csvtojson':
         csvToJsonScript.start(program);
+        break;
+      case 'deleteindicespattern':
+        deleteIndicesPatternScript.start(program);
         break;
       default:
         defaultCommand(command);
