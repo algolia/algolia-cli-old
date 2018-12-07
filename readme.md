@@ -40,6 +40,8 @@ $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sou
 $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
 
 $ algolia transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
+
+$ algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' -x <true|false>
 ```
 
 See also [additional examples](#examples).
@@ -336,6 +338,37 @@ module.exports = (line) => {
 
 - `<outputPath>` must be a directory.
 - Running `transformlines` command without providing optional `<transformationFilepath>` param will cause it to assume it's parsing a `.json-seq` file; thus, it will apply the `defaultLineTransformation` method in `transformLines.js` to each line. This checks each line for the ASCII Record Separator character `\u001e` and replaces it with a `,`. It will _also_ cause it to enclose the whole file in "[" and "]" square brackets to make it a valid JS array. Providing a custom transformation method via the optional `<transformationFilepath>` param will make it exclusively run your transformation function instead of the default one (and in this case it will also omit adding enclosing square brackets).
+
+### 10. Delete Indices Pattern | `deleteindicespattern`
+
+##### Description:
+
+Delete multiple indices at once (main or replica indices included) using a regular expression.
+
+##### Usage:
+
+```shell
+algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' -x <dryrun>
+```
+
+##### Options:
+
+- `<algoliaAppId>` | Required
+- `<algoliaApiKey>` | Required
+- `<regexp>` | Required | Provide regexes without the leading and trailing slashes
+- `<dryrun>` | Required | This is a boolean, when true it will run in dry mode and show what will be deleted, when false it will really delete the indices. Careful!
+
+##### Notes:
+
+- The command handles replicas. First it update the settings of all main indices removing any replica that will match the regular expression. Then it will delete all matching indices (main and replica indices).
+
+#### Example:
+
+```shell
+algolia deleteindicespattern -a someAppId -k someApiKey -r '^staging__' -x false
+```
+
+This will delete all indices of the application that are starting with "staging__".
 
 # Examples
 ```bash
