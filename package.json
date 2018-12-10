@@ -70,26 +70,6 @@
     "rimraf": "^2.6.2",
     "striptags": "^3.1.1"
   },
-  "eslintConfig": {
-    "extends": [
-      "algolia",
-      "algolia/jest"
-    ],
-    "rules": {
-      "import/no-commonjs": "off",
-      "import/extensions": "ignorePackages",
-      "no-console": "off",
-      "no-process-exit": "off",
-      "prettier/prettier": [
-        "error",
-        {
-          "trailingComma": "es5",
-          "singleQuote": true,
-          "printWidth": 80
-        }
-      ]
-    }
-  },
   "jest": {
     "testEnvironment": "node",
     "verbose": true,
