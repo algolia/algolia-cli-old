@@ -7,6 +7,4 @@ npm-debug.log
 .env
 package-lock.json
 tests/temp
-transformations/*
-!transformations/example-transformations.js
-!transformations/example-line-transformations.js
+transformations/*.local.js
