@@ -362,7 +362,7 @@ algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' 
 
 - The command handles replicas. First it update the settings of all main indices removing any replica that will match the regular expression. Then it will delete all matching indices (main and replica indices).
 
-#### Example:
+##### Example:
 
 ```shell
 algolia deleteindicespattern -a someAppId -k someApiKey -r '^staging__' -x false

@@ -14,7 +14,7 @@ const apiKey = process.env.ALGOLIA_TEST_API_KEY;
 const client = algoliasearch(appId, apiKey, keepaliveAgent);
 
 describe('DeleteIndicesPattern command OK', () => {
-  const randomName = randomize('aA0', 20);
+  const randomName = `algolia-cli-deleteindices-${randomize('aA0', 20)}`;
   const masterIndexName = `${randomName}-master-algolia-cli`;
   const replicas = [
     `${randomName}-replica1-algolia-cli`,
