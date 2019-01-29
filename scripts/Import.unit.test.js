@@ -73,12 +73,12 @@ describe('Import script OK', () => {
       keepaliveAgent: { name: 'keepaliveAgent' },
     };
     importScript.setIndex(options);
-    expect(algolia).toBeCalledWith(
+    expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
       validProgram.algoliaapikey,
       expect.any(Object)
     );
-    expect(importScript.client.initIndex).toBeCalledWith(
+    expect(importScript.client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname
     );
     done();
@@ -113,13 +113,13 @@ describe('Import script OK', () => {
 
   test('Should return correct writestream for JSON filetype', done => {
     importScript.conditionallyParseCsv(false);
-    expect(transform).toBeCalledWith(importScript.defaultTransformations);
+    expect(transform).toHaveBeenCalledWith(importScript.defaultTransformations);
     done();
   });
 
   test('Should return correct writestream for CSV filetype', done => {
     importScript.conditionallyParseCsv(true);
-    expect(csv).toBeCalled();
+    expect(csv).toHaveBeenCalled();
     done();
   });
 
@@ -135,8 +135,8 @@ describe('Import script OK', () => {
     };
     const callback = jest.fn();
     await importScript.importToAlgolia(data, callback);
-    expect(importScript.index.addObjects).toBeCalledWith(data);
-    expect(callback).toBeCalledWith(null);
+    expect(importScript.index.addObjects).toHaveBeenCalledWith(data);
+    expect(callback).toHaveBeenCalledWith(null);
     done();
   });
 
@@ -144,7 +144,7 @@ describe('Import script OK', () => {
 
   test('Should exit method early if no more filenames in input array', done => {
     const result = importScript.indexFiles([]);
-    expect(fs.createReadStream).not.toBeCalled();
+    expect(fs.createReadStream).not.toHaveBeenCalled();
     expect(result).toEqual(undefined);
     done();
   });
@@ -192,16 +192,19 @@ describe('Import script OK', () => {
     importScript.queue.drain();
 
     // Expect creation of read stream with correct params
-    expect(fs.createReadStream).toBeCalledWith(`${directory}/${filename}`, {
-      autoclose: true,
-      flags: 'r',
-    });
+    expect(fs.createReadStream).toHaveBeenCalledWith(
+      `${directory}/${filename}`,
+      {
+        autoclose: true,
+        flags: 'r',
+      }
+    );
     // Expect filstream to pause when queue is full in onData handler
-    expect(mockedStream.pause).toBeCalled();
+    expect(mockedStream.pause).toHaveBeenCalled();
     // Expect indexFiles to be called recursively in onEnd handler
-    expect(indexFilesSpy).toBeCalledWith([]);
+    expect(indexFilesSpy).toHaveBeenCalledWith([]);
     // Expect filstream to resume when queue is empty in onDrain handler
-    expect(mockedStream.resume).toBeCalled();
+    expect(mockedStream.resume).toHaveBeenCalled();
     done();
   });
 
@@ -215,7 +218,7 @@ describe('Import script OK', () => {
     validProgram.sourcefilepath = filepath;
     importScript.indexFiles = jest.fn();
     importScript.start(validProgram);
-    expect(importScript.indexFiles).toBeCalledWith([filename]);
+    expect(importScript.indexFiles).toHaveBeenCalledWith([filename]);
     done();
   });
 });

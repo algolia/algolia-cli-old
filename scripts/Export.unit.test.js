@@ -36,7 +36,9 @@ describe('Export script OK', () => {
   test('writeProgress should output number of records browsed', done => {
     const random = Math.floor(Math.random() * 10);
     exportScript.writeProgress(random);
-    expect(process.stdout.write).toBeCalledWith(`Records browsed: ~ ${random}`);
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      `Records browsed: ~ ${random}`
+    );
     done();
   });
 
@@ -59,7 +61,7 @@ describe('Export script OK', () => {
     // Execute method
     exportScript.writeFile(hits, options, fileCount);
     // Expect fs.writeFileSync to be called with correct params
-    expect(fs.writeFileSync).toBeCalledWith(
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
       `${options.outputPath}/${filename}`,
       JSON.stringify(hits)
     );
@@ -92,16 +94,16 @@ describe('Export script OK', () => {
     browser.emit('end');
     const result = await promise;
     // Assertions
-    expect(algolia).toBeCalledWith(
+    expect(algolia).toHaveBeenCalledWith(
       options.appId,
       options.apiKey,
       expect.any(Object)
     );
-    expect(client.initIndex).toBeCalledWith(options.indexName);
-    expect(browseAll).toBeCalledWith('', options.params);
-    expect(browserSpy).toBeCalledWith('result', expect.any(Function));
-    expect(browserSpy).toBeCalledWith('end', expect.any(Function));
-    expect(browserSpy).toBeCalledWith('error', expect.any(Function));
+    expect(client.initIndex).toHaveBeenCalledWith(options.indexName);
+    expect(browseAll).toHaveBeenCalledWith('', options.params);
+    expect(browserSpy).toHaveBeenCalledWith('result', expect.any(Function));
+    expect(browserSpy).toHaveBeenCalledWith('end', expect.any(Function));
+    expect(browserSpy).toHaveBeenCalledWith('error', expect.any(Function));
     expect(result).toEqual(expect.any(String));
     done();
   });
@@ -130,9 +132,9 @@ describe('Export script OK', () => {
     browser.emit('end');
     await promise;
     // Expect script to output progress in onResult handler
-    expect(exportScript.writeProgress).toBeCalledWith(expect.any(Number));
+    expect(exportScript.writeProgress).toHaveBeenCalledWith(expect.any(Number));
     // Expect script to write data to file in onResult handler
-    expect(exportScript.writeFile).toBeCalledWith(
+    expect(exportScript.writeFile).toHaveBeenCalledWith(
       expect.any(Array),
       expect.any(Object),
       expect.any(Number)
@@ -162,7 +164,7 @@ describe('Export script OK', () => {
     browser.emit('end');
     const result = await promise;
     // Expect script to write data to file in onEnd handler
-    expect(exportScript.writeFile).toBeCalledWith(
+    expect(exportScript.writeFile).toHaveBeenCalledWith(
       mockResults.hits,
       expect.any(Object),
       1
@@ -188,8 +190,8 @@ describe('Export script OK', () => {
 
     // Execute method
     await exportScript.start(validProgram);
-    expect(exportScript.exportData).toBeCalledWith(mockOptions);
-    expect(logSpy).toBeCalledWith('result');
+    expect(exportScript.exportData).toHaveBeenCalledWith(mockOptions);
+    expect(logSpy).toHaveBeenCalledWith('result');
     done();
   });
 });

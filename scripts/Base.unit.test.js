@@ -88,7 +88,7 @@ describe('Base script OK', () => {
       SOURCE_FILEPATH: filepath,
     };
     baseScript.setSource(options);
-    expect(normalizePathSpy).toBeCalledWith(filepath);
+    expect(normalizePathSpy).toHaveBeenCalledWith(filepath);
     expect(baseScript.directory).toEqual(directory);
     expect(baseScript.filenames).toEqual([filename]);
     done();
@@ -104,7 +104,7 @@ describe('Base script OK', () => {
     };
     fs.readdirSync.mockReturnValueOnce([filename]);
     baseScript.setSource(options);
-    expect(normalizePathSpy).toBeCalledWith(directory);
+    expect(normalizePathSpy).toHaveBeenCalledWith(directory);
     expect(baseScript.directory).toEqual(directory);
     expect(baseScript.filenames).toEqual([filename]);
     done();

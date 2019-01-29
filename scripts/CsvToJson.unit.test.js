@@ -49,15 +49,17 @@ describe('CsvToJson script OK', () => {
     const execSpy = jest.spyOn(childProcess, 'exec');
     const errorPhrase = 'Cannot find file or directory';
     csvToJsonScript.start(invalidProgram);
-    expect(consoleLogSpy).toBeCalledWith(expect.stringContaining(errorPhrase));
-    expect(execSpy).not.toBeCalled();
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining(errorPhrase)
+    );
+    expect(execSpy).not.toHaveBeenCalled();
     done();
   });
 
   test('Child process should be called with valid params', done => {
     const execSpy = jest.spyOn(childProcess, 'exec');
     csvToJsonScript.start(validProgram);
-    expect(execSpy).toBeCalledWith(
+    expect(execSpy).toHaveBeenCalledWith(
       `${csvToJsonPath} ${validProgram.sourcefilepath} > ${
         validProgram.outputfilepath
       } `,

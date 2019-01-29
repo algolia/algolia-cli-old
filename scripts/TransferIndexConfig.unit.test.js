@@ -36,22 +36,25 @@ describe('Transfer Index script OK', () => {
     algolia.mockReturnValue(client);
 
     const result = transferIndexConfigScript.getIndices(mockOptions);
-    expect(algolia).toBeCalledTimes(2);
-    expect(algolia).nthCalledWith(
+    expect(algolia).toHaveBeenCalledTimes(2);
+    expect(algolia).toHaveBeenNthCalledWith(
       1,
       mockOptions.sourceAppId,
       mockOptions.sourceApiKey,
       expect.any(Object)
     );
-    expect(algolia).nthCalledWith(
+    expect(algolia).toHaveBeenNthCalledWith(
       2,
       mockOptions.destinationAppId,
       mockOptions.destinationApiKey,
       expect.any(Object)
     );
-    expect(initIndex).toBeCalledTimes(2);
-    expect(initIndex).nthCalledWith(1, mockOptions.sourceIndexName);
-    expect(initIndex).nthCalledWith(2, mockOptions.destinationIndexName);
+    expect(initIndex).toHaveBeenCalledTimes(2);
+    expect(initIndex).toHaveBeenNthCalledWith(1, mockOptions.sourceIndexName);
+    expect(initIndex).toHaveBeenNthCalledWith(
+      2,
+      mockOptions.destinationIndexName
+    );
     expect(result).toEqual({
       sourceIndex: mockOptions.sourceIndexName,
       destinationIndex: mockOptions.destinationIndexName,
@@ -131,12 +134,12 @@ describe('Transfer Index script OK', () => {
 
     // Execute transfer
     await transferIndexConfigScript.transferIndexConfig(indices, config);
-    expect(getSettings).toBeCalled();
-    expect(exportSynonyms).toBeCalled();
-    expect(exportRules).toBeCalled();
-    expect(setSettings).toBeCalledWith(settings);
-    expect(batchSynonyms).toBeCalledWith(synonyms, expect.any(Object));
-    expect(batchRules).toBeCalledWith(rules, expect.any(Object));
+    expect(getSettings).toHaveBeenCalled();
+    expect(exportSynonyms).toHaveBeenCalled();
+    expect(exportRules).toHaveBeenCalled();
+    expect(setSettings).toHaveBeenCalledWith(settings);
+    expect(batchSynonyms).toHaveBeenCalledWith(synonyms, expect.any(Object));
+    expect(batchRules).toHaveBeenCalledWith(rules, expect.any(Object));
     done();
   });
 
@@ -170,26 +173,33 @@ describe('Transfer Index script OK', () => {
 
     // Use timeout to defer execution of test assertions
     setTimeout(() => {
-      expect(algolia).toBeCalledWith(
+      expect(algolia).toHaveBeenCalledWith(
         validProgram.algoliaappid,
         validProgram.algoliaapikey,
         expect.any(Object)
       );
-      expect(algolia).toBeCalledWith(
+      expect(algolia).toHaveBeenCalledWith(
         validProgram.destinationalgoliaappid,
         validProgram.destinationalgoliaapikey,
         expect.any(Object)
       );
-      expect(client.initIndex).toBeCalledWith(validProgram.algoliaindexname);
-      expect(client.initIndex).toBeCalledWith(validProgram.algoliaindexname);
-      expect(getSettings).toBeCalled();
-      expect(exportSynonyms).toBeCalled();
-      expect(exportRules).toBeCalled();
-      expect(setSettings).toBeCalledWith('settings');
-      expect(batchSynonyms).toBeCalledWith('synonyms', expect.any(Object));
-      expect(batchRules).toBeCalledWith('rules', expect.any(Object));
+      expect(client.initIndex).toHaveBeenCalledWith(
+        validProgram.algoliaindexname
+      );
+      expect(client.initIndex).toHaveBeenCalledWith(
+        validProgram.algoliaindexname
+      );
+      expect(getSettings).toHaveBeenCalled();
+      expect(exportSynonyms).toHaveBeenCalled();
+      expect(exportRules).toHaveBeenCalled();
+      expect(setSettings).toHaveBeenCalledWith('settings');
+      expect(batchSynonyms).toHaveBeenCalledWith(
+        'synonyms',
+        expect.any(Object)
+      );
+      expect(batchRules).toHaveBeenCalledWith('rules', expect.any(Object));
       expect(result).toEqual(undefined);
-      expect(global.console.log).toBeCalledWith(expect.any(String));
+      expect(global.console.log).toHaveBeenCalledWith(expect.any(String));
       done();
     }, 0);
   });

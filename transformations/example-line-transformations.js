@@ -12,14 +12,18 @@ In the contrived example below, we want to transform a hypothetical json file wi
 
 */
 
-module.exports = (line) => {
-  if (line === '[') { // First line is an opening brace; return it intact
+module.exports = line => {
+  if (line === '[') {
+    // First line is an opening brace; return it intact
     return line;
-  } else if (line === ']') { // Last line is an opening brace; return it intact
+  } else if (line === ']') {
+    // Last line is an opening brace; return it intact
     return line;
-  } else if (line.includes('"status":"active"')) { // Preserve that contain valid record
+  } else if (line.includes('"status":"active"')) {
+    // Preserve that contain valid record
     return line;
-  } else { // Remove all other lines
+  } else {
+    // Remove all other lines
     return '\n';
   }
-}
+};

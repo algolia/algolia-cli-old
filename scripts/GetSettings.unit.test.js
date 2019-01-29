@@ -30,13 +30,15 @@ describe('GetSettings script OK', () => {
   test('Get settings should be called with valid params', done => {
     client.initIndex.mockReturnValueOnce(index);
     getSettingsScript.start(validProgram);
-    expect(algolia).toBeCalledWith(
+    expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
       validProgram.algoliaapikey,
       expect.any(Object)
     );
-    expect(client.initIndex).toBeCalledWith(validProgram.algoliaindexname);
-    expect(index.getSettings).toBeCalled();
+    expect(client.initIndex).toHaveBeenCalledWith(
+      validProgram.algoliaindexname
+    );
+    expect(index.getSettings).toHaveBeenCalled();
     done();
   });
 
