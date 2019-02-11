@@ -52,7 +52,7 @@
     "chalk": "^2.4.1",
     "commander": "^2.19.0",
     "csvtojson": "^2.0.8",
-    "event-stream": "4.0.1",
+    "event-stream": "3.3.4",
     "stream-transform": "^1.0.7"
   },
   "devDependencies": {
