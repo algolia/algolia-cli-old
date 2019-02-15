@@ -137,9 +137,9 @@ Examples:
 
 function registerDefaultProcessEventListeners() {
   // Handle node process exit
-  process.on('exit', code => {
-    if (code === 0) console.log(chalk.white.bgGreen('\nDone'));
-  });
+  // process.on('exit', code => {
+  //   if (code === 0) console.log(chalk.white.bgGreen('\nDone'));
+  // });
   // Handle ctrl+c event
   process.on('SIGINT', () => {
     process.exitCode = 2;
