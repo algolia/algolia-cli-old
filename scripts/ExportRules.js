@@ -16,15 +16,16 @@ class ExportRulesScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia exportrules -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath\n\n';
+      '\nExample: $ algolia exportrules -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath\n\n';
     this.params = ['algoliaappid', 'algoliaapikey', 'algoliaindexname'];
   }
 
   async start(program) {
     try {
-      // Validate command
+      // Validate command; if invalid display help text
       const isValid = this.validate(program, this.message, this.params);
-      if (isValid.flag) return console.log(isValid.output);
+      if (isValid.flag)
+        return console.log(program.help(h => h + isValid.output));
 
       // Config params
       const appId = program.algoliaappid;

@@ -31,7 +31,7 @@ class ImportScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia import -s sourcefilepath -a algoliaappid -k algoliaapikey -n algoliaindexname -b batchsize -t transformationfilepath -m maxconcurrency -p csvtojsonparams\n\n';
+      '\nExample: $ algolia import -s sourcefilepath -a algoliaappid -k algoliaapikey -n algoliaindexname -b batchsize -t transformationfilepath -m maxconcurrency -p csvtojsonparams\n\n';
     this.params = [
       'sourcefilepath',
       'algoliaappid',
@@ -163,9 +163,9 @@ class ImportScript extends Base {
     // Script reads JSON file or directory of JSON files, optionally applies
     // transformations, then batches and indexes the data in Algolia
 
-    // Validate command
+    // Validate command; if invalid display help text
     const isValid = this.validate(program, this.message, this.params);
-    if (isValid.flag) return console.log(isValid.output);
+    if (isValid.flag) return console.log(program.help(h => h + isValid.output));
 
     // Config params
     const OPTIONS = {

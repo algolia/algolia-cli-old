@@ -15,7 +15,7 @@ class TransformLinesScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia transformlines -s sourcefilepath -o outputpath -t transformationfilepath \n\n';
+      '\nExample: $ algolia transformlines -s sourcefilepath -o outputpath -t transformationfilepath \n\n';
     this.params = ['sourcefilepath', 'outputpath'];
   }
 
@@ -106,9 +106,9 @@ class TransformLinesScript extends Base {
     // Script reads a file or directory of files synchronously, line-by-line.
     // Writes each file synchronously, line-by-line, to an output directory
     // while optionally applying a provided transformation function to each line.
-    // Validate command
+    // Validate command; if invalid display help text
     const isValid = this.validate(program, this.message, this.params);
-    if (isValid.flag) return console.log(isValid.output);
+    if (isValid.flag) return console.log(program.help(h => h + isValid.output));
 
     // Ensure outputpath is a directory
     if (!fs.lstatSync(program.outputpath).isDirectory())

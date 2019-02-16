@@ -250,7 +250,7 @@ program
   .command('examples')
   .alias('ex')
   .description('View command examples')
-  .action(cmd => {
+  .action(() => {
     console.log(examples);
   });
 

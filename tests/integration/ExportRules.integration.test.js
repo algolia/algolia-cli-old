@@ -45,7 +45,7 @@ describe('ExportRules command OK', () => {
       clearExistingRules: false,
     });
     await index.waitTask(response.taskID);
-  });
+  }, 60000);
 
   test('exportRules writes rules file', async done => {
     const doneMsg = `Done writing ${program.outputpath}`;
@@ -60,10 +60,10 @@ describe('ExportRules command OK', () => {
     });
     // Execute ExportRules
     await exportRulesScript.start(program);
-  });
+  }, 60000);
 
   afterAll(async () => {
     rimraf.sync(tempDir);
     await index.clearRules();
-  });
+  }, 60000);
 });
