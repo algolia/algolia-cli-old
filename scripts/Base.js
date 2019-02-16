@@ -28,6 +28,7 @@ class Base {
 
   setSource(options) {
     // Set source directory and filenames array
+    // Used to process path inputs that may either be a single file or a directory of files
     const source = this.normalizePath(options.SOURCE_FILEPATH);
     if (fs.lstatSync(source).isDirectory()) {
       this.directory = source;

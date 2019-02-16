@@ -13,11 +13,28 @@ class ExportRulesScript extends Base {
   constructor() {
     super();
     // Bind class methods
+    this.getOutputPath = this.getOutputPath.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
       '\nExample: $ algolia exportrules -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath\n\n';
     this.params = ['algoliaappid', 'algoliaapikey', 'algoliaindexname'];
+  }
+
+  getOutputPath(outputpath, indexName) {
+    const defaultFilename = `${indexName}-rules.json`;
+    const defaultFilepath = path.resolve(process.cwd(), defaultFilename);
+    // Process output filepath
+    const filepath =
+      outputpath !== null ? this.normalizePath(outputpath) : defaultFilepath;
+    // Validate filepath targets valid directory
+    const dir = path.dirname(filepath);
+    if (!fs.lstatSync(dir).isDirectory()) {
+      throw new Error(
+        `Output path must target valid directory. Eg. ${defaultFilepath}`
+      );
+    }
+    return filepath;
   }
 
   async start(program) {
@@ -33,10 +50,7 @@ class ExportRulesScript extends Base {
       const indexName = program.algoliaindexname;
       const outputpath = program.outputpath || null;
 
-      const filepath =
-        outputpath !== null
-          ? this.normalizePath(program.outputpath)
-          : path.resolve(process.cwd(), `${indexName}-rules.json`);
+      const filepath = this.getOutputPath(outputpath, indexName);
 
       // Instantiate Algolia index
       const client = algolia(appId, apiKey, keepaliveAgent);

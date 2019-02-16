@@ -16,7 +16,7 @@ class TransformLinesScript extends Base {
     // Define validation constants
     this.message =
       '\nExample: $ algolia transformlines -s sourcefilepath -o outputpath -t transformationfilepath \n\n';
-    this.params = ['sourcefilepath', 'outputpath'];
+    this.params = ['sourcefilepath'];
   }
 
   defaultLineTransformation(line) {
@@ -36,11 +36,12 @@ class TransformLinesScript extends Base {
   }
 
   setOutput(outputPath) {
-    // Trim any trailing "/" from outputpath
     this.outputDir =
-      outputPath[outputPath.length - 1] === '/'
-        ? outputPath.slice(0, outputPath.length - 1)
-        : outputPath;
+      outputPath !== null ? this.normalizePath(outputPath) : process.cwd();
+
+    // Ensure outputpath is a directory
+    if (!fs.lstatSync(this.outputDir).isDirectory())
+      throw new Error('Output path must be a directory.');
   }
 
   setTransformations(transformationFilepath) {
@@ -110,13 +111,9 @@ class TransformLinesScript extends Base {
     const isValid = this.validate(program, this.message, this.params);
     if (isValid.flag) return console.log(program.help(h => h + isValid.output));
 
-    // Ensure outputpath is a directory
-    if (!fs.lstatSync(program.outputpath).isDirectory())
-      return console.log('Output filepath must be a directory.');
-
     // Config params
     this.sourceFilepath = program.sourcefilepath;
-    this.outputpath = program.outputpath;
+    this.outputpath = program.outputpath || null;
     this.transformationFilepath = program.transformationfilepath || null;
 
     // Configure source paths (this.directory, this.filenames)

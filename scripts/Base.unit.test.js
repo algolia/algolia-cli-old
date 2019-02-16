@@ -40,7 +40,7 @@ describe('Base script OK', () => {
   test('Should reject command missing required input params', done => {
     const isValid = baseScript.validate(invalidProgram, message, params);
     expect(isValid.flag).toEqual(true);
-    expect(isValid.output).toEqual(`${message}Must specify fakeParam2\n`);
+    expect(isValid.output.includes('Must specify fakeParam2')).toBe(true);
     done();
   });
 

@@ -97,7 +97,7 @@ program
     '-n, --algoliaindexname <algoliaIndexName>',
     'Required | Algolia index name'
   )
-  .option('-o, --outputpath <outputPath>', 'Required | Output filepath')
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .option('-p, --params <params>', 'Optional | Algolia params')
   .action(cmd => {
     exportScript.start(cmd);
@@ -236,7 +236,7 @@ program
     'Apply a custom transformation to each line of a file saving output lines to a new file'
   )
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
-  .option('-o, --outputpath <outputPath>', 'Required | Output filepath')
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
     'Optional | Transformation filepath'
