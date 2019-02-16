@@ -31,10 +31,7 @@ describe('SetSettings command OK', () => {
     // Get sample index settings
     const settings = await index.getSettings();
     // Write settings file to be read by setSettings script
-    fs.writeFileSync(
-      settingsPath,
-      JSON.stringify(settings)
-    );
+    fs.writeFileSync(settingsPath, JSON.stringify(settings));
     done();
   });
 
