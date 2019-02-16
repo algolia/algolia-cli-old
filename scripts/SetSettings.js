@@ -1,3 +1,4 @@
+const fs = require('fs');
 const algolia = require('algoliasearch');
 const HttpsAgent = require('agentkeepalive').HttpsAgent;
 const keepaliveAgent = new HttpsAgent({
@@ -11,6 +12,7 @@ class SetSettingsScript extends Base {
   constructor() {
     super();
     // Bind class methods
+    this.getSource = this.getSource.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
@@ -21,6 +23,13 @@ class SetSettingsScript extends Base {
       'algoliaindexname',
       'sourcefilepath',
     ];
+  }
+
+  getSource(path) {
+    const filepath = this.normalizePath(path);
+    if (!fs.lstatSync(filepath).isFile())
+      throw new Error('Source filepath must target valid settings file.');
+    return filepath;
   }
 
   async start(program) {
@@ -37,7 +46,7 @@ class SetSettingsScript extends Base {
       const settingsPath = program.sourcefilepath;
 
       // Get index settings
-      const settings = require(settingsPath);
+      const settings = require(this.getSource(settingsPath));
       // Instantiate Algolia index
       const client = algolia(appId, apiKey, keepaliveAgent);
       const index = client.initIndex(indexName);
