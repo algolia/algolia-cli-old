@@ -43,10 +43,13 @@ class SetSettingsScript extends Base {
       const appId = program.algoliaappid;
       const apiKey = program.algoliaapikey;
       const indexName = program.algoliaindexname;
-      const settingsPath = program.sourcefilepath;
+      const sourceFilepath = program.sourcefilepath;
 
       // Get index settings
-      const settings = require(this.getSource(settingsPath));
+      const settingsPath = this.getSource(sourceFilepath);
+      const settingsFile = await fs.readFileSync(settingsPath);
+      const settings = JSON.parse(settingsFile);
+
       // Instantiate Algolia index
       const client = algolia(appId, apiKey, keepaliveAgent);
       const index = client.initIndex(indexName);
