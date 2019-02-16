@@ -34,7 +34,7 @@ class GetSettingsScript extends Base {
       const index = client.initIndex(indexName);
       // Get index settings
       const settings = await index.getSettings();
-      return console.log(settings);
+      return console.log(JSON.stringify(settings));
     } catch (e) {
       throw e;
     }

@@ -19,10 +19,11 @@ describe('GetSettings command OK', () => {
     global.console.log = jest.fn();
     // Get a baseline of the settings on the index
     const settings = await index.getSettings();
+    const json = JSON.stringify(settings);
     // Execute GetSettings
     await getSettingsScript.start(program);
     // Check if settings we just retrieved match ones retrieved by script
-    expect(global.console.log).toHaveBeenLastCalledWith(settings);
+    expect(global.console.log).toHaveBeenLastCalledWith(json);
     done();
   });
 });
