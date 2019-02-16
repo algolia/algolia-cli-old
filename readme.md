@@ -35,6 +35,8 @@ $ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
 $ algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
 
+$ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath>
+
 $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
 
 $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
@@ -173,6 +175,11 @@ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 - `<algoliaApiKey>` | Required
 - `<algoliaIndexName>` | Required
 
+##### Notes:
+
+- To write settings JSON to file, just redirect the output to a file. For example:
+`$ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME > ~/Desktop/EXAMPLE_FILE_NAME.json`
+
 ### 6. Set Settings | `setsettings`
 
 ##### Description:
@@ -232,7 +239,30 @@ module.exports = {
 };
 ```
 
-### 7. Transfer Index | `transferindex`
+### 7. Export Rules | `exportrules`
+
+##### Description:
+
+Download all query rules from a specific Algolia index.
+
+##### Usage:
+
+```shell
+algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath>
+```
+
+##### Options:
+
+- `<algoliaAppId>` | Required
+- `<algoliaApiKey>` | Required
+- `<algoliaIndexName>` | Required
+- `<outputPath>` | Optional | Local path where query rules file will be saved. If no output path is provided, defaults to current working directory.
+
+##### Notes:
+
+- `<outputPath>`path must include file name.
+
+### 8. Transfer Index | `transferindex`
 
 ##### Description:
 
@@ -259,7 +289,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 - Command duplicates data and extended settings; does not delete or affect source index.
 - Replica indices and settings not transferred.
 
-### 8. Transfer Index Config | `transferindexconfig`
+### 9. Transfer Index Config | `transferindexconfig`
 
 ##### Description:
 
@@ -285,7 +315,7 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 
 - When transferring synonyms and query rules, `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will default to false, unless you specify `<configParams>`.
 
-### 9. Transform Lines | `transformlines`
+### 10. Transform Lines | `transformlines`
 
 ##### Description:
 
@@ -352,6 +382,8 @@ $ algolia transformlines -s ~/Desktop/example_source_file.json -o ~/Desktop/exam
 $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 
 $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js
+
+$ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/example_rules.json
 
 $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
 

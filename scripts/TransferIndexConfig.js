@@ -17,7 +17,7 @@ class TransferIndexConfigScript extends Base {
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
     // Define validation constants
     this.message =
-      '\nUsage: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -p configParams\n\n';
+      '\nExample: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -p configParams\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
@@ -80,9 +80,10 @@ class TransferIndexConfigScript extends Base {
 
   async start(program) {
     try {
-      // Validate command
+      // Validate command; if invalid display help text
       const isValid = this.validate(program, this.message, this.params);
-      if (isValid.flag) return console.log(isValid.output);
+      if (isValid.flag)
+        return console.log(program.help(h => h + isValid.output));
 
       // Config params
       const options = {

@@ -1,6 +1,7 @@
-const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const path = require('path');
+const chalk = require('chalk');
 
 class Base {
   validate(program, message, params) {
@@ -8,7 +9,7 @@ class Base {
     let output = message;
     params.forEach(param => {
       if (!program[param]) {
-        output += `Must specify ${param}\n`;
+        output += chalk.red(`Must specify ${param}\n`);
         flag = true;
       }
     });

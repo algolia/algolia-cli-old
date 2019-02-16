@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const algolia = require('algoliasearch');
 const HttpsAgent = require('agentkeepalive').HttpsAgent;
 const keepaliveAgent = new HttpsAgent({
@@ -7,20 +9,15 @@ const keepaliveAgent = new HttpsAgent({
 });
 const Base = require('./Base.js');
 
-class SetSettingsScript extends Base {
+class ExportRulesScript extends Base {
   constructor() {
     super();
     // Bind class methods
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia setsettings -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath\n\n';
-    this.params = [
-      'algoliaappid',
-      'algoliaapikey',
-      'algoliaindexname',
-      'sourcefilepath',
-    ];
+      '\nExample: $ algolia exportrules -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath\n\n';
+    this.params = ['algoliaappid', 'algoliaapikey', 'algoliaindexname'];
   }
 
   async start(program) {
@@ -34,21 +31,25 @@ class SetSettingsScript extends Base {
       const appId = program.algoliaappid;
       const apiKey = program.algoliaapikey;
       const indexName = program.algoliaindexname;
-      const settingsPath = program.sourcefilepath;
+      const outputpath = program.outputpath || null;
 
-      // Get index settings
-      const settings = require(settingsPath);
+      const filepath =
+        outputpath !== null
+          ? this.normalizePath(program.outputpath)
+          : path.resolve(process.cwd(), `${indexName}-rules.json`);
+
       // Instantiate Algolia index
       const client = algolia(appId, apiKey, keepaliveAgent);
       const index = client.initIndex(indexName);
-      // Set index settings
-      const result = await index.setSettings(settings);
-      return console.log(result);
+      // Get index settings
+      const rules = await index.exportRules();
+      fs.writeFileSync(filepath, JSON.stringify(rules));
+      return console.log(`Done writing ${filepath}`);
     } catch (e) {
       throw e;
     }
   }
 }
 
-const setSettingsScript = new SetSettingsScript();
-module.exports = setSettingsScript;
+const exportRulesScript = new ExportRulesScript();
+module.exports = exportRulesScript;

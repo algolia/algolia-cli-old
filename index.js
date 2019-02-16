@@ -10,29 +10,14 @@ const importScript = require('./scripts/Import.js');
 const exportScript = require('./scripts/Export.js');
 const getSettingsScript = require('./scripts/GetSettings.js');
 const setSettingsScript = require('./scripts/SetSettings.js');
+const exportRulesScript = require('./scripts/ExportRules.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
 const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
 const transformLinesScript = require('./scripts/TransformLines.js');
 
 // DOCS
 
-const instructions = `
-Usage:
-
-  $ algolia <COMMAND NAME> [OPTIONS]
-
-Commands:
-
-  1. --help
-  2. --version
-  3. import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency> -p <csvToJsonParams>
-  4. export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath> -p <algoliaParams>
-  5. getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
-  6. setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
-  7. transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
-  8. transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
-  9. transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
-
+const examples = `
 Examples:
 
   $ algolia --help
@@ -41,14 +26,13 @@ Examples:
   $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p '{"filters":["category:book"]}'
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
   $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js
+  $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_file.json
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
 `;
 
 // HELPERS
-
-const help = () => console.log(instructions);
 
 const registerDefaultProcessEventListeners = () => {
   // Handle process cancellation
@@ -69,41 +53,35 @@ const defaultCommand = command => {
   process.exit(1);
 };
 
-const noCommand = () => {
-  console.error('You must specify a command.');
-  console.error('Run "algolia --help" to view options.');
-  process.exit(1);
-};
-
 // COMMANDS
 
-program.version(version, '-v, --version').on('--help', help);
+program.version(version, '-v, --version');
 
 // Import
 program
   .command('import')
   .alias('i')
   .description('Import local JSON or CSV data to an Algolia index')
-  .option('-s, --sourcefilepath <sourceFilepath>', 'Source filepath | Required')
-  .option('-a, --algoliaappid <algoliaAppId>', 'Algolia app ID | Required')
-  .option('-k, --algoliaapikey <algoliaApiKey>', 'Algolia API key | Required')
+  .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
   .option(
     '-n, --algoliaindexname <algoliaIndexName>',
-    'Algolia index name | Required'
+    'Required | Algolia index name'
   )
   .option(
     '-b, --batchsize <batchSize>',
-    'Number of objects to import per batch | Optional'
+    'Optional | Number of objects to import per batch'
   )
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
-    'Transformation filepath | Optional'
+    'Optional | Transformation filepath'
   )
   .option(
     '-m, --maxconcurrency <maxConcurrency>',
-    'Maximum number of concurrent filestreams to process | Optional'
+    'Optional | Maximum number of concurrent filestreams to process'
   )
-  .option('-p, --params <params>', 'CsvToJson params | Optional')
+  .option('-p, --params <params>', 'Optional | CsvToJson params')
   .action(cmd => {
     importScript.start(cmd);
   });
@@ -113,14 +91,14 @@ program
   .command('export')
   .alias('e')
   .description('Export the contents of an Algolia index to local JSON files')
-  .option('-a, --algoliaappid <algoliaAppId>', 'Algolia app ID | Required')
-  .option('-k, --algoliaapikey <algoliaApiKey>', 'Algolia API key | Required')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
   .option(
     '-n, --algoliaindexname <algoliaIndexName>',
-    'Algolia index name | Required'
+    'Required | Algolia index name'
   )
-  .option('-o, --outputpath <outputPath>', 'Output filepath | Required')
-  .option('-p, --params <params>', 'Algolia params | Optional')
+  .option('-o, --outputpath <outputPath>', 'Required | Output filepath')
+  .option('-p, --params <params>', 'Optional | Algolia params')
   .action(cmd => {
     exportScript.start(cmd);
   });
@@ -130,11 +108,11 @@ program
   .command('getsettings')
   .alias('g')
   .description('Get the settings of an Algolia index as JSON')
-  .option('-a, --algoliaappid <algoliaAppId>', 'Algolia app ID | Required')
-  .option('-k, --algoliaapikey <algoliaApiKey>', 'Algolia API key | Required')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
   .option(
     '-n, --algoliaindexname <algoliaIndexName>',
-    'Algolia index name | Required'
+    'Required | Algolia index name'
   )
   .action(cmd => {
     getSettingsScript.start(cmd);
@@ -145,15 +123,31 @@ program
   .command('setsettings')
   .alias('s')
   .description('Set the settings of an Algolia index from a JSON file')
-  .option('-a, --algoliaappid <algoliaAppId>', 'Algolia app ID | Required')
-  .option('-k, --algoliaapikey <algoliaApiKey>', 'Algolia API key | Required')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
   .option(
     '-n, --algoliaindexname <algoliaIndexName>',
-    'Algolia index name | Required'
+    'Required | Algolia index name'
   )
-  .option('-s, --sourcefilepath <sourceFilepath>', 'Source filepath | Required')
+  .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .action(cmd => {
     setSettingsScript.start(cmd);
+  });
+
+// Export Rules
+program
+  .command('exportrules')
+  .alias('er')
+  .description('Export the query rules of an Algolia index to local JSON file')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option(
+    '-n, --algoliaindexname <algoliaIndexName>',
+    'Required | Algolia index name'
+  )
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
+  .action(cmd => {
+    exportRulesScript.start(cmd);
   });
 
 // Transfer Index
@@ -165,31 +159,31 @@ program
   )
   .option(
     '-a, --sourceAlgoliaAppId <algoliaAppId>',
-    'Algolia app ID | Required'
+    'Required | Algolia app ID'
   )
   .option(
     '-k, --sourceAlgoliaApiKey <algoliaApiKey>',
-    'Algolia API key | Required'
+    'Required | Algolia API key'
   )
   .option(
     '-n, --sourceAlgoliaIndexName <algoliaIndexName>',
-    'Algolia index name | Required'
+    'Required | Algolia index name'
   )
   .option(
     '-d, --destinationAlgoliaAppId <algoliaAppId>',
-    'Algolia app ID | Required'
+    'Required | Algolia app ID'
   )
   .option(
     '-y, --destinationAlgoliaApiKey <algoliaApiKey>',
-    'Algolia API key | Required'
+    'Required | Algolia API key'
   )
   .option(
     '-i, --destinationIndexName <algoliaIndexName>',
-    'Algolia index name | Optional'
+    'Optional | Algolia index name'
   )
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
-    'Transformation filepath | Optional'
+    'Optional | Transformation filepath'
   )
   .action(cmd => {
     transferIndexScript.start(cmd);
@@ -204,31 +198,31 @@ program
   )
   .option(
     '-a, --sourceAlgoliaAppId <algoliaAppId>',
-    'Algolia app ID | Required'
+    'Required | Algolia app ID'
   )
   .option(
     '-k, --sourceAlgoliaApiKey <algoliaApiKey>',
-    'Algolia API key | Required'
+    'Required | Algolia API key'
   )
   .option(
     '-n, --sourceAlgoliaIndexName <algoliaIndexName>',
-    'Algolia index name | Required'
+    'Required | Algolia index name'
   )
   .option(
     '-d, --destinationAlgoliaAppId <algoliaAppId>',
-    'Algolia app ID | Required'
+    'Required | Algolia app ID'
   )
   .option(
     '-y, --destinationAlgoliaApiKey <algoliaApiKey>',
-    'Algolia API key | Required'
+    'Required | Algolia API key'
   )
   .option(
     '-i, --destinationIndexName <algoliaIndexName>',
-    'Algolia index name | Optional'
+    'Optional | Algolia index name'
   )
   .option(
     '-p, --params <params>',
-    'Algolia batchSynonyms and batchRules params | Optional'
+    'Optional | Algolia batchSynonyms and batchRules params'
   )
   .action(cmd => {
     transferIndexConfigScript.start(cmd);
@@ -241,14 +235,23 @@ program
   .description(
     'Apply a custom transformation to each line of a file saving output lines to a new file'
   )
-  .option('-s, --sourcefilepath <sourceFilepath>', 'Source filepath | Required')
-  .option('-o, --outputpath <outputPath>', 'Output filepath | Required')
+  .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
+  .option('-o, --outputpath <outputPath>', 'Required | Output filepath')
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
-    'Transformation filepath | Optional'
+    'Optional | Transformation filepath'
   )
   .action(cmd => {
     transformLinesScript.start(cmd);
+  });
+
+// Display command examples
+program
+  .command('examples')
+  .alias('ex')
+  .description('View command examples')
+  .action(() => {
+    console.log(examples);
   });
 
 // Default Command
@@ -267,4 +270,4 @@ program.parse(process.argv);
 // Register node process event listeners
 registerDefaultProcessEventListeners();
 // Handle no-command case
-if (program.args.length === 0) noCommand();
+if (program.args.length === 0) program.help();
