@@ -6,6 +6,7 @@ const Batch = require('batch-stream');
 const readLine = require('readline');
 const async = require('async');
 const csv = require('csvtojson');
+const regexParser = require('regex-parser');
 const algolia = require('algoliasearch');
 const HttpsAgent = require('agentkeepalive').HttpsAgent;
 const keepaliveAgent = new HttpsAgent({
@@ -74,6 +75,13 @@ class ImportScript extends Base {
       this.csvOptions = options.CSV_TO_JSON_PARAMS
         ? JSON.parse(options.CSV_TO_JSON_PARAMS)
         : null;
+      if (!this.csvOptions) return;
+      const csvToJsonRegexPropertyList = ['includeColumns', 'ignoreColumns'];
+      csvToJsonRegexPropertyList.forEach(prop => {
+        if (this.csvOptions.hasOwnProperty(prop)) {
+          this.csvOptions[prop] = regexParser(this.csvOptions[prop]);
+        }
+      });
     } catch (e) {
       throw e;
     }

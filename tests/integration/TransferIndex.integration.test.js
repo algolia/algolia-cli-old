@@ -38,9 +38,12 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('TransferIndex command OK', () => {
   beforeAll(async () => {
+    // Clear source and destination indices, then re-populate source index
     const data = fs.readFileSync(dataPath, 'utf-8');
-    await altIndex.clearIndex();
-    await index.clearIndex();
+    const altClearRes = await altIndex.clearIndex();
+    await altIndex.waitTask(altClearRes.taskID);
+    const clearRes = await index.clearIndex();
+    await index.waitTask(clearRes.taskID);
     const content = await index.addObjects(JSON.parse(data));
     await index.waitTask(content.taskID);
   }, 60000);
