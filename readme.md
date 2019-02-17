@@ -35,6 +35,8 @@ $ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
 $ algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
 
+$ algolia addrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath> -p <batchRulesParams>
+
 $ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath>
 
 $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
@@ -239,7 +241,31 @@ module.exports = {
 };
 ```
 
-### 7. Export Rules | `exportrules`
+### 7. Add Rules | `addrules`
+
+##### Description:
+
+Import a local JSON file of query rules to an Algolia index.
+
+##### Usage:
+
+```shell
+algolia addrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath> -p <batchRulesParams>
+```
+
+##### Options:
+
+- `<algoliaAppId>` | Required
+- `<algoliaApiKey>` | Required
+- `<algoliaIndexName>` | Required
+- `<sourceFilepath>` | Required | Path to a JSON file containing an array of query rule objects.
+- `<batchRulesParams>` | Optional | JSON object containing options passed to `batchRules()` [method](https://www.algolia.com/doc/api-reference/api-methods/batch-rules/).
+
+##### Notes:
+
+- See [batchRules documentation](https://www.algolia.com/doc/api-reference/api-methods/batch-rules/) and [implementing query rules documentation](https://www.algolia.com/doc/guides/managing-results/refine-results/merchandising-and-promoting/in-depth/implementing-query-rules/) for more info.
+
+### 8. Export Rules | `exportrules`
 
 ##### Description:
 
@@ -262,7 +288,7 @@ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 
 - `<outputPath>`path must include file name.
 
-### 8. Transfer Index | `transferindex`
+### 9. Transfer Index | `transferindex`
 
 ##### Description:
 
@@ -289,7 +315,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 - Command duplicates data and extended settings; does not delete or affect source index.
 - Replica indices and settings not transferred.
 
-### 9. Transfer Index Config | `transferindexconfig`
+### 10. Transfer Index Config | `transferindexconfig`
 
 ##### Description:
 
@@ -315,7 +341,7 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 
 - When transferring synonyms and query rules, `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will default to false, unless you specify `<configParams>`.
 
-### 10. Transform Lines | `transformlines`
+### 11. Transform Lines | `transformlines`
 
 ##### Description:
 
@@ -382,6 +408,8 @@ $ algolia transformlines -s ~/Desktop/example_source_file.json -o ~/Desktop/exam
 $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 
 $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.json
+
+$ algolia addrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_rules.json -p '{"forwardToReplicas":false,"clearExistingRules":true}'
 
 $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/example_rules.json
 
