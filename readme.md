@@ -33,7 +33,7 @@ $ algolia export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <
 
 $ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
-$ algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
+$ algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath> -p <setSettingsParams>
 
 $ algolia addrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath> -p <batchRulesParams>
 
@@ -196,7 +196,7 @@ Set settings for a specific Algolia index.
 ##### Usage:
 
 ```shell
-algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath>
+algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath> -p <setSettingsParams>
 ```
 
 ##### Options:
@@ -205,6 +205,7 @@ algolia setsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 - `<algoliaApiKey>` | Required
 - `<algoliaIndexName>` | Required
 - `<sourceFilepath>` | Required | Path to a JSON file containing a settings object.
+- `<setSettingsParams>` | Optional | JSON object containing options passed to `setSettings()` [method](https://www.algolia.com/doc/api-reference/api-methods/set-settings/).
 
 ##### Example settings file:
 
@@ -244,6 +245,12 @@ module.exports = {
   snippetEllipsisText: '',
   alternativesAsExact: [ 'ignorePlurals', 'singleWordSynonym' ]
 };
+```
+
+##### Example setSettings params:
+
+```
+'{"forwardToReplicas":true}'
 ```
 
 ### 7. Add Rules | `addrules`
@@ -441,7 +448,7 @@ $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~
 
 $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 
-$ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.json
+$ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.json -p '{"forwardToReplicas":true}'
 
 $ algolia addrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_rules.json -p '{"forwardToReplicas":false,"clearExistingRules":true}'
 
