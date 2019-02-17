@@ -46,6 +46,8 @@ $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -
 $ algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' -x <true|false>
 
 $ algolia transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
+
+$ algolia examples
 ```
 
 See also [additional examples](#examples).
@@ -436,6 +438,22 @@ module.exports = (line) => {
 - `<outputPath>` must be a directory.
 - Running `transformlines` command without providing optional `<transformationFilepath>` param will cause it to assume it's parsing a `.json-seq` file; thus, it will apply the `defaultLineTransformation` method in `transformLines.js` to each line. This checks each line for the ASCII Record Separator character `\u001e` and replaces it with a `,`. It will _also_ cause it to enclose the whole file in "[" and "]" square brackets to make it a valid JS array. Providing a custom transformation method via the optional `<transformationFilepath>` param will make it exclusively run your transformation function instead of the default one (and in this case it will also omit adding enclosing square brackets).
 
+### 14. Examples | `examples`
+
+##### Description:
+
+Display command usage examples.
+
+##### Usage:
+
+```shell
+algolia examples
+```
+
+##### Notes:
+
+- See equivalent list of [examples below](#examples).
+
 # Examples
 ```bash
 $ algolia --help
@@ -461,6 +479,8 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
 
 $ algolia transformlines -s ~/Desktop/example_source_file.json -o ~/Desktop/example_output_folder/ -t ~/Desktop/example_transformations.js
+
+$ algolia examples
 ```
 
 # Contribute
