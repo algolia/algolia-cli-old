@@ -107,9 +107,9 @@ class TransformLinesScript extends Base {
     // Script reads a file or directory of files synchronously, line-by-line.
     // Writes each file synchronously, line-by-line, to an output directory
     // while optionally applying a provided transformation function to each line.
-    // Validate command; if invalid display help text
-    const isValid = this.validate(program, this.message, this.params);
-    if (isValid.flag) return console.log(program.help(h => h + isValid.output));
+
+    // Validate command; if invalid display help text and exit
+    this.validate(program, this.message, this.params);
 
     // Config params
     this.sourceFilepath = program.sourcefilepath;

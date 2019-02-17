@@ -26,6 +26,7 @@ const validProgram = {
 };
 const invalidProgram = {
   fakeParam1: 'fake-command-input-1',
+  help: jest.fn(),
 };
 
 describe('Base script OK', () => {
@@ -38,9 +39,9 @@ describe('Base script OK', () => {
   });
 
   test('Should reject command missing required input params', done => {
-    const isValid = baseScript.validate(invalidProgram, message, params);
-    expect(isValid.flag).toEqual(true);
-    expect(isValid.output.includes('Must specify fakeParam2')).toBe(true);
+    const result = baseScript.validate(invalidProgram, message, params);
+    expect(result).toEqual(undefined);
+    expect(invalidProgram.help).toHaveBeenCalled();
     done();
   });
 

@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const addRulesScript = require(`${__dirname}/../../scripts/AddRules.js`);
 const algolia = require('algoliasearch');

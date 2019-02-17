@@ -163,9 +163,8 @@ class ImportScript extends Base {
     // Script reads JSON file or directory of JSON files, optionally applies
     // transformations, then batches and indexes the data in Algolia
 
-    // Validate command; if invalid display help text
-    const isValid = this.validate(program, this.message, this.params);
-    if (isValid.flag) return console.log(program.help(h => h + isValid.output));
+    // Validate command; if invalid display help text and exit
+    this.validate(program, this.message, this.params);
 
     // Config params
     const OPTIONS = {

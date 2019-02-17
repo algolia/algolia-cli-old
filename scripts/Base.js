@@ -13,7 +13,8 @@ class Base {
         flag = true;
       }
     });
-    return { flag, output };
+    if (flag) return program.help(h => h + output);
+    else return { flag, output };
   }
 
   normalizePath(input) {
