@@ -129,11 +129,14 @@ module.exports = (data,cb) => {
 
 ##### Notes:
 
-- `<sourceFilepath>` and `<transformationFilepath>` arguments can be absolute or relative paths.
-- If your system has limited memory resources or if you run into heap allocation errors, consider reducing `<maxconcurrency>`.
+- `<sourceFilepath>` may target a file or a directory of files.
+- JSON files must contain an array of objects.
+- CSV files must have a `.csv` extension.
+- `<transformationFilepath>` requires a path to a transformation file. See [example file](transformations/example-transformations.js).
+- If your system has limited memory resources or if you run into heap allocation errors, consider reducing `<maxconcurrency>` to `1`.
 - Make sure you only import JSON or CSV files. Don't accidentally try to import hidden files like `.DS_Store`, log files, etc. as they will throw an error.
 - Command assumes each file contains an array of JSON objects unless the file extension ends with `.csv`.
-- CSV to JSON conversion performed using [csvtojson](https://www.npmjs.com/package/csvtojson).
+- CSV to JSON conversion performed using [csvtojson](https://www.npmjs.com/package/csvtojson) package.
 
 ### 4. Export | `export`
 
@@ -179,7 +182,7 @@ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
 ##### Notes:
 
-- To write settings JSON to file, just redirect the output to a file. For example:
+- To write settings JSON locally, just redirect the output to a file. For example:
 `$ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME > ~/Desktop/EXAMPLE_FILE_NAME.json`
 
 ### 6. Set Settings | `setsettings`
