@@ -6,6 +6,7 @@ const chalk = require('chalk');
 
 // SCRIPTS
 
+const searchScript = require('./scripts/Search.js');
 const importScript = require('./scripts/Import.js');
 const exportScript = require('./scripts/Export.js');
 const getSettingsScript = require('./scripts/GetSettings.js');
@@ -15,6 +16,7 @@ const exportRulesScript = require('./scripts/ExportRules.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
 const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
 const transformLinesScript = require('./scripts/TransformLines.js');
+const deleteIndicesPatternScript = require('./scripts/DeleteIndicesPattern.js');
 
 // DOCS
 
@@ -23,15 +25,18 @@ Examples:
 
   $ algolia --help
   $ algolia --version
+  $ algolia search -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -q 'example query' -p '{"filters":["category:book"]}' -o ~/Desktop/results.json
   $ algolia import -s ~/Desktop/example_data.json -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -b 5000 -t ~/Desktop/example_transformations.js -m 4 -p '{"delimiter":[":"]}'
   $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p '{"filters":["category:book"]}'
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
-  $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js
+  $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js -p '{"forwardToReplicas":true}'
   $ algolia addrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_rules.json
   $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_file.json
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
+  $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
+  $ algolia examples
 `;
 
 // HELPERS
@@ -58,6 +63,24 @@ const defaultCommand = command => {
 // COMMANDS
 
 program.version(version, '-v, --version');
+
+// Search
+program
+  .command('search')
+  .alias('s')
+  .description('Search an Algolia index')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option(
+    '-n, --algoliaindexname <algoliaIndexName>',
+    'Required | Algolia index name'
+  )
+  .option('-q, --query <query>', 'Optional | Algolia search query string')
+  .option('-p, --params <params>', 'Optional | Algolia search params')
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
+  .action(cmd => {
+    searchScript.start(cmd);
+  });
 
 // Import
 program
@@ -108,7 +131,7 @@ program
 // Get Settings
 program
   .command('getsettings')
-  .alias('g')
+  .alias('gs')
   .description('Get the settings of an Algolia index as JSON')
   .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
   .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
@@ -123,7 +146,7 @@ program
 // Set Settings
 program
   .command('setsettings')
-  .alias('s')
+  .alias('ss')
   .description('Set the settings of an Algolia index from a JSON file')
   .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
   .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
@@ -132,6 +155,7 @@ program
     'Required | Algolia index name'
   )
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
+  .option('-p, --params <params>', 'Optional | Algolia setSettings params')
   .action(cmd => {
     setSettingsScript.start(cmd);
   });
@@ -245,6 +269,23 @@ program
   )
   .action(cmd => {
     transferIndexConfigScript.start(cmd);
+  });
+
+// Delete Indices
+
+program
+  .command('deleteindicespattern')
+  .alias('dip')
+  .description('Delete multiple indices using a regular expression')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option('-r, --regexp <regexp>', 'Required | Regexp to use for filtering')
+  .option(
+    '-x, --dryrun <boolean>',
+    'Required | Dry run, will only output what would be done'
+  )
+  .action(cmd => {
+    deleteIndicesPatternScript.start(cmd);
   });
 
 // Transform Lines

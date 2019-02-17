@@ -32,6 +32,8 @@ const validProgram = {
   sourcefilepath: settingsPath,
 };
 
+const defaultSettingsOptions = { forwardToReplicas: false };
+
 describe('SetSettings script OK', () => {
   /* start */
 
@@ -48,7 +50,10 @@ describe('SetSettings script OK', () => {
     expect(client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname
     );
-    expect(index.setSettings).toHaveBeenCalledWith(settings);
+    expect(index.setSettings).toHaveBeenCalledWith(
+      settings,
+      defaultSettingsOptions
+    );
     done();
   });
 

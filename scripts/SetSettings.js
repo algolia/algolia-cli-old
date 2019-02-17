@@ -13,10 +13,11 @@ class SetSettingsScript extends Base {
     super();
     // Bind class methods
     this.getSource = this.getSource.bind(this);
+    this.parseSetSettingsOptions = this.parseSetSettingsOptions.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia setsettings -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath\n\n';
+      '\nExample: $ algolia setsettings -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p setsettingsparams\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
@@ -32,6 +33,16 @@ class SetSettingsScript extends Base {
     return filepath;
   }
 
+  parseSetSettingsOptions(params) {
+    try {
+      const options = { forwardToReplicas: false };
+      if (params === null) return options;
+      else return JSON.parse(params);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async start(program) {
     try {
       // Validate command; if invalid display help text and exit
@@ -42,17 +53,20 @@ class SetSettingsScript extends Base {
       const apiKey = program.algoliaapikey;
       const indexName = program.algoliaindexname;
       const sourceFilepath = program.sourcefilepath;
+      const params = program.params || null;
 
       // Get index settings
       const settingsPath = this.getSource(sourceFilepath);
       const settingsFile = await fs.readFileSync(settingsPath);
       const settings = JSON.parse(settingsFile);
+      // Get options
+      const settingsOptions = this.parseSetSettingsOptions(params);
 
       // Instantiate Algolia index
       const client = algolia(appId, apiKey, keepaliveAgent);
       const index = client.initIndex(indexName);
       // Set index settings
-      const result = await index.setSettings(settings);
+      const result = await index.setSettings(settings, settingsOptions);
       return console.log(result);
     } catch (e) {
       throw e;
