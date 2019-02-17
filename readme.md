@@ -109,8 +109,8 @@ algolia search -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -q <qu
 - `<algoliaAppId>` | Required
 - `<algoliaApiKey>` | Required
 - `<algoliaIndexName>` | Required
-- `<query>` | Optional | Search query string to send to Algolia index. Defaults to ''.
-- `<searchParams>` | Optional | JSON params to be passed to Algolia .search() [method](https://www.algolia.com/doc/api-reference/api-methods/search/?language=javascript).
+- `<query>` | Optional | Search query string to send to Algolia index. Defaults to `''`.
+- `<searchParams>` | Optional | JSON params to be passed to Algolia `.search()` [method](https://www.algolia.com/doc/api-reference/api-methods/search/?language=javascript).
 - `<outputPath>` | Optional | Local path where search results file will be saved.
 
 ##### Notes:
