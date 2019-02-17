@@ -27,6 +27,8 @@ $ algolia --help
 
 $ algolia --version
 
+$ algolia search -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -q <query> -p <searchParams> -o <outputPath>
+
 $ algolia import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency> -p <csvToJsonParams>
 
 $ algolia export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath> -p <algoliaParams>
@@ -46,6 +48,8 @@ $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -
 $ algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' -x <true|false>
 
 $ algolia transformlines -s <sourceFilepath> -o <outputPath> -t <transformationFilepath>
+
+$ algolia examples
 ```
 
 See also [additional examples](#examples).
@@ -88,7 +92,35 @@ or
 algolia -v
 ```
 
-### 3. Import | `import`
+### 3. Search | `search`
+
+##### Description:
+
+Search an Algolia index.
+
+##### Usage:
+
+```shell
+algolia search -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -q <query> -p <searchParams> -o <outputPath>
+```
+
+##### Options:
+
+- `<algoliaAppId>` | Required
+- `<algoliaApiKey>` | Required
+- `<algoliaIndexName>` | Required
+- `<query>` | Optional | Search query string to send to Algolia index. Defaults to ''.
+- `<searchParams>` | Optional | JSON params to be passed to Algolia .search() [method](https://www.algolia.com/doc/api-reference/api-methods/search/?language=javascript).
+- `<outputPath>` | Optional | Local path where search results file will be saved.
+
+##### Notes:
+
+- If no `<outputPath>` is provided, command will simply console.log() the response.
+- If an `<outputPath>` is provided, command will write a JSON file to that location.
+- Provided `<outputPath>` path must include file name.
+- See [search parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/) for more documentation about search options.
+
+### 4. Import | `import`
 
 ##### Description:
 
@@ -140,7 +172,7 @@ module.exports = (data,cb) => {
 - Command assumes each file contains an array of JSON objects unless the file extension ends with `.csv`.
 - CSV to JSON conversion performed using [csvtojson](https://www.npmjs.com/package/csvtojson) package.
 
-### 4. Export | `export`
+### 5. Export | `export`
 
 ##### Description:
 
@@ -164,7 +196,7 @@ algolia export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <ou
 
 - `<outputPath>` must be a directory.
 
-### 5. Get Settings | `getsettings`
+### 6. Get Settings | `getsettings`
 
 ##### Description:
 
@@ -187,7 +219,7 @@ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 - To write settings JSON locally, just redirect the output to a file. For example:
 `$ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME > ~/Desktop/EXAMPLE_FILE_NAME.json`
 
-### 6. Set Settings | `setsettings`
+### 7. Set Settings | `setsettings`
 
 ##### Description:
 
@@ -253,7 +285,7 @@ module.exports = {
 '{"forwardToReplicas":true}'
 ```
 
-### 7. Add Rules | `addrules`
+### 8. Add Rules | `addrules`
 
 ##### Description:
 
@@ -277,7 +309,7 @@ algolia addrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <
 
 - See [batchRules documentation](https://www.algolia.com/doc/api-reference/api-methods/batch-rules/) and [implementing query rules documentation](https://www.algolia.com/doc/guides/managing-results/refine-results/merchandising-and-promoting/in-depth/implementing-query-rules/) for more info.
 
-### 8. Export Rules | `exportrules`
+### 9. Export Rules | `exportrules`
 
 ##### Description:
 
@@ -300,7 +332,7 @@ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 
 - `<outputPath>`path must include file name.
 
-### 9. Transfer Index | `transferindex`
+### 10. Transfer Index | `transferindex`
 
 ##### Description:
 
@@ -327,7 +359,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 - Command duplicates data and extended settings; does not delete or affect source index.
 - Replica indices and settings not transferred.
 
-### 10. Transfer Index Config | `transferindexconfig`
+### 11. Transfer Index Config | `transferindexconfig`
 
 ##### Description:
 
@@ -353,7 +385,7 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 
 - When transferring synonyms and query rules, `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will default to false, unless you specify `<configParams>`.
 
-### 11. Delete Indices Pattern | `deleteindicespattern`
+### 12. Delete Indices Pattern | `deleteindicespattern`
 
 ##### Description:
 
@@ -384,7 +416,7 @@ algolia deleteindicespattern -a someAppId -k someApiKey -r '^staging__' -x false
 
 This will delete all indices of the application that are starting with "staging__".
 
-### 12. Transform Lines | `transformlines`
+### 13. Transform Lines | `transformlines`
 
 ##### Description:
 
@@ -436,11 +468,29 @@ module.exports = (line) => {
 - `<outputPath>` must be a directory.
 - Running `transformlines` command without providing optional `<transformationFilepath>` param will cause it to assume it's parsing a `.json-seq` file; thus, it will apply the `defaultLineTransformation` method in `transformLines.js` to each line. This checks each line for the ASCII Record Separator character `\u001e` and replaces it with a `,`. It will _also_ cause it to enclose the whole file in "[" and "]" square brackets to make it a valid JS array. Providing a custom transformation method via the optional `<transformationFilepath>` param will make it exclusively run your transformation function instead of the default one (and in this case it will also omit adding enclosing square brackets).
 
+### 14. Examples | `examples`
+
+##### Description:
+
+Display command usage examples.
+
+##### Usage:
+
+```shell
+algolia examples
+```
+
+##### Notes:
+
+- See equivalent list of [examples below](#examples).
+
 # Examples
 ```bash
 $ algolia --help
 
 $ algolia --version
+
+$ algolia search -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -q 'example query' -p '{"facetFilters":["category:book"]}' -o ~/Desktop/results.json
 
 $ algolia import -s ~/Desktop/example_source_directory/ -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -b 5000 -t ~/Desktop/example_transformations.js -m 4 -p '{"delimiter":[":"]}'
 
@@ -461,6 +511,8 @@ $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY
 $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
 
 $ algolia transformlines -s ~/Desktop/example_source_file.json -o ~/Desktop/example_output_folder/ -t ~/Desktop/example_transformations.js
+
+$ algolia examples
 ```
 
 # Contribute
