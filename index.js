@@ -15,6 +15,7 @@ const exportRulesScript = require('./scripts/ExportRules.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
 const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
 const transformLinesScript = require('./scripts/TransformLines.js');
+const deleteIndicesPatternScript = require('./scripts/DeleteIndicesPattern.js');
 
 // DOCS
 
@@ -31,6 +32,7 @@ Examples:
   $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_file.json
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
+  $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
 `;
 
@@ -245,6 +247,23 @@ program
   )
   .action(cmd => {
     transferIndexConfigScript.start(cmd);
+  });
+
+// Delete Indices
+
+program
+  .command('deleteindicespattern')
+  .alias('dip')
+  .description('Delete multiple indices using a regular expression')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option('-r, --regexp <regexp>', 'Required | Regexp to use for filtering')
+  .option(
+    '-x, --dryrun <boolean>',
+    'Required | Dry run, will only output what would be done'
+  )
+  .action(cmd => {
+    deleteIndicesPatternScript.start(cmd);
   });
 
 // Transform Lines
