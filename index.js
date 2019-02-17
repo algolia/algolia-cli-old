@@ -10,6 +10,7 @@ const importScript = require('./scripts/Import.js');
 const exportScript = require('./scripts/Export.js');
 const getSettingsScript = require('./scripts/GetSettings.js');
 const setSettingsScript = require('./scripts/SetSettings.js');
+const addRulesScript = require('./scripts/AddRules.js');
 const exportRulesScript = require('./scripts/ExportRules.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
 const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
@@ -26,6 +27,7 @@ Examples:
   $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p '{"filters":["category:book"]}'
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
   $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js
+  $ algolia addrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_rules.json
   $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_file.json
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
@@ -97,8 +99,8 @@ program
     '-n, --algoliaindexname <algoliaIndexName>',
     'Required | Algolia index name'
   )
-  .option('-o, --outputpath <outputPath>', 'Required | Output filepath')
-  .option('-p, --params <params>', 'Optional | Algolia params')
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
+  .option('-p, --params <params>', 'Optional | Algolia browseAll params')
   .action(cmd => {
     exportScript.start(cmd);
   });
@@ -132,6 +134,23 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .action(cmd => {
     setSettingsScript.start(cmd);
+  });
+
+// Add Rules
+program
+  .command('addrules')
+  .alias('er')
+  .description('Add query rules to an Algolia index from a JSON file')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option(
+    '-n, --algoliaindexname <algoliaIndexName>',
+    'Required | Algolia index name'
+  )
+  .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
+  .option('-p, --params <params>', 'Optional | Algolia batchRules params')
+  .action(cmd => {
+    addRulesScript.start(cmd);
   });
 
 // Export Rules
@@ -236,7 +255,7 @@ program
     'Apply a custom transformation to each line of a file saving output lines to a new file'
   )
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
-  .option('-o, --outputpath <outputPath>', 'Required | Output filepath')
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .option(
     '-t, --transformationfilepath <transformationFilepath>',
     'Optional | Transformation filepath'

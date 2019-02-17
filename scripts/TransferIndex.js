@@ -105,10 +105,8 @@ class TransferIndexScript extends Base {
 
   async start(program) {
     try {
-      // Validate command; if invalid display help text
-      const isValid = this.validate(program, this.message, this.params);
-      if (isValid.flag)
-        return console.log(program.help(h => h + isValid.output));
+      // Validate command; if invalid display help text and exit
+      this.validate(program, this.message, this.params);
 
       // Config params
       const options = {

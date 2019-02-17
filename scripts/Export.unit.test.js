@@ -20,6 +20,8 @@ process.stdout.write = jest.fn();
 HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock fs
+const isDirectory = jest.fn().mockReturnValue(true);
+fs.lstatSync.mockReturnValue({ isDirectory });
 fs.writeFileSync = jest.fn();
 
 // Mock user input

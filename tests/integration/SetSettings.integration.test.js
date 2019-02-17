@@ -3,7 +3,7 @@ const setSettingsScript = require(`${__dirname}/../../scripts/SetSettings.js`);
 const algolia = require('algoliasearch');
 
 const tempDir = `${__dirname}/../temp`;
-const settingsFile = 'algolia-cli-test-settings.js';
+const settingsFile = 'algolia-cli-test-settings.json';
 const settingsPath = `${tempDir}/${settingsFile}`;
 
 const appId = process.env.ALGOLIA_TEST_APP_ID;
@@ -31,10 +31,7 @@ describe('SetSettings command OK', () => {
     // Get sample index settings
     const settings = await index.getSettings();
     // Write settings file to be read by setSettings script
-    fs.writeFileSync(
-      settingsPath,
-      `module.exports = ${JSON.stringify(settings)};`
-    );
+    fs.writeFileSync(settingsPath, JSON.stringify(settings));
     done();
   });
 

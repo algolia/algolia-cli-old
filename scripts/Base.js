@@ -13,7 +13,8 @@ class Base {
         flag = true;
       }
     });
-    return { flag, output };
+    if (flag) return program.help(h => h + output);
+    else return { flag, output };
   }
 
   normalizePath(input) {
@@ -28,6 +29,7 @@ class Base {
 
   setSource(options) {
     // Set source directory and filenames array
+    // Used to process path inputs that may either be a single file or a directory of files
     const source = this.normalizePath(options.SOURCE_FILEPATH);
     if (fs.lstatSync(source).isDirectory()) {
       this.directory = source;

@@ -15,23 +15,38 @@ class ExportScript extends Base {
     super();
     // Bind class methods
     this.writeProgress = this.writeProgress.bind(this);
+    this.getOutput = this.getOutput.bind(this);
+    this.parseParams = this.parseParams.bind(this);
     this.writeFile = this.writeFile.bind(this);
     this.exportData = this.exportData.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
       '\nExample: $ algolia export -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath -p params\n\n';
-    this.params = [
-      'algoliaappid',
-      'algoliaapikey',
-      'algoliaindexname',
-      'outputpath',
-    ];
+    this.params = ['algoliaappid', 'algoliaapikey', 'algoliaindexname'];
   }
 
   writeProgress(count) {
     readLine.cursorTo(process.stdout, 0);
     process.stdout.write(`Records browsed: ~ ${count}`);
+  }
+
+  getOutput(outputPath) {
+    const outputDir =
+      outputPath !== null ? this.normalizePath(outputPath) : process.cwd();
+    // Ensure outputPath is a directory
+    if (!fs.lstatSync(outputPath).isDirectory())
+      throw new Error('Output path must be a directory.');
+    return outputDir;
+  }
+
+  parseParams(params) {
+    try {
+      if (params === null) return { hitsPerPage: 1000 };
+      return JSON.parse(params);
+    } catch (e) {
+      throw e;
+    }
   }
 
   writeFile(hits, options, fileCount) {
@@ -84,19 +99,22 @@ class ExportScript extends Base {
 
   async start(program) {
     try {
-      // Validate command; if invalid display help text
-      const isValid = this.validate(program, this.message, this.params);
-      if (isValid.flag)
-        return console.log(program.help(h => h + isValid.output));
+      // Validate command; if invalid display help text and exit
+      this.validate(program, this.message, this.params);
 
       // Config params
       const options = {
         appId: program.algoliaappid,
         apiKey: program.algoliaapikey,
         indexName: program.algoliaindexname,
-        outputPath: this.normalizePath(program.outputpath),
-        params: program.params || { hitsPerPage: 1000 },
+        outputPath: program.outputpath || null,
+        params: program.params || null,
       };
+
+      // Configure and validate output path
+      options.outputPath = this.getOutput(options.outputPath);
+      // Configure browseAll params
+      options.params = this.parseParams(options.params);
 
       // Export data
       const result = await this.exportData(options);
