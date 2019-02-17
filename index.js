@@ -98,7 +98,7 @@ program
     'Required | Algolia index name'
   )
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
-  .option('-p, --params <params>', 'Optional | Algolia params')
+  .option('-p, --params <params>', 'Optional | Algolia browseAll params')
   .action(cmd => {
     exportScript.start(cmd);
   });
