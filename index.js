@@ -6,6 +6,7 @@ const chalk = require('chalk');
 
 // SCRIPTS
 
+const searchScript = require('./scripts/Search.js');
 const importScript = require('./scripts/Import.js');
 const exportScript = require('./scripts/Export.js');
 const getSettingsScript = require('./scripts/GetSettings.js');
@@ -24,6 +25,7 @@ Examples:
 
   $ algolia --help
   $ algolia --version
+  $ algolia search -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -q 'example query' -p '{"filters":["category:book"]}' -o ~/Desktop/results.json
   $ algolia import -s ~/Desktop/example_data.json -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -b 5000 -t ~/Desktop/example_transformations.js -m 4 -p '{"delimiter":[":"]}'
   $ algolia export -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_folder/ -p '{"filters":["category:book"]}'
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
@@ -61,6 +63,24 @@ const defaultCommand = command => {
 // COMMANDS
 
 program.version(version, '-v, --version');
+
+// Search
+program
+  .command('search')
+  .alias('s')
+  .description('Search an Algolia index')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option(
+    '-n, --algoliaindexname <algoliaIndexName>',
+    'Required | Algolia index name'
+  )
+  .option('-q, --query <query>', 'Optional | Algolia search query string')
+  .option('-p, --params <params>', 'Optional | Algolia search params')
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
+  .action(cmd => {
+    searchScript.start(cmd);
+  });
 
 // Import
 program
@@ -111,7 +131,7 @@ program
 // Get Settings
 program
   .command('getsettings')
-  .alias('g')
+  .alias('gs')
   .description('Get the settings of an Algolia index as JSON')
   .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
   .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
@@ -126,7 +146,7 @@ program
 // Set Settings
 program
   .command('setsettings')
-  .alias('s')
+  .alias('ss')
   .description('Set the settings of an Algolia index from a JSON file')
   .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
   .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
