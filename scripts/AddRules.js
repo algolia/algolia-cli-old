@@ -17,7 +17,7 @@ class AddRulesScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia exportrules -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p batchRulesParams\n\n';
+      '\nExample: $ algolia addrules -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p batchRulesParams\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
