@@ -223,16 +223,10 @@ program
   .description(
     'Duplicate the data and settings of an index from one Algolia App to another'
   )
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
   .option(
-    '-a, --sourcealgoliaappid <algoliaAppId>',
-    'Required | Algolia app ID'
-  )
-  .option(
-    '-k, --sourcealgoliaapikey <algoliaApiKey>',
-    'Required | Algolia API key'
-  )
-  .option(
-    '-n, --sourcealgoliaindexname <algoliaIndexName>',
+    '-n, --algoliaindexname <algoliaIndexName>',
     'Required | Algolia index name'
   )
   .option(
