@@ -1,6 +1,6 @@
 const fs = require('fs');
-const es = require('event-stream');
 const JSONStream = require('JSONStream');
+const through = require('through');
 const transform = require('stream-transform');
 const Batch = require('batch-stream');
 const readLine = require('readline');
@@ -153,7 +153,7 @@ class ImportScript extends Base {
       .pipe(transform(this.formatRecord))
       .pipe(new Batch({ size: this.CHUNK_SIZE }))
       .pipe(
-        es.through(data => {
+        through(data => {
           this.queue.push([data]);
         })
       );
