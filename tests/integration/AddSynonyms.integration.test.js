@@ -11,7 +11,7 @@ const index = client.initIndex(indexName);
 
 const synonymsJSONPath = path.resolve(
   process.cwd(),
-  'mocks/addSynonyms/synonym.json'
+  'mocks/addSynonyms/synonyms.json'
 );
 
 const synonymsCSVPath = path.resolve(
