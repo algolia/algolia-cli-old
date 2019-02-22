@@ -11,12 +11,12 @@ const index = client.initIndex(indexName);
 
 const synonymsJSONPath = path.resolve(
   process.cwd(),
-  'mocks/addSynonyms/synonyms.json'
+  'tests/mocks/addSynonyms/synonyms.json'
 );
 
 const synonymsCSVPath = path.resolve(
   process.cwd(),
-  'mocks/addSynonyms/synonym.csv'
+  'tests/mocks/addSynonyms/synonym.csv'
 );
 
 const program = {
