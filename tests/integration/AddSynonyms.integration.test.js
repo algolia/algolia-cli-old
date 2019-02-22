@@ -16,7 +16,7 @@ const synonymsJSONPath = path.resolve(
 
 const synonymsCSVPath = path.resolve(
   process.cwd(),
-  'tests/mocks/addSynonyms/synonym.csv'
+  'tests/mocks/addSynonyms/synonyms.csv'
 );
 
 const program = {
