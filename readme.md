@@ -342,6 +342,8 @@ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 
 Import a local CSV or JSON file of synonyms to an Algolia index. Some public synonym files can be downloaded from [this repository](https://github.com/algolia/synonym-dictionaries). Disclaimer: These are not intended to be all encompassing -- edits may be needed for your use case.
 
+Note that if importing a CSV file, the expected format is file with no headers and with each row of comma-separated values being a group of synonyms for each other.
+
 ##### Usage:
 
 ```shell
