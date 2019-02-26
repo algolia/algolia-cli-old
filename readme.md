@@ -340,7 +340,7 @@ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 
 ##### Description:
 
-Import a local CSV or JSON file of synonyms to an Algolia index. Some public synonym files can be downloaded and used from the [synonyms directory](#synonyms) of this repository.
+Import a local CSV or JSON file of synonyms to an Algolia index. Some public synonym files can be downloaded from [this repository](https://github.com/algolia/synonym-dictionaries). Disclaimer: These are not intended to be all encompassing -- edits may be needed for your use case.
 
 ##### Usage:
 
@@ -354,7 +354,7 @@ algolia addsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 - `<algoliaApiKey>` | Required
 - `<algoliaIndexName>` | Required
 - `<sourceFilepath>` | Required | Path to a CSV or JSON file containing an array of synonyms objects.
-- `<batchRulesParams>` | Optional | JSON object containing options passed to `batchSynonyms()` [method](https://www.algolia.com/doc/api-reference/api-methods/batch-synonyms/).
+- `<batchSynonymsParams>` | Optional | JSON object containing options passed to `batchSynonyms()` [method](https://www.algolia.com/doc/api-reference/api-methods/batch-synonyms/).
 
 ##### Notes:
 

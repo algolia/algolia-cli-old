@@ -18,7 +18,7 @@ class AddSynonymsScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia addsynonyms -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p batchRulesParams\n\n';
+      '\nExample: $ algolia addsynonyms -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p batchSynonymsParams\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
