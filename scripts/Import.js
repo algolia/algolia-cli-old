@@ -1,6 +1,6 @@
 const fs = require('fs');
-const es = require('event-stream');
 const JSONStream = require('JSONStream');
+const through = require('through');
 const transform = require('stream-transform');
 const Batch = require('batch-stream');
 const readLine = require('readline');
@@ -94,16 +94,18 @@ class ImportScript extends Base {
       : transform(this.defaultTransformations); // Do nothing
   }
 
-  async importToAlgolia(data, callback) {
+  async importToAlgolia(data) {
     // Method to index batches of records in Algolia
-    // Outputs estimated number of records processed to console
-    // Invokes callback when finished so queue can continue processing
     try {
       await this.index.addObjects(data);
       this.importCount += data.length;
       this.writeProgress(this.importCount);
-      callback(null);
     } catch (e) {
+      console.log(
+        'Exception while importing batch to Algolia:',
+        e.message,
+        e.stack
+      );
       throw e;
     }
   }
@@ -153,7 +155,7 @@ class ImportScript extends Base {
       .pipe(transform(this.formatRecord))
       .pipe(new Batch({ size: this.CHUNK_SIZE }))
       .pipe(
-        es.through(data => {
+        through(data => {
           this.queue.push([data]);
         })
       );

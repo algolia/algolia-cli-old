@@ -1,6 +1,6 @@
 {
   "name": "@algolia/cli",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "A Node CLI tools for manipulating data. Handy for day-to-day Algolia SE work.",
   "license": "ISC",
   "author": "Algolia, Inc. (https://www.algolia.com)",
@@ -52,9 +52,9 @@
     "chalk": "^2.4.1",
     "commander": "^2.19.0",
     "csvtojson": "^2.0.8",
-    "event-stream": "3.3.4",
     "regex-parser": "^2.2.10",
-    "stream-transform": "^1.0.7"
+    "stream-transform": "^1.0.7",
+    "through": "^2.3.8"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",

@@ -125,7 +125,7 @@ describe('Import script OK', () => {
 
   /* importToAlgolia */
 
-  test('Should call addObjects to import data to Algolia then invoke callback', async done => {
+  test('Should call addObjects to import data to Algolia', async done => {
     importScript.index = {
       addObjects: jest.fn(),
     };
@@ -136,7 +136,6 @@ describe('Import script OK', () => {
     const callback = jest.fn();
     await importScript.importToAlgolia(data, callback);
     expect(importScript.index.addObjects).toHaveBeenCalledWith(data);
-    expect(callback).toHaveBeenCalledWith(null);
     done();
   });
 
