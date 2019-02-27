@@ -8,16 +8,17 @@ const keepaliveAgent = new HttpsAgent({
 });
 const Base = require('./Base.js');
 
-class AddRulesScript extends Base {
+class AddSynonymsScript extends Base {
   constructor() {
     super();
     // Bind class methods
     this.getSource = this.getSource.bind(this);
-    this.parseBatchRulesOptions = this.parseBatchRulesOptions.bind(this);
+    this.parseBatchSynonymsOptions = this.parseBatchSynonymsOptions.bind(this);
+    this.convertCsvToJson = this.convertCsvToJson.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia addrules -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p batchRulesParams\n\n';
+      '\nExample: $ algolia addsynonyms -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p batchSynonymsParams\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
@@ -29,18 +30,30 @@ class AddRulesScript extends Base {
   getSource(path) {
     const filepath = this.normalizePath(path);
     if (!fs.lstatSync(filepath).isFile())
-      throw new Error('Source filepath must target valid rules file.');
+      throw new Error('Source filepath must target valid synonyms file.');
     return filepath;
   }
 
-  parseBatchRulesOptions(params) {
+  parseBatchSynonymsOptions(params) {
     try {
-      const options = { forwardToReplicas: false, clearExistingRules: false };
+      const options = {
+        forwardToReplicas: false,
+        clearExistingSynonyms: false,
+      };
       if (params === null) return options;
       else return JSON.parse(params);
     } catch (e) {
       throw e;
     }
+  }
+
+  convertCsvToJson(synonymFile, filepath) {
+    const synonyms = synonymFile.toString().split('\n');
+    return synonyms.map((line, num) => ({
+      type: 'synonym',
+      objectID: `${filepath}-${num}`,
+      synonyms: line.split(','),
+    }));
   }
 
   async start(program) {
@@ -54,19 +67,23 @@ class AddRulesScript extends Base {
       const indexName = program.algoliaindexname;
       const sourcefilepath = program.sourcefilepath;
       const params = program.params || null;
+      const isCsv = sourcefilepath.split('.').pop() === 'csv';
 
-      // Get rules
-      const rulesPath = this.getSource(sourcefilepath);
-      const rulesFile = await fs.readFileSync(rulesPath);
-      const rules = JSON.parse(rulesFile);
+      // Get synonyms
+      const synonymsPath = this.getSource(sourcefilepath);
+      const synonymsFile = await fs.readFileSync(synonymsPath);
+      const synonyms = isCsv
+        ? this.convertCsvToJson(synonymsFile, sourcefilepath)
+        : JSON.parse(synonymsFile);
+
       // Get options
-      const batchRulesOptions = this.parseBatchRulesOptions(params);
+      const batchSynonymsOptions = this.parseBatchSynonymsOptions(params);
 
       // Instantiate Algolia index
       const client = algolia(appId, apiKey, keepaliveAgent);
       const index = client.initIndex(indexName);
       // Add rules
-      const result = await index.batchRules(rules, batchRulesOptions);
+      const result = await index.batchSynonyms(synonyms, batchSynonymsOptions);
       return console.log(result);
     } catch (e) {
       throw e;
@@ -74,5 +91,5 @@ class AddRulesScript extends Base {
   }
 }
 
-const addRulesScript = new AddRulesScript();
-module.exports = addRulesScript;
+const addSynonymsScript = new AddSynonymsScript();
+module.exports = addSynonymsScript;

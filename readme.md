@@ -41,6 +41,10 @@ $ algolia addrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s
 
 $ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath>
 
+$ algolia addsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath> -p <batchSynonymsParams>
+
+$ algolia exportsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath>
+
 $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
 
 $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
@@ -339,7 +343,56 @@ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 
 - `<outputPath>`path must include file name.
 
-### 10. Transfer Index | `transferindex`
+### 10. Add Synonyms | `addsynonyms`
+
+##### Description:
+
+Import a local CSV or JSON file of synonyms to an Algolia index. Some public synonym files can be downloaded from [this repository](https://github.com/algolia/synonym-dictionaries). Disclaimer: These are not intended to be all encompassing -- edits may be needed for your use case.
+
+Note that if importing a CSV file, the expected format is file with no headers and with each row of comma-separated values being a group of synonyms for each other. For more information, read our [documentation](https://www.algolia.com/doc/guides/managing-results/optimize-search-results/adding-synonyms/how-to/managing-synonyms-from-the-dashboard/#csv) on the topic.
+
+##### Usage:
+
+```shell
+algolia addsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <sourceFilepath> -p <batchSynonymsParams>
+```
+
+##### Options:
+
+- `<algoliaAppId>` | Required
+- `<algoliaApiKey>` | Required
+- `<algoliaIndexName>` | Required
+- `<sourceFilepath>` | Required | Path to a CSV or JSON file containing an array of synonyms objects.
+- `<batchSynonymsParams>` | Optional | JSON object containing options passed to `batchSynonyms()` [method](https://www.algolia.com/doc/api-reference/api-methods/batch-synonyms/).
+
+##### Notes:
+
+- See [batchSynonyms documentation](https://www.algolia.com/doc/api-reference/api-methods/batch-synonyms/) and [adding synonyms documentation](https://www.algolia.com/doc/guides/managing-results/optimize-search-results/adding-synonyms/) for more info.
+
+### 11. Export Synonyms | `exportsynonyms`
+
+##### Description:
+
+Download all synonyms from a specific Algolia index.
+
+##### Usage:
+
+```shell
+algolia exportsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath>
+```
+
+##### Options:
+
+- `<algoliaAppId>` | Required
+- `<algoliaApiKey>` | Required
+- `<algoliaIndexName>` | Required
+- `<outputPath>` | Optional | Local path where synonyms file will be saved. If no output path is provided, defaults to current working directory.
+
+##### Notes:
+
+- `<outputPath>`path must include file name.
+
+### 12. Transfer Index | `transferindex`
 
 ##### Description:
 
@@ -366,7 +419,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 - Command duplicates data and extended settings; does not delete or affect source index.
 - Replica indices and settings not transferred.
 
-### 11. Transfer Index Config | `transferindexconfig`
+### 13. Transfer Index Config | `transferindexconfig`
 
 ##### Description:
 
@@ -392,7 +445,7 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 
 - When transferring synonyms and query rules, `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will default to false, unless you specify `<configParams>`.
 
-### 12. Delete Indices Pattern | `deleteindicespattern`
+### 14. Delete Indices Pattern | `deleteindicespattern`
 
 ##### Description:
 
@@ -423,7 +476,7 @@ algolia deleteindicespattern -a someAppId -k someApiKey -r '^staging__' -x false
 
 This will delete all indices of the application that are starting with "staging__".
 
-### 13. Transform Lines | `transformlines`
+### 15. Transform Lines | `transformlines`
 
 ##### Description:
 
@@ -510,6 +563,10 @@ $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 $ algolia addrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_rules.json -p '{"forwardToReplicas":false,"clearExistingRules":true}'
 
 $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/example_rules.json
+
+$ algolia addsynonyms -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_synonyms.json -p '{"forwardToReplicas":true,"clearExistingSynonyms":true}'
+
+$ algolia exportsynonyms -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/example_synonyms.json
 
 $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
 
