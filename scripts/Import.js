@@ -94,16 +94,18 @@ class ImportScript extends Base {
       : transform(this.defaultTransformations); // Do nothing
   }
 
-  async importToAlgolia(data, callback) {
+  async importToAlgolia(data) {
     // Method to index batches of records in Algolia
-    // Outputs estimated number of records processed to console
-    // Invokes callback when finished so queue can continue processing
     try {
       await this.index.addObjects(data);
       this.importCount += data.length;
       this.writeProgress(this.importCount);
-      callback(null);
     } catch (e) {
+      console.log(
+        'Exception while importing batch to Algolia:',
+        e.message,
+        e.stack
+      );
       throw e;
     }
   }

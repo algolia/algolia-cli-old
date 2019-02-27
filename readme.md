@@ -154,10 +154,16 @@ See `transformations/example-transformations.js` for an extensive JSON object tr
 Simple transformation file example:
 ```javascript
 module.exports = (data,cb) => {
-  let record = data;
-  record.objectID = data.product_id;
-  record.proper_number = parseInt(data.integer_formatted_as_string,10);
-  cb( null, record );
+  try {
+    const record = Object.assign({}, data);
+    record.objectID = data.product_id;
+    record.score = Math.floor(Math.random() * 100);
+    record.formattedNumber = parseInt(data.integer_formatted_as_string, 10);
+    cb(null, record);
+  } catch (e) {
+    console.log('Transformation error:', e.message, e.stack);
+    throw e;
+  }
 }
 ```
 
@@ -171,6 +177,7 @@ module.exports = (data,cb) => {
 - Make sure you only import JSON or CSV files. Don't accidentally try to import hidden files like `.DS_Store`, log files, etc. as they will throw an error.
 - Command assumes each file contains an array of JSON objects unless the file extension ends with `.csv`.
 - CSV to JSON conversion performed using [csvtojson](https://www.npmjs.com/package/csvtojson) package.
+- If command returns an `AlgoliaSearchRequestTimeoutError`, consider reducing `<batchSize>` by passing in a value below the default.
 
 ### 5. Export | `export`
 
