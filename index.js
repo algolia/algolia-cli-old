@@ -12,7 +12,9 @@ const exportScript = require('./scripts/Export.js');
 const getSettingsScript = require('./scripts/GetSettings.js');
 const setSettingsScript = require('./scripts/SetSettings.js');
 const addRulesScript = require('./scripts/AddRules.js');
+const addSynonymsScript = require('./scripts/AddSynonyms.js');
 const exportRulesScript = require('./scripts/ExportRules.js');
+const exportSynonymsScript = require('./scripts/ExportSynonyms.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
 const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
 const transformLinesScript = require('./scripts/TransformLines.js');
@@ -31,11 +33,14 @@ Examples:
   $ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
   $ algolia setsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_settings.js -p '{"forwardToReplicas":true}'
   $ algolia addrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_rules.json
+  $ algolia addsynonyms -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -s ~/Desktop/example_synonyms.csv
   $ algolia exportrules -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_file.json
+  $ algolia exportsynonyms -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/output_file.json
   $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
   $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
+  
   $ algolia examples
 `;
 
@@ -177,6 +182,23 @@ program
     addRulesScript.start(cmd);
   });
 
+// Add Synonyms
+program
+  .command('addsynonyms')
+  .alias('as')
+  .description('Add synonyms to an Algolia index from a CSV or JSON file')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option(
+    '-n, --algoliaindexname <algoliaIndexName>',
+    'Required | Algolia index name'
+  )
+  .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
+  .option('-p, --params <params>', 'Optional | Algolia batchSynonyms params')
+  .action(cmd => {
+    addSynonymsScript.start(cmd);
+  });
+
 // Export Rules
 program
   .command('exportrules')
@@ -191,6 +213,22 @@ program
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
     exportRulesScript.start(cmd);
+  });
+
+// Export Synonyms
+program
+  .command('exportsynonyms')
+  .alias('es')
+  .description('Export the synonyms of an Algolia index to local JSON file')
+  .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
+  .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
+  .option(
+    '-n, --algoliaindexname <algoliaIndexName>',
+    'Required | Algolia index name'
+  )
+  .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
+  .action(cmd => {
+    exportSynonymsScript.start(cmd);
   });
 
 // Transfer Index
