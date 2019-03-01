@@ -1,4 +1,4 @@
-#!/usr/bin/env node --max_old_space_size=4096
+#!/usr/bin/env node
 
 const program = require('commander');
 const { version } = require('./package.json');
@@ -16,7 +16,7 @@ const addSynonymsScript = require('./scripts/AddSynonyms.js');
 const exportRulesScript = require('./scripts/ExportRules.js');
 const exportSynonymsScript = require('./scripts/ExportSynonyms.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
-const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
+const transferIndexConfigScript = require('./scripts/TransferIndexConfig.js');
 const transformLinesScript = require('./scripts/TransformLines.js');
 const deleteIndicesPatternScript = require('./scripts/DeleteIndicesPattern.js');
 
