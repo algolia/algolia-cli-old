@@ -20,13 +20,13 @@ class TransferIndexScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia transferindex -a sourceAlgoliaAppId -k sourceAlgoliaApiKey -n sourceAlgoliaIndexName -d destinationAlgoliaAppId -y destinationAlgoliaApiKey -i destinationIndexName -t transformationfilepath\n\n';
+      '\nExample: $ algolia transferindex -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -t transformationfilepath\n\n';
     this.params = [
-      'sourceAlgoliaAppId',
-      'sourceAlgoliaApiKey',
-      'sourceAlgoliaIndexName',
-      'destinationAlgoliaAppId',
-      'destinationAlgoliaApiKey',
+      'sourcealgoliaappid',
+      'sourcealgoliaapikey',
+      'sourcealgoliaindexname',
+      'destinationalgoliaappid',
+      'destinationalgoliaapikey',
     ];
   }
 
@@ -110,13 +110,13 @@ class TransferIndexScript extends Base {
 
       // Config params
       const options = {
-        sourceAppId: program.sourceAlgoliaAppId,
-        sourceApiKey: program.sourceAlgoliaApiKey,
-        sourceIndexName: program.sourceAlgoliaIndexName,
-        destinationAppId: program.destinationAlgoliaAppId,
-        destinationApiKey: program.destinationAlgoliaApiKey,
+        sourceAppId: program.sourcealgoliaappid,
+        sourceApiKey: program.sourcealgoliaapikey,
+        sourceIndexName: program.sourcealgoliaindexname,
+        destinationAppId: program.destinationalgoliaappid,
+        destinationApiKey: program.destinationalgoliaapikey,
         destinationIndexName:
-          program.destinationIndexName || program.sourceAlgoliaIndexName,
+          program.destinationindexname || program.sourcealgoliaindexname,
         transformations: program.transformationfilepath || null,
       };
 
