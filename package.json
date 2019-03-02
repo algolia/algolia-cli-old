@@ -24,6 +24,10 @@
     "node": ">=8.9.1",
     "yarn": ">=1.10.1"
   },
+  "files": [
+    "scripts",
+    "index.js"
+  ],
   "renovate": {
     "extends": [
       "config:js-app"
