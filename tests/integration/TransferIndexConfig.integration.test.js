@@ -27,9 +27,9 @@ const mockSettings = { hitsPerPage: 7 };
 
 // Mock user input
 const validProgram = {
-  algoliaappid: appId,
-  algoliaapikey: apiKey,
-  algoliaindexname: indexName,
+  sourcealgoliaappid: appId,
+  sourcealgoliaapikey: apiKey,
+  sourcealgoliaindexname: indexName,
   destinationalgoliaappid: altAppId,
   destinationalgoliaapikey: altApiKey,
 };

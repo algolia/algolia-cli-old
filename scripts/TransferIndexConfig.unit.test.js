@@ -10,9 +10,9 @@ HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock user input
 const validProgram = {
-  algoliaappid: 'fake-command-input-1',
-  algoliaapikey: 'fake-command-input-2',
-  algoliaindexname: 'fake-command-input-3',
+  sourcealgoliaappid: 'fake-command-input-1',
+  sourcealgoliaapikey: 'fake-command-input-2',
+  sourcealgoliaindexname: 'fake-command-input-3',
   destinationalgoliaappid: 'fake-command-input-4',
   destinationalgoliaapikey: 'fake-command-input-5',
   destinationindexname: 'fake-command-input-6',
@@ -23,9 +23,9 @@ describe('Transfer Index script OK', () => {
 
   test('getIndices should return algolia indices', done => {
     const mockOptions = {
-      sourceAppId: validProgram.algoliaappid,
-      sourceApiKey: validProgram.algoliaapikey,
-      sourceindexName: validProgram.algoliaindexname,
+      sourceAppId: validProgram.sourcealgoliaappid,
+      sourceApiKey: validProgram.sourcealgoliaapikey,
+      sourceindexName: validProgram.sourcealgoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
@@ -174,8 +174,8 @@ describe('Transfer Index script OK', () => {
     // Use timeout to defer execution of test assertions
     setTimeout(() => {
       expect(algolia).toHaveBeenCalledWith(
-        validProgram.algoliaappid,
-        validProgram.algoliaapikey,
+        validProgram.sourcealgoliaappid,
+        validProgram.sourcealgoliaapikey,
         expect.any(Object)
       );
       expect(algolia).toHaveBeenCalledWith(
@@ -184,10 +184,10 @@ describe('Transfer Index script OK', () => {
         expect.any(Object)
       );
       expect(client.initIndex).toHaveBeenCalledWith(
-        validProgram.algoliaindexname
+        validProgram.sourcealgoliaindexname
       );
       expect(client.initIndex).toHaveBeenCalledWith(
-        validProgram.algoliaindexname
+        validProgram.sourcealgoliaindexname
       );
       expect(getSettings).toHaveBeenCalled();
       expect(exportSynonyms).toHaveBeenCalled();

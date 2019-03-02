@@ -17,9 +17,9 @@ HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock user input
 const validProgram = {
-  algoliaappid: 'fake-command-input-1',
-  algoliaapikey: 'fake-command-input-2',
-  algoliaindexname: 'fake-command-input-3',
+  sourcealgoliaappid: 'fake-command-input-1',
+  sourcealgoliaapikey: 'fake-command-input-2',
+  sourcealgoliaindexname: 'fake-command-input-3',
   destinationalgoliaappid: 'fake-command-input-4',
   destinationalgoliaapikey: 'fake-command-input-5',
   destinationindexname: 'fake-command-input-6',
@@ -41,9 +41,9 @@ describe('Transfer Index script OK', () => {
 
   test('getIndices should set algolia clients and indices', done => {
     const mockOptions = {
-      sourceAppId: validProgram.algoliaappid,
-      sourceApiKey: validProgram.algoliaapikey,
-      sourceIndexName: validProgram.algoliaindexname,
+      sourceAppId: validProgram.sourcealgoliaappid,
+      sourceApiKey: validProgram.sourcealgoliaapikey,
+      sourceIndexName: validProgram.sourcealgoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
@@ -218,9 +218,9 @@ describe('Transfer Index script OK', () => {
     const logSpy = jest.spyOn(global.console, 'log');
     // Mock options
     const options = {
-      sourceAppId: validProgram.algoliaappid,
-      sourceApiKey: validProgram.algoliaapikey,
-      sourceIndexName: validProgram.algoliaindexname,
+      sourceAppId: validProgram.sourcealgoliaappid,
+      sourceApiKey: validProgram.sourcealgoliaapikey,
+      sourceIndexName: validProgram.sourcealgoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
