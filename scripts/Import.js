@@ -60,14 +60,18 @@ class ImportScript extends Base {
   }
 
   setTransformations(options) {
-    // Set JSON record transformations
-    const transformations = options.TRANSFORMATIONS
-      ? require(options.TRANSFORMATIONS)
-      : null;
-    // Validate transformations function input param
-    const valid = transformations && typeof transformations === 'function';
-    // Assign our transformations function using provided custom transformations file if exists
-    this.formatRecord = valid ? transformations : this.defaultTransformations;
+    try {
+      // Set JSON record transformations
+      const transformations = options.TRANSFORMATIONS
+        ? require(this.normalizePath(options.TRANSFORMATIONS))
+        : null;
+      // Validate transformations function input param
+      const valid = transformations && typeof transformations === 'function';
+      // Assign our transformations function using provided custom transformations file if exists
+      this.formatRecord = valid ? transformations : this.defaultTransformations;
+    } catch (e) {
+      throw e;
+    }
   }
 
   setCsvOptions(options) {
