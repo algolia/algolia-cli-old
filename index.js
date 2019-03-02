@@ -1,4 +1,4 @@
-#!/usr/bin/env node --max_old_space_size=4096
+#!/usr/bin/env node
 
 const program = require('commander');
 const { version } = require('./package.json');
@@ -16,7 +16,7 @@ const addSynonymsScript = require('./scripts/AddSynonyms.js');
 const exportRulesScript = require('./scripts/ExportRules.js');
 const exportSynonymsScript = require('./scripts/ExportSynonyms.js');
 const transferIndexScript = require('./scripts/TransferIndex.js');
-const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
+const transferIndexConfigScript = require('./scripts/TransferIndexConfig.js');
 const transformLinesScript = require('./scripts/TransformLines.js');
 const deleteIndicesPatternScript = require('./scripts/DeleteIndicesPattern.js');
 
@@ -40,7 +40,6 @@ Examples:
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
   $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
-  
   $ algolia examples
 `;
 
@@ -239,27 +238,27 @@ program
     'Duplicate the data and settings of an index from one Algolia App to another'
   )
   .option(
-    '-a, --sourceAlgoliaAppId <algoliaAppId>',
+    '-a, --sourcealgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-k, --sourceAlgoliaApiKey <algoliaApiKey>',
+    '-k, --sourcealgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-n, --sourceAlgoliaIndexName <algoliaIndexName>',
+    '-n, --sourcealgoliaindexname <algoliaIndexName>',
     'Required | Algolia index name'
   )
   .option(
-    '-d, --destinationAlgoliaAppId <algoliaAppId>',
+    '-d, --destinationalgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-y, --destinationAlgoliaApiKey <algoliaApiKey>',
+    '-y, --destinationalgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-i, --destinationIndexName <algoliaIndexName>',
+    '-i, --destinationindexname <algoliaIndexName>',
     'Optional | Algolia index name'
   )
   .option(
@@ -278,27 +277,27 @@ program
     'Duplicate the settings, synonyms, and query rules of an index from one Algolia App to another'
   )
   .option(
-    '-a, --sourceAlgoliaAppId <algoliaAppId>',
+    '-a, --sourcealgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-k, --sourceAlgoliaApiKey <algoliaApiKey>',
+    '-k, --sourcealgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-n, --sourceAlgoliaIndexName <algoliaIndexName>',
+    '-n, --sourcealgoliaindexname <algoliaIndexName>',
     'Required | Algolia index name'
   )
   .option(
-    '-d, --destinationAlgoliaAppId <algoliaAppId>',
+    '-d, --destinationalgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-y, --destinationAlgoliaApiKey <algoliaApiKey>',
+    '-y, --destinationalgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-i, --destinationIndexName <algoliaIndexName>',
+    '-i, --destinationindexname <algoliaIndexName>',
     'Optional | Algolia index name'
   )
   .option(

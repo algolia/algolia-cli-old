@@ -19,9 +19,9 @@ class TransferIndexConfigScript extends Base {
     this.message =
       '\nExample: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -p configParams\n\n';
     this.params = [
-      'algoliaappid',
-      'algoliaapikey',
-      'algoliaindexname',
+      'sourcealgoliaappid',
+      'sourcealgoliaapikey',
+      'sourcealgoliaindexname',
       'destinationalgoliaappid',
       'destinationalgoliaapikey',
     ];
@@ -85,13 +85,13 @@ class TransferIndexConfigScript extends Base {
 
       // Config params
       const options = {
-        sourceAppId: program.algoliaappid,
-        sourceApiKey: program.algoliaapikey,
-        sourceIndexName: program.algoliaindexname,
+        sourceAppId: program.sourcealgoliaappid,
+        sourceApiKey: program.sourcealgoliaapikey,
+        sourceIndexName: program.sourcealgoliaindexname,
         destinationAppId: program.destinationalgoliaappid,
         destinationApiKey: program.destinationalgoliaapikey,
         destinationIndexName:
-          program.destinationindexname || program.algoliaindexname,
+          program.destinationindexname || program.sourcealgoliaindexname,
         configParams: program.params || null,
       };
 
