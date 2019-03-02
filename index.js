@@ -344,6 +344,7 @@ program
   .alias('shell')
   .description('Run in an interactive mode')
   .action(cmd => {
+    console.log(Object.keys(runner.scripts));
     runner.scripts.interactive.start(cmd)
   })
 

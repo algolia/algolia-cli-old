@@ -1,5 +1,8 @@
 const inquirer = require('inquirer');
 
+
+const runner = require('../Runner.js');
+
 class Interactive {
   createCommandNameList() {
     return this.commands
@@ -28,8 +31,7 @@ class Interactive {
       name: argument.param,
       message: argument.text
     }))).then(output => {
-      console.log(this.commandToRun);
-      // console.log(output)
+      runner.scripts[this.commandToRun._name].start(output);
     })
   }
 
