@@ -30,14 +30,20 @@ class Interactive {
       type: argument.text.includes('key') ? 'password' : 'input',
       name: argument.param,
       message: argument.text
-    }))).then(output => {
-      runner.scripts[this.commandToRun._name].start(output);
+    }))).then(userInputs => {
+      Object.keys(userInputs).forEach(key => {
+        if (userInputs[key].length) {
+          this.program[key] = key
+        }
+      })
+      runner.scripts[this.commandToRun._name].start(this.program);
     })
   }
 
-  start(cmd) {
-    this.commandName = cmd._name;
-    this.commands = cmd.parent.commands;
+  start(program) {
+    this.program = program;
+    this.commandName = program._name;
+    this.commands = program.parent.commands;
 
     this.userScriptSelector();
   }
