@@ -52,6 +52,7 @@
     "chalk": "^2.4.1",
     "commander": "^2.19.0",
     "csvtojson": "^2.0.8",
+    "inquirer": "^6.2.2",
     "regex-parser": "^2.2.10",
     "stream-transform": "^1.0.7",
     "through": "^2.3.8"
