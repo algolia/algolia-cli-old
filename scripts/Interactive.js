@@ -33,7 +33,7 @@ class Interactive {
     }))).then(userInputs => {
       Object.keys(userInputs).forEach(key => {
         if (userInputs[key].length) {
-          this.program[key] = key
+          this.program[key] = userInputs[key]
         }
       })
       runner.scripts[this.commandToRun._name].start(this.program);
