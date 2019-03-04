@@ -1,5 +1,4 @@
 const addRulesScript = require(`./AddRules.js`);
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 const path = require('path');
 const fs = require('fs');
@@ -9,11 +8,7 @@ const rulesPath = path.resolve(
   'tests/mocks/addRules/rules.json'
 );
 
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock Algolia
 const message = 'Caught exception';
@@ -43,8 +38,7 @@ describe('AddRules script OK', () => {
     await addRulesScript.start(validProgram);
     expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
-      validProgram.algoliaapikey,
-      expect.any(Object)
+      validProgram.algoliaapikey
     );
     expect(client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname

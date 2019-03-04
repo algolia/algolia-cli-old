@@ -1,5 +1,4 @@
 const importScript = require(`./Import.js`);
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 const readLine = require('readline');
 const path = require('path');
@@ -8,7 +7,6 @@ const { Readable } = require('stream');
 const transform = require('stream-transform');
 const csv = require('csvtojson');
 
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 jest.mock('readline');
 jest.mock('fs');
@@ -24,9 +22,6 @@ fs.lstatSync.mockReturnValue({ isDirectory, isFile });
 readLine.clearLine = jest.fn();
 readLine.cursorTo = jest.fn();
 process.stdout.write = jest.fn();
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock Algolia
 const initIndex = jest.fn();
@@ -72,13 +67,11 @@ describe('Import script OK', () => {
       appId: validProgram.algoliaappid,
       apiKey: validProgram.algoliaapikey,
       indexName: validProgram.algoliaindexname,
-      keepaliveAgent: { name: 'keepaliveAgent' },
     };
     importScript.setIndex(options);
     expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
-      validProgram.algoliaapikey,
-      expect.any(Object)
+      validProgram.algoliaapikey
     );
     expect(importScript.client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname

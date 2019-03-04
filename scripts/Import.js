@@ -9,12 +9,6 @@ const csv = require('csvtojson');
 const regexParser = require('regex-parser');
 const chalk = require('chalk');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
 class ImportScript extends Base {
@@ -87,7 +81,7 @@ class ImportScript extends Base {
 
   setIndex(options) {
     // Set Algolia index
-    this.client = algolia(options.appId, options.apiKey, keepaliveAgent);
+    this.client = algolia(options.appId, options.apiKey);
     this.index = this.client.initIndex(options.indexName);
   }
 

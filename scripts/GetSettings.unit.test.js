@@ -1,12 +1,7 @@
 const getSettingsScript = require(`./GetSettings.js`);
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock Algolia
 const message = 'Caught exception';
@@ -32,8 +27,7 @@ describe('GetSettings script OK', () => {
     getSettingsScript.start(validProgram);
     expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
-      validProgram.algoliaapikey,
-      expect.any(Object)
+      validProgram.algoliaapikey
     );
     expect(client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname

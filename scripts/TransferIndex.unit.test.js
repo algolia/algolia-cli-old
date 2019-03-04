@@ -1,19 +1,14 @@
 const transferIndexScript = require(`./TransferIndex.js`);
 const EventEmitter = require('events');
 const readLine = require('readline');
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 
 jest.mock('readline');
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 
 // Mock Readline
 readLine.cursorTo = jest.fn();
 process.stdout.write = jest.fn();
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock user input
 const validProgram = {
@@ -58,14 +53,12 @@ describe('Transfer Index script OK', () => {
     expect(algolia).toHaveBeenNthCalledWith(
       1,
       mockOptions.sourceAppId,
-      mockOptions.sourceApiKey,
-      expect.any(Object)
+      mockOptions.sourceApiKey
     );
     expect(algolia).toHaveBeenNthCalledWith(
       2,
       mockOptions.destinationAppId,
-      mockOptions.destinationApiKey,
-      expect.any(Object)
+      mockOptions.destinationApiKey
     );
     expect(initIndex).toHaveBeenCalledTimes(2);
     expect(initIndex).toHaveBeenNthCalledWith(1, mockOptions.sourceIndexName);

@@ -1,11 +1,5 @@
 const readLine = require('readline');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
 class TransferIndexScript extends Base {
@@ -39,15 +33,13 @@ class TransferIndexScript extends Base {
     // Instantiate Algolia indices
     const sourceClient = algolia(
       options.sourceAppId,
-      options.sourceApiKey,
-      keepaliveAgent
+      options.sourceApiKey
     );
     const sourceIndex = sourceClient.initIndex(options.sourceIndexName);
 
     const destinationClient = algolia(
       options.destinationAppId,
-      options.destinationApiKey,
-      keepaliveAgent
+      options.destinationApiKey
     );
     const destinationIndex = destinationClient.initIndex(
       options.destinationIndexName

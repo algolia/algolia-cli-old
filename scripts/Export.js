@@ -2,12 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const readLine = require('readline');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
 class ExportScript extends Base {
@@ -59,7 +53,7 @@ class ExportScript extends Base {
   exportData(options) {
     return new Promise((resolve, reject) => {
       // Instantiate Algolia index
-      const client = algolia(options.appId, options.apiKey, keepaliveAgent);
+      const client = algolia(options.appId, options.apiKey);
       const index = client.initIndex(options.indexName);
 
       // Export index

@@ -1,13 +1,11 @@
 const exportScript = require(`./Export.js`);
 const EventEmitter = require('events');
 const readLine = require('readline');
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 const fs = require('fs');
 const path = require('path');
 
 jest.mock('readline');
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 jest.mock('fs');
 jest.mock('path');
@@ -15,9 +13,6 @@ jest.mock('path');
 // Mock Readline
 readLine.cursorTo = jest.fn();
 process.stdout.write = jest.fn();
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock fs
 const isDirectory = jest.fn().mockReturnValue(true);
@@ -98,8 +93,7 @@ describe('Export script OK', () => {
     // Assertions
     expect(algolia).toHaveBeenCalledWith(
       options.appId,
-      options.apiKey,
-      expect.any(Object)
+      options.apiKey
     );
     expect(client.initIndex).toHaveBeenCalledWith(options.indexName);
     expect(browseAll).toHaveBeenCalledWith('', options.params);
