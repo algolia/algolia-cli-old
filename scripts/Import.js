@@ -3,7 +3,6 @@ const JSONStream = require('JSONStream');
 const through = require('through');
 const transform = require('stream-transform');
 const Batch = require('batch-stream');
-const readLine = require('readline');
 const async = require('async');
 const csv = require('csvtojson');
 const regexParser = require('regex-parser');
@@ -41,9 +40,13 @@ class ImportScript extends Base {
   }
 
   suggestions() {
-    let output = `\nConsider reducing <batchSize> (currently ${this.batchSize}).`;
+    let output = `\nConsider reducing <batchSize> (currently ${
+      this.batchSize
+    }).`;
     if (this.maxConcurrency > 1)
-      output += `\nConsider reducing <maxConcurrency> (currently ${this.maxConcurrency}).`;
+      output += `\nConsider reducing <maxConcurrency> (currently ${
+        this.maxConcurrency
+      }).`;
     return output;
   }
 

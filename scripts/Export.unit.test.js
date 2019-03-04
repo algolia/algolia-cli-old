@@ -74,10 +74,7 @@ describe('Export script OK', () => {
     browser.emit('end');
     const result = await promise;
     // Assertions
-    expect(algolia).toHaveBeenCalledWith(
-      options.appId,
-      options.apiKey
-    );
+    expect(algolia).toHaveBeenCalledWith(options.appId, options.apiKey);
     expect(client.initIndex).toHaveBeenCalledWith(options.indexName);
     expect(browseAll).toHaveBeenCalledWith('', options.params);
     expect(browserSpy).toHaveBeenCalledWith('result', expect.any(Function));

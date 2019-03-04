@@ -56,11 +56,11 @@ describe('Base script OK', () => {
 
   test('writeProgress should output string', done => {
     const random = Math.floor(Math.random() * 10);
-    const message = `Message with random number ${random}`;
-    baseScript.writeProgress(message);
+    const msg = `Message with random number ${random}`;
+    baseScript.writeProgress(msg);
     expect(readLine.clearLine).toHaveBeenCalled();
     expect(readLine.cursorTo).toHaveBeenCalled();
-    expect(process.stdout.write).toHaveBeenCalledWith(message);
+    expect(process.stdout.write).toHaveBeenCalledWith(msg);
     done();
   });
 

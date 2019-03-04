@@ -23,12 +23,8 @@ class TransferIndexConfigScript extends Base {
 
   getIndices(options) {
     // Instantiate Algolia indices
-    const sourceClient = algolia(
-      options.sourceAppId,
-      options.sourceApiKey
-    );
+    const sourceClient = algolia(options.sourceAppId, options.sourceApiKey);
     const sourceIndex = sourceClient.initIndex(options.sourceIndexName);
-
     const destinationClient = algolia(
       options.destinationAppId,
       options.destinationApiKey

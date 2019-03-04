@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const readLine = require('readline');
 const algolia = require('algoliasearch');
 const Base = require('./Base.js');
 

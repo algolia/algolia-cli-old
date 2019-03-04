@@ -1,11 +1,4 @@
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
-const readLine = require('readline');
 const Base = require('./Base.js');
 
 class DeleteIndicesPatternScript extends Base {
@@ -80,7 +73,7 @@ class DeleteIndicesPatternScript extends Base {
   }
 
   async deleteIndicesPattern(options) {
-    this.client = algolia(options.appId, options.apiKey, keepaliveAgent);
+    this.client = algolia(options.appId, options.apiKey);
     const { items: indices } = await this.client.listIndexes();
     const regexp = new RegExp(options.regexp);
     await this.removeReplicas({ indices, regexp, dryRun: options.dryRun });
