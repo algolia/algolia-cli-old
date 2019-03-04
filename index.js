@@ -48,8 +48,8 @@ Examples:
 const registerDefaultProcessEventListeners = () => {
   // Handle process cancellation
   process.on('SIGINT', () => {
-    process.exitCode = 2;
     console.log(chalk.white.bgYellow('\nCancelled'));
+    process.exit(1);
   });
   // Handle uncaught exceptions
   process.on('uncaughtException', e => {
