@@ -21,6 +21,7 @@ const isFile = jest.fn().mockReturnValue(true);
 fs.lstatSync.mockReturnValue({ isDirectory, isFile });
 
 // Mock Readline
+readLine.clearLine = jest.fn();
 readLine.cursorTo = jest.fn();
 process.stdout.write = jest.fn();
 
@@ -56,6 +57,7 @@ describe('Import script OK', () => {
   test('Should write progress with correct count to stdout', done => {
     const count = 908765;
     importScript.writeProgress(count);
+    expect(readLine.clearLine).toHaveBeenCalled();
     expect(readLine.cursorTo).toHaveBeenCalled();
     expect(process.stdout.write).toHaveBeenCalledWith(
       `Records indexed: ${count}`
@@ -67,9 +69,9 @@ describe('Import script OK', () => {
 
   test('Should set Algolia index instance variable', done => {
     const options = {
-      ALGOLIA_APP_ID: validProgram.algoliaappid,
-      ALGOLIA_API_KEY: validProgram.algoliaapikey,
-      ALGOLIA_INDEX_NAME: validProgram.algoliaindexname,
+      appId: validProgram.algoliaappid,
+      apiKey: validProgram.algoliaapikey,
+      indexName: validProgram.algoliaindexname,
       keepaliveAgent: { name: 'keepaliveAgent' },
     };
     importScript.setIndex(options);
@@ -88,7 +90,7 @@ describe('Import script OK', () => {
 
   test('Should apply correct formatRecord method without transformations input param', done => {
     const options = {
-      TRANSFORMATIONS: null,
+      transformations: null,
     };
     importScript.setTransformations(options);
     expect(importScript.formatRecord).toEqual(
@@ -98,12 +100,12 @@ describe('Import script OK', () => {
   });
 
   test('Should apply correct formatRecord method with transformations input param', done => {
-    const TRANSFORMATIONS = path.resolve(
+    const transformations = path.resolve(
       process.cwd(),
       'tests/mocks/users-transformation.js'
     );
-    const method = require(TRANSFORMATIONS);
-    const options = { TRANSFORMATIONS };
+    const method = require(transformations);
+    const options = { transformations };
     importScript.setTransformations(options);
     expect(importScript.formatRecord).toEqual(method);
     done();
@@ -178,8 +180,8 @@ describe('Import script OK', () => {
     importScript.formatRecord = jest.fn();
     importScript.directory = directory;
     importScript.filename = filename;
-    importScript.MAX_CONCURRENCY = 4;
-    importScript.CHUNK_SIZE = 10;
+    importScript.maxConcurrency = 4;
+    importScript.batchSize = 10;
 
     // Run target method to test
     importScript.indexFiles([filename]);

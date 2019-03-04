@@ -30,7 +30,7 @@ class Base {
   setSource(options) {
     // Set source directory and filenames array
     // Used to process path inputs that may either be a single file or a directory of files
-    const source = this.normalizePath(options.SOURCE_FILEPATH);
+    const source = this.normalizePath(options.sourceFilepath);
     if (fs.lstatSync(source).isDirectory()) {
       this.directory = source;
       this.filenames = fs.readdirSync(source);
@@ -40,6 +40,14 @@ class Base {
     } else {
       throw new Error('Invalid sourcefilepath param');
     }
+  }
+
+  getMemoryUsage() {
+    const used = process.memoryUsage().heapUsed / 1024 / 1024;
+    const usedMb = Math.round(used * 100) / 100;
+    const maxHeapMb = process.arch.includes('64') ? 1024 : 512;
+    const percentUsed = Math.floor((usedMb / maxHeapMb) * 100);
+    return { usedMb, maxHeapMb, percentUsed };
   }
 }
 

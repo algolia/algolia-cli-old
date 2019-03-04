@@ -86,7 +86,7 @@ describe('Base script OK', () => {
     const filename = 'test.js';
     const filepath = `${directory}/${filename}`;
     const options = {
-      SOURCE_FILEPATH: filepath,
+      sourceFilepath: filepath,
     };
     baseScript.setSource(options);
     expect(normalizePathSpy).toHaveBeenCalledWith(filepath);
@@ -101,7 +101,7 @@ describe('Base script OK', () => {
       '/Users/username/Documents/Code/practice/path-manipulation';
     const filename = 'test.js';
     const options = {
-      SOURCE_FILEPATH: directory,
+      sourceFilepath: directory,
     };
     fs.readdirSync.mockReturnValueOnce([filename]);
     baseScript.setSource(options);

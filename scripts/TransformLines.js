@@ -117,7 +117,7 @@ class TransformLinesScript extends Base {
     this.transformationFilepath = program.transformationfilepath || null;
 
     // Configure source paths (this.directory, this.filenames)
-    this.setSource({ SOURCE_FILEPATH: this.sourceFilepath });
+    this.setSource({ sourceFilepath: this.sourceFilepath });
     // Configure output path (this.outputDir)
     this.setOutput(this.outputpath);
     // Configure transformations (this.lineTransformation)
