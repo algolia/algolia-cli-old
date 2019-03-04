@@ -8,7 +8,6 @@ class ExportScript extends Base {
   constructor() {
     super();
     // Bind class methods
-    this.writeProgress = this.writeProgress.bind(this);
     this.getOutput = this.getOutput.bind(this);
     this.parseParams = this.parseParams.bind(this);
     this.writeFile = this.writeFile.bind(this);
@@ -18,11 +17,6 @@ class ExportScript extends Base {
     this.message =
       '\nExample: $ algolia export -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath -p params\n\n';
     this.params = ['algoliaappid', 'algoliaapikey', 'algoliaindexname'];
-  }
-
-  writeProgress(count) {
-    readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Records browsed: ~ ${count}`);
   }
 
   getOutput(outputPath) {
@@ -66,7 +60,7 @@ class ExportScript extends Base {
         // Push 1000 new hits to array
         hits = hits.concat(result.hits);
         hitsCount += result.hits.length;
-        this.writeProgress(hitsCount);
+        this.writeProgress(`Records browsed: ${hitsCount}`);
         if (hits.length >= 10000) {
           // Write batch of 10,000 records to file
           fileCount++;

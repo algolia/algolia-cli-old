@@ -16,7 +16,6 @@ class ImportScript extends Base {
     super();
     // Bind class methods
     this.defaultTransformations = this.defaultTransformations.bind(this);
-    this.writeProgress = this.writeProgress.bind(this);
     this.suggestions = this.suggestions.bind(this);
     this.checkMemoryUsage = this.checkMemoryUsage.bind(this);
     this.setIndex = this.setIndex.bind(this);
@@ -39,12 +38,6 @@ class ImportScript extends Base {
 
   defaultTransformations(data, cb) {
     cb(null, data);
-  }
-
-  writeProgress(count) {
-    readLine.clearLine(process.stdout, 0);
-    readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Records indexed: ${count}`);
   }
 
   suggestions() {
@@ -129,7 +122,7 @@ class ImportScript extends Base {
     try {
       await this.index.addObjects(data);
       this.importCount += data.length;
-      this.writeProgress(this.importCount);
+      this.writeProgress(`Records indexed: ${this.importCount}`);
     } catch (e) {
       let message = e.message;
       let addendum = e.stack;

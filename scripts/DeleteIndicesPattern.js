@@ -17,11 +17,6 @@ class DeleteIndicesPatternScript extends Base {
     this.params = ['algoliaappid', 'algoliaapikey', 'regexp', 'dryrun'];
   }
 
-  writeProgress(count) {
-    readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Deleted indices: ${count}`);
-  }
-
   removeReplicas({ indices, regexp, dryRun }) {
     return Promise.all(
       indices.map(async ({ name: indexName }) => {
@@ -65,7 +60,7 @@ class DeleteIndicesPatternScript extends Base {
           deletedIndices++;
 
           if (dryRun === false) {
-            this.writeProgress(deletedIndices);
+            this.writeProgress(`Deleted indices: ${deletedIndices}`);
             const index = this.client.initIndex(indexName);
             const { taskID } = await this.client.deleteIndex(indexName);
             return index.waitTask(taskID);

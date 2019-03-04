@@ -7,7 +7,6 @@ class TransformLinesScript extends Base {
     super();
     // Bind class methods
     this.defaultLineTransformation = this.defaultLineTransformation.bind(this);
-    this.writeProgress = this.writeProgress.bind(this);
     this.setOutput = this.setOutput.bind(this);
     this.setTransformations = this.setTransformations.bind(this);
     this.transformFile = this.transformFile.bind(this);
@@ -27,12 +26,6 @@ class TransformLinesScript extends Base {
       : line;
     return newLine;
     /* eslint-enable no-control-regex */
-  }
-
-  writeProgress(count) {
-    // Method to help with logging progress
-    readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Line ${count}...`);
   }
 
   setOutput(outputPath) {
@@ -71,7 +64,7 @@ class TransformLinesScript extends Base {
         lineReader.on('line', line => {
           count++;
           const newLine = this.lineTransformation(line);
-          this.writeProgress(count);
+          this.writeProgress(`Line ${count}...`);
           writeStream.write(newLine);
         });
 

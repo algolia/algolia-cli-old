@@ -1,6 +1,5 @@
 const importScript = require(`./Import.js`);
 const algolia = require('algoliasearch');
-const readLine = require('readline');
 const path = require('path');
 const fs = require('fs');
 const { Readable } = require('stream');
@@ -8,7 +7,6 @@ const transform = require('stream-transform');
 const csv = require('csvtojson');
 
 jest.mock('algoliasearch');
-jest.mock('readline');
 jest.mock('fs');
 jest.mock('stream-transform');
 jest.mock('csvtojson');
@@ -17,11 +15,6 @@ jest.mock('csvtojson');
 const isDirectory = jest.fn().mockReturnValueOnce(false);
 const isFile = jest.fn().mockReturnValue(true);
 fs.lstatSync.mockReturnValue({ isDirectory, isFile });
-
-// Mock Readline
-readLine.clearLine = jest.fn();
-readLine.cursorTo = jest.fn();
-process.stdout.write = jest.fn();
 
 // Mock Algolia
 const initIndex = jest.fn();
@@ -44,19 +37,6 @@ describe('Import script OK', () => {
     const testCallback = jest.fn();
     importScript.defaultTransformations(testData, testCallback);
     expect(testCallback).toHaveBeenCalledWith(null, testData);
-    done();
-  });
-
-  /* writeProgress */
-
-  test('Should write progress with correct count to stdout', done => {
-    const count = 908765;
-    importScript.writeProgress(count);
-    expect(readLine.clearLine).toHaveBeenCalled();
-    expect(readLine.cursorTo).toHaveBeenCalled();
-    expect(process.stdout.write).toHaveBeenCalledWith(
-      `Records indexed: ${count}`
-    );
     done();
   });
 

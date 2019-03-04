@@ -6,7 +6,6 @@ class TransferIndexScript extends Base {
   constructor() {
     super();
     // Bind class methods
-    this.writeProgress = this.writeProgress.bind(this);
     this.getIndices = this.getIndices.bind(this);
     this.getTransformations = this.getTransformations.bind(this);
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
@@ -22,11 +21,6 @@ class TransferIndexScript extends Base {
       'destinationalgoliaappid',
       'destinationalgoliaapikey',
     ];
-  }
-
-  writeProgress(count) {
-    readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Records transferred: ~ ${count}`);
   }
 
   getIndices(options) {
@@ -85,7 +79,7 @@ class TransferIndexScript extends Base {
             : result.hits;
           await indices.destinationIndex.addObjects(hits);
           hitsCount += result.hits.length;
-          this.writeProgress(hitsCount);
+          this.writeProgress(`Records transferred: ${hitsCount}`);
         } catch (e) {
           throw e;
         }

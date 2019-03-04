@@ -14,10 +14,6 @@ const transformationFilepath = path.resolve(
 );
 const transformation = require(transformationFilepath);
 
-// Mock Readline
-readLine.cursorTo = jest.fn();
-process.stdout.write = jest.fn();
-
 // Mock fs
 const isDirectory = () => true;
 fs.lstatSync = jest.fn().mockReturnValue({ isDirectory });
@@ -39,15 +35,6 @@ describe('TransformLines script OK', () => {
     });
     const result = transformLinesScript.defaultLineTransformation(data);
     expect(result).toEqual(data);
-    done();
-  });
-
-  /* writeProgress */
-
-  test('writeProgress should output number of lines browsed', done => {
-    const random = Math.floor(Math.random() * 10);
-    transformLinesScript.writeProgress(random);
-    expect(process.stdout.write).toHaveBeenCalledWith(`Line ${random}...`);
     done();
   });
 

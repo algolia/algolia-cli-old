@@ -1,6 +1,7 @@
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
+const readLine = require('readline');
 const chalk = require('chalk');
 
 class Base {
@@ -15,6 +16,12 @@ class Base {
     });
     if (flag) return program.help(h => h + output);
     else return { flag, output };
+  }
+
+  writeProgress(message) {
+    readLine.clearLine(process.stdout, 0);
+    readLine.cursorTo(process.stdout, 0);
+    process.stdout.write(message);
   }
 
   normalizePath(input) {
