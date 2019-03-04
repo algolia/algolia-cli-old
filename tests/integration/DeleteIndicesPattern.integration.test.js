@@ -1,17 +1,11 @@
 const deleteIndicesPattern = require('../../scripts/DeleteIndicesPattern');
 const algoliasearch = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const randomize = require('randomatic');
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
 const apiKey = process.env.ALGOLIA_TEST_API_KEY;
-const client = algoliasearch(appId, apiKey, keepaliveAgent);
+const client = algoliasearch(appId, apiKey);
 
 describe('DeleteIndicesPattern command OK', () => {
   const randomName = `algolia-cli-deleteindices-${randomize('aA0', 20)}`;
