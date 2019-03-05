@@ -9,9 +9,8 @@ class Runner {
     this.scripts = {};
 
     paths.forEach(filepath => {
-      this.scripts[
-        path.basename(filepath).toLowerCase()
-      ] = require(`./scripts/${path}`);
+      const scriptName = path.basename(filepath, '.js').toLowerCase();
+      this.scripts[scriptName] = require(`./scripts/${filepath}`);
     });
   }
 }

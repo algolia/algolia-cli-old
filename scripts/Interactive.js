@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 
-
 const runner = require('../Runner.js');
 
 class Interactive {
@@ -29,11 +28,10 @@ class Interactive {
 
   getInputArguments(userInput) {
     const commandToRun = this.commands.find(command => command._name === userInput.scriptChoice);
-
     const questionsToAsk = commandToRun.options.map(argument => ({
-      type: argument.text.includes('key') ? 'password' : 'input',
-      name: argument.param,
-      message: argument.text
+      type: argument.description.includes('key') ? 'password' : 'input',
+      name: argument.long.substring(2),
+      message: argument.description
     }))
 
     inquirer
@@ -45,7 +43,7 @@ class Interactive {
             this.program[question] = userInputs[question]
           }
         })
-      
+
       runner.scripts[commandToRun._name].start(this.program);
     })
   }
