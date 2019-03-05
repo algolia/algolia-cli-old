@@ -1,15 +1,16 @@
 const fs = require('fs');
+const path = require('path');
 
 class Runner {
   requireScripts() {
     const paths = fs
       .readdirSync('./scripts')
-      .filter(path => !path.includes('unit'));
+      .filter(filepath => !filepath.includes('unit'));
     this.scripts = {};
 
-    paths.forEach(path => {
+    paths.forEach(filepath => {
       this.scripts[
-        path.split('.')[0].toLowerCase()
+        path.basename(filepath).toLowerCase()
       ] = require(`./scripts/${path}`);
     });
   }
