@@ -4,10 +4,18 @@ const inquirer = require('inquirer');
 const runner = require('../Runner.js');
 
 class Interactive {
+
   createCommandNameList() {
-    return this.commands
-      .map(command => command._name)
-      .filter(commandName => commandName !== this.commandName && commandName !== '*');
+    const parsedCommandNames = this.commands
+      .map(command => command._name);
+    
+    // Remove current command name and default command from list
+    const usableCommandNames = parsedCommandNames.filter(commandName => 
+      commandName !== this.commandName && 
+      commandName !== '*'
+    )
+
+    return usableCommandNames
   }
 
   userScriptSelector() {
@@ -16,27 +24,29 @@ class Interactive {
       name: 'scriptChoice',
       message: 'Select the script to run',
       choices: this.createCommandNameList()
-    }).then((results) => this.getInputArguments(results));
+    }).then((userInput) => this.getInputArguments(userInput));
   }
 
-  getInputArguments(results) {
-    this.commandToRun = this.commands.find(command => command._name === results.scriptChoice);
-    const args = this.commandToRun.options.map(opt => ({
-      param: opt.long.substring(2),
-      text: opt.description
-    }))
+  getInputArguments(userInput) {
+    const commandToRun = this.commands.find(command => command._name === userInput.scriptChoice);
 
-    inquirer.prompt(args.map(argument => ({
+    const questionsToAsk = commandToRun.options.map(argument => ({
       type: argument.text.includes('key') ? 'password' : 'input',
       name: argument.param,
       message: argument.text
-    }))).then(userInputs => {
-      Object.keys(userInputs).forEach(key => {
-        if (userInputs[key].length) {
-          this.program[key] = userInputs[key]
-        }
-      })
-      runner.scripts[this.commandToRun._name].start(this.program);
+    }))
+
+    inquirer
+      .prompt(questionsToAsk)
+      .then(userInputs => {
+        const questions = Object.keys(userInputs);
+        questions.forEach(question => {
+          if (!!userInputs[question]) {
+            this.program[question] = userInputs[question]
+          }
+        })
+      
+      runner.scripts[commandToRun._name].start(this.program);
     })
   }
 
