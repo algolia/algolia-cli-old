@@ -4,9 +4,12 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const readLine = require('readline');
+const speedTest = require('speedtest-net');
+const EventEmitter = require('events');
 
 jest.mock('fs');
 jest.mock('readline');
+jest.mock('speedtest-net');
 
 // Mock Readline
 readLine.clearLine = jest.fn();
@@ -21,6 +24,10 @@ const isDirectory = jest
   .mockReturnValueOnce(false);
 const isFile = jest.fn().mockReturnValue(true);
 fs.lstatSync.mockReturnValue({ isDirectory, isFile });
+
+// Mock Speedtest
+const tester = new EventEmitter();
+speedTest.mockReturnValue(tester);
 
 const message =
   '\nUsage: $ algolia test -x fakeParam1 -y fakeParam2 -z fakeParam3\n\n';
@@ -127,6 +134,51 @@ describe('Base script OK', () => {
     expect(normalizePathSpy).toHaveBeenCalledWith(directory);
     expect(baseScript.directory).toEqual(directory);
     expect(baseScript.filenames).toEqual([filename]);
+    done();
+  });
+
+  /* getMemoryUsage */
+
+  test('Should return memory usage info', done => {
+    const expected = {
+      usedMb: expect.any(Number),
+      percentUsed: expect.any(Number),
+    };
+    const result = baseScript.getMemoryUsage();
+    expect(result).toMatchObject(expected);
+    done();
+  });
+
+  /* getStringSizeMb */
+
+  test('Should return string size in MB', done => {
+    const stringOne = 'Small string';
+    const stringTwo = 'a'.repeat(5 * 1024 * 1024);
+    const expectedOne = 1;
+    const expectedTwo = 5;
+    const resultOne = baseScript.getStringSizeMb(stringOne);
+    const resultTwo = baseScript.getStringSizeMb(stringTwo);
+    expect(resultOne).toEqual(expectedOne);
+    expect(resultTwo).toEqual(expectedTwo);
+    done();
+  });
+
+  /* getNetworkSpeed */
+
+  test('Should return upload speed', async done => {
+    const consoleSpy = jest.spyOn(global.console, 'log');
+    const speed = 16;
+    const expected = '2.00';
+    const p = baseScript.getNetworkSpeed();
+    tester.emit('downloadspeed', speed);
+    tester.emit('uploadspeed', speed);
+    tester.emit('done');
+    const result = await p;
+    expect(consoleSpy).toHaveBeenLastCalledWith(
+      expect.any(String),
+      expect.any(String)
+    );
+    expect(result).toEqual(expected);
     done();
   });
 });

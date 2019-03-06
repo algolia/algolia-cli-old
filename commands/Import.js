@@ -17,11 +17,17 @@ class ImportScript extends Base {
     this.defaultTransformations = this.defaultTransformations.bind(this);
     this.suggestions = this.suggestions.bind(this);
     this.checkMemoryUsage = this.checkMemoryUsage.bind(this);
+    this.handleHighMemoryUsage = this.handleHighMemoryUsage.bind(this);
+    this.handleExtremeMemoryUsage = this.handleExtremeMemoryUsage.bind(this);
     this.setIndex = this.setIndex.bind(this);
     this.setTransformations = this.setTransformations.bind(this);
     this.setCsvOptions = this.setCsvOptions.bind(this);
     this.conditionallyParseCsv = this.conditionallyParseCsv.bind(this);
+    this.setBatchSize = this.setBatchSize.bind(this);
+    this.estimateBatchSize = this.estimateBatchSize.bind(this);
+    this.updateBatchSize = this.updateBatchSize.bind(this);
     this.importToAlgolia = this.importToAlgolia.bind(this);
+    this.retryImport = this.retryImport.bind(this);
     this.indexFiles = this.indexFiles.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
@@ -51,28 +57,40 @@ class ImportScript extends Base {
   }
 
   checkMemoryUsage() {
-    // Exit early if highMemoryUsage warning occurred in last 30 seconds
+    // Exit early if high memory usage warning issued too recently
     if (this.highMemoryUsage) return false;
-    // Get memory usage, and prepare warning message
-    const { usedMb, maxHeapMb, percentUsed } = this.getMemoryUsage();
+    // Get memory usage
+    const { usedMb, percentUsed } = this.getMemoryUsage();
+    // Handle if heap usage exceeds n% of estimated allocation for node process
+    if (percentUsed >= 70) this.handleHighMemoryUsage(percentUsed);
+    if (percentUsed >= 90) this.handleExtremeMemoryUsage(usedMb, percentUsed);
+    return false;
+  }
+
+  handleHighMemoryUsage(percentUsed) {
+    const newBatchSize = Math.floor(this.batchSize / 2);
+    this.updateBatchSize(newBatchSize);
+    this.writeProgress(
+      `High memory usage (${percentUsed}%). Reducing batchSize to ${newBatchSize}`
+    );
+  }
+
+  handleExtremeMemoryUsage(usedMb, percentUsed) {
+    // Issue warning
     const name = `Warning: High memory usage`;
     const message = `Memory usage at ${usedMb} MB (${percentUsed}% of heap allocation for this process).`;
-    // Issue warning if heap usage exceeds 90% estimated system allocation for node process
-    if (usedMb >= maxHeapMb * 0.9) {
-      // Set class instance flag to debounce future warnings
-      this.highMemoryUsage = true;
-      // Output warning
-      console.log(
-        chalk.white.bgRed(`\n${name}`),
-        chalk.red(`\n${message}`),
-        chalk.red(`${this.suggestions()}`)
-      );
-      // Reset flag in 30 seconds
-      setTimeout(() => {
-        this.highMemoryUsage = false;
-      }, 30000);
-    }
-    return false;
+    // Set class instance flag to debounce future warnings
+    this.highMemoryUsage = true;
+    // Output warning
+    console.log(
+      chalk.white.bgRed(`\n${name}`),
+      chalk.red(`\n${message}`),
+      chalk.red(`${this.suggestions()}`)
+    );
+    // Reset flag in 30 seconds
+    setTimeout(() => {
+      this.highMemoryUsage = false;
+    }, 30000);
   }
 
   setIndex(options) {
@@ -117,7 +135,90 @@ class ImportScript extends Base {
     // Return the appropriate writestream for piping depending on filetype
     return isCsv
       ? csv(this.csvOptions) // Convert from CSV to JSON
-      : transform(this.defaultTransformations); // Do nothing
+      : through(); // Do nothing
+  }
+
+  async setBatchSize(options) {
+    try {
+      // If user provided batchSize, use and exit early
+      // Otherwise calculate and set optimal batch size
+      if (options.objectsPerBatch !== null) {
+        this.batchSize = options.objectsPerBatch;
+        return;
+      }
+      // Test files to estimate optimal batch size
+      const estimatedBatchSize = await this.estimateBatchSize();
+      // Test network upload speed
+      const uploadSpeedMb = await this.getNetworkSpeed();
+      // Calculate optimal batch size
+      this.writeProgress('Calculating optimal batch size...');
+      let batchSize;
+      // Reconcile batch size with network speed
+      if (uploadSpeedMb >= this.desiredBatchSizeMb)
+        batchSize = Math.floor(estimatedBatchSize);
+      else
+        batchSize = Math.floor(
+          (uploadSpeedMb / this.desiredBatchSizeMb) * estimatedBatchSize
+        );
+      // Ensure minimum batch size is enforced
+      batchSize = Math.max(this.minBatchSize, batchSize);
+      console.log(chalk.blue(`\nOptimal batch size: ${batchSize}`));
+      // Set batch size
+      this.batchSize = batchSize;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  estimateBatchSize() {
+    // Read file, estimate average record size, estimate batch size
+    // Return estimated batch size divided by maxConcurrency
+    return new Promise((resolve, reject) => {
+      try {
+        const filename = this.filenames[0];
+        const file = `${this.directory}/${filename}`;
+        const isCsv = filename.split('.').pop() === 'csv';
+        const fileStream = fs.createReadStream(file, {
+          autoclose: true,
+          flags: 'r',
+        });
+        this.writeProgress(`Estimating data size...`);
+        const jsonStreamOption = isCsv ? null : '*';
+        fileStream
+          .pipe(this.conditionallyParseCsv(isCsv))
+          .pipe(JSONStream.parse(jsonStreamOption))
+          .pipe(transform(this.formatRecord))
+          .pipe(new Batch({ size: 10000 }))
+          .pipe(
+            through(data => {
+              const count = data.length;
+              const string = JSON.stringify(data);
+              const batchSizeMb = this.getStringSizeMb(string);
+              const avgRecordSizeMb = batchSizeMb / count;
+              const avgRecordSizeKb = Math.ceil(avgRecordSizeMb * 1000);
+              const roughBatchSize = this.desiredBatchSizeMb / avgRecordSizeMb;
+              const estimatedBatchSize = Math.floor(
+                roughBatchSize / this.maxConcurrency
+              );
+              console.log(
+                chalk.blue(`\nAverage record size: ${avgRecordSizeKb} Kb`)
+              );
+              fileStream.destroy();
+              resolve(estimatedBatchSize);
+            })
+          );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  updateBatchSize(newSize) {
+    this.batchSize = newSize;
+  }
+
+  getBatchStream() {
+    return new Batch({ size: this.batchSize });
   }
 
   async importToAlgolia(data) {
@@ -132,18 +233,50 @@ class ImportScript extends Base {
       if (e.name === 'AlgoliaSearchRequestTimeoutError') {
         message = `You may be attempting to import batches too large for the network connection.`;
         addendum = this.suggestions();
+        this.retryImport(data);
       }
       console.log(
-        chalk.white.bgRed(`\nError: ${e.name}`),
+        chalk.white.bgRed(`\nImport error: ${e.name}`),
         chalk.red(`\n${message}`),
         chalk.red(addendum)
       );
+      throw e;
+    }
+  }
+
+  retryImport(data) {
+    // Algolia import retry strategy
+    try {
+      this.retryCount++;
+      console.log(`\n(${this.retryCount}) Retrying batch...`);
+      const importedBatchCount = Math.floor(this.importCount / this.batchSize);
+      const retryLimit =
+        this.retryCount > 15 && this.retryCount > importedBatchCount / 2;
+      if (retryLimit) {
+        console.log(
+          chalk.white.bgRed(`\nError: Failure to index data`),
+          chalk.red(`\nRetry limit reached.`),
+          chalk.red(this.suggestions())
+        );
+        return;
+      }
+      // Split data in half
+      const middle = Math.floor(data.length / 2);
+      const firstHalf = data.splice(0, middle);
+      // Reduce batchsize
+      if (this.batchSize > middle) this.updateBatchSize(middle);
+      // Push each half of data into import queue
+      this.queue.push([firstHalf]);
+      this.queue.push([data]);
+    } catch (e) {
+      console.error('Retry error:', e);
+      throw e;
     }
   }
 
   indexFiles(filenames) {
     // Recursive method that iterates through an array of filenames, opens a read stream for each file
-    // then pipes the read stream through a series of transformations (parse JSON objects, transform
+    // then pipes the read stream through a series of transformations (parse CSV/JSON objects, transform
     // them, batch them, index them in Algolia) while imposing a queue so that only so many
     // indexing threads will be run in parallel
     if (filenames.length <= 0) {
@@ -161,7 +294,6 @@ class ImportScript extends Base {
     });
 
     fileStream.on('data', () => {
-      this.checkMemoryUsage();
       if (this.queue.length() >= this.maxConcurrency) {
         // If async upload queue is full, pause reading from file stream
         fileStream.pause();
@@ -182,20 +314,21 @@ class ImportScript extends Base {
     console.log(`\nImporting [${filename}]`);
     const jsonStreamOption = isCsv ? null : '*';
     fileStream
-      .pipe(this.conditionallyParseCsv(isCsv))
+      .pipe(this.conditionallyParseCsv(isCsv, filename))
       .pipe(JSONStream.parse(jsonStreamOption))
       .pipe(transform(this.formatRecord))
-      .pipe(new Batch({ size: this.batchSize }))
+      .pipe(this.getBatchStream())
       .pipe(
         through(data => {
+          this.checkMemoryUsage();
           this.queue.push([data]);
         })
       );
   }
 
-  start(program) {
-    // Script reads JSON file or directory of JSON files, optionally applies
-    // transformations, then batches and indexes the data in Algolia
+  async start(program) {
+    // Script reads JSON or CSV file, or directory of such files, optionally applies
+    // transformations, then batches and indexes the data in Algolia.
 
     // Validate command; if invalid display help text and exit
     this.validate(program, this.message, this.params);
@@ -206,7 +339,7 @@ class ImportScript extends Base {
       appId: program.algoliaappid,
       apiKey: program.algoliaapikey,
       indexName: program.algoliaindexname,
-      objectsPerBatch: program.batchsize || 1000,
+      objectsPerBatch: program.batchsize || null,
       transformations: program.transformationfilepath || null,
       maxConcurrency: program.maxconcurrency || 2,
       csvToJsonParams: program.params || null,
@@ -221,16 +354,23 @@ class ImportScript extends Base {
     this.setCsvOptions(options);
     // Configure data upload parameters
     this.maxConcurrency = options.maxConcurrency;
-    // Configure number of records to index per batch
-    this.batchSize = options.objectsPerBatch;
+    // Theoretically desirable batch size in MB
+    this.desiredBatchSizeMb = 10;
+    // Minimum batch size
+    this.minBatchSize = 100;
+    // Configure number of records to index per batch (this.batchSize, this.batch)
+    await this.setBatchSize(options);
     // Assign dangerous memory usage flag
     this.highMemoryUsage = false;
     // Assign import count
     this.importCount = 0;
+    // Assign retry count
+    this.retryCount = 0;
     // Assign async queue
     this.queue = async.queue(this.importToAlgolia, this.maxConcurrency);
 
     // Execute import
+    console.log(chalk.bgGreen.white('Starting import...'));
     return this.indexFiles(this.filenames);
   }
 }

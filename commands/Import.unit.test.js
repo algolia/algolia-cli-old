@@ -3,12 +3,16 @@ const algolia = require('algoliasearch');
 const path = require('path');
 const fs = require('fs');
 const { Readable } = require('stream');
-const transform = require('stream-transform');
+const transform = require('stream-transform'); // eslint-disable-line no-unused-vars
+const async = require('async');
+const through = require('through');
 const csv = require('csvtojson');
 
 jest.mock('algoliasearch');
 jest.mock('fs');
 jest.mock('stream-transform');
+jest.mock('async');
+jest.mock('through');
 jest.mock('csvtojson');
 
 // Mock fs
@@ -20,6 +24,9 @@ fs.lstatSync.mockReturnValue({ isDirectory, isFile });
 const initIndex = jest.fn();
 const client = { initIndex };
 algolia.mockReturnValue(client);
+
+// Mock async
+async.queue = jest.fn();
 
 // Mock user input
 const validProgram = {
@@ -37,6 +44,107 @@ describe('Import script OK', () => {
     const testCallback = jest.fn();
     importScript.defaultTransformations(testData, testCallback);
     expect(testCallback).toHaveBeenCalledWith(null, testData);
+    done();
+  });
+
+  /* suggestions */
+
+  test('Should return helpful message', done => {
+    const batchSize = 5000;
+    const maxConcurrency = 2;
+    importScript.batchSize = batchSize;
+    importScript.maxConcurrency = maxConcurrency;
+    const result = importScript.suggestions();
+    expect(result).toEqual(expect.any(String));
+    expect(result.includes(batchSize)).toBe(true);
+    expect(result.includes(maxConcurrency)).toBe(true);
+    done();
+  });
+
+  /* checkMemoryUsage */
+
+  test('Should attempt to handle high memory usage', done => {
+    jest.useFakeTimers();
+    const handleHighMemoryUsageSpy = jest.spyOn(
+      importScript,
+      'handleHighMemoryUsage'
+    );
+    const handleExtremeMemoryUsageSpy = jest.spyOn(
+      importScript,
+      'handleExtremeMemoryUsage'
+    );
+    const usedMb = 800;
+    const percentUsed = 78;
+    importScript.highMemoryUsage = false;
+    importScript.getMemoryUsage = jest.fn().mockReturnValue({
+      usedMb,
+      percentUsed,
+    });
+    importScript.checkMemoryUsage();
+    expect(handleHighMemoryUsageSpy).toHaveBeenCalledWith(percentUsed);
+    expect(handleExtremeMemoryUsageSpy).not.toHaveBeenCalled();
+    jest.runAllTimers();
+    done();
+  });
+
+  test('Should attempt to handle very high memory usage', done => {
+    jest.useFakeTimers();
+    const handleHighMemoryUsageSpy = jest.spyOn(
+      importScript,
+      'handleHighMemoryUsage'
+    );
+    const handleExtremeMemoryUsageSpy = jest.spyOn(
+      importScript,
+      'handleExtremeMemoryUsage'
+    );
+    const usedMb = 1000;
+    const percentUsed = 98;
+    importScript.highMemoryUsage = false;
+    importScript.getMemoryUsage = jest.fn().mockReturnValue({
+      usedMb,
+      percentUsed,
+    });
+    importScript.checkMemoryUsage();
+    expect(handleHighMemoryUsageSpy).toHaveBeenCalledWith(percentUsed);
+    expect(handleExtremeMemoryUsageSpy).toHaveBeenCalledWith(
+      usedMb,
+      percentUsed
+    );
+    jest.runAllTimers();
+    done();
+  });
+
+  /* handleHighMemoryUsage */
+
+  test('Should update batchSize on high memory usage', done => {
+    jest.useFakeTimers();
+    const updateBatchSizeSpy = jest.spyOn(importScript, 'updateBatchSize');
+    const percentUsed = 75;
+    const expected = 5000;
+    importScript.batchSize = 10000;
+    importScript.handleHighMemoryUsage(percentUsed);
+    expect(updateBatchSizeSpy).toHaveBeenCalledWith(expected);
+    expect(importScript.batchSize).toEqual(expected);
+    jest.runAllTimers();
+    done();
+  });
+
+  /* handleExtremeMemoryUsage */
+
+  test('Should issue warning when extremely high memory usage', done => {
+    jest.useFakeTimers();
+    const logSpy = jest.spyOn(global.console, 'log');
+    const usedMb = 1000;
+    const percentUsed = 98;
+    importScript.highMemoryUsage = false;
+    importScript.handleExtremeMemoryUsage(usedMb, percentUsed);
+    expect(importScript.highMemoryUsage).toBe(true);
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.any(String)
+    );
+    jest.runAllTimers();
     done();
   });
 
@@ -88,13 +196,39 @@ describe('Import script OK', () => {
 
   test('Should return correct writestream for JSON filetype', done => {
     importScript.conditionallyParseCsv(false);
-    expect(transform).toHaveBeenCalledWith(importScript.defaultTransformations);
+    expect(through).toHaveBeenCalled();
     done();
   });
 
   test('Should return correct writestream for CSV filetype', done => {
     importScript.conditionallyParseCsv(true);
     expect(csv).toHaveBeenCalled();
+    done();
+  });
+
+  /* setBatchSize */
+
+  test('Should set this.batchSize and this.batch', async done => {
+    const options = { objectsPerBatch: null };
+    importScript.batchSize = null;
+    importScript.minBatchSize = 100;
+    importScript.desiredBatchSizeMb = 10;
+    importScript.estimateBatchSize = jest.fn().mockResolvedValue(3000);
+    importScript.getNetworkSpeed = jest.fn().mockResolvedValue(1);
+    await importScript.setBatchSize(options);
+    expect(importScript.batchSize).toEqual(300);
+    done();
+  });
+
+  /* estimateBatchSize */
+
+  /* updateBatchSize */
+
+  test('Should update this.batchSize and this.batch', done => {
+    const newSize = 100;
+    importScript.batchSize = 2500;
+    importScript.updateBatchSize(100);
+    expect(importScript.batchSize).toEqual(newSize);
     done();
   });
 
@@ -113,6 +247,8 @@ describe('Import script OK', () => {
     expect(importScript.index.addObjects).toHaveBeenCalledWith(data);
     done();
   });
+
+  /* retryImport */
 
   /* indexFiles */
 
@@ -184,14 +320,15 @@ describe('Import script OK', () => {
 
   /* start */
 
-  test('Should kick off script when called with valid params', done => {
+  test('Should kick off script when called with valid params', async done => {
     const directory =
       '/Users/username/Documents/Code/practice/path-manipulation';
     const filename = 'test.js';
     const filepath = `${directory}/${filename}`;
     validProgram.sourcefilepath = filepath;
     importScript.indexFiles = jest.fn();
-    importScript.start(validProgram);
+    importScript.setBatchSize = jest.fn();
+    await importScript.start(validProgram);
     expect(importScript.indexFiles).toHaveBeenCalledWith([filename]);
     done();
   });
