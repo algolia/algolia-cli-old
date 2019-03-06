@@ -18,7 +18,7 @@ class SearchScript extends Base {
     this.writeOutput = this.writeOutput.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia getsettings -a algoliaappid -k algoliaapikey -n algoliaindexname -q query -p searchparams -o outputpath\n\n';
+      '\nExample: $ algolia search -a algoliaappid -k algoliaapikey -n algoliaindexname -q query -p searchparams -o outputpath\n\n';
     this.params = ['algoliaappid', 'algoliaapikey', 'algoliaindexname'];
   }
 

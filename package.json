@@ -14,8 +14,8 @@
   },
   "scripts": {
     "test": "jest --runInBand",
-    "test:unit": "jest scripts/",
-    "test:unit:watch": "jest --watch scripts/",
+    "test:unit": "jest commands/",
+    "test:unit:watch": "jest --watch commands/",
     "test:integration": "jest --runInBand tests/integration/",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix"

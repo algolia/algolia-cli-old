@@ -3,9 +3,7 @@
 const program = require('commander');
 const { version } = require('./package.json');
 const chalk = require('chalk');
-
-const runner = require('./Runner.js');
-runner.requireScripts();
+const commands = require('./commands.js');
 
 // DOCS
 
@@ -70,7 +68,7 @@ program
   .option('-p, --params <params>', 'Optional | Algolia search params')
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    runner.scripts.search.start(cmd);
+    commands.search.start(cmd);
   });
 
 // Import
@@ -99,7 +97,7 @@ program
   )
   .option('-p, --params <params>', 'Optional | CsvToJson params')
   .action(cmd => {
-    runner.scripts.import.start(cmd);
+    commands.import.start(cmd);
   });
 
 // Export
@@ -116,7 +114,7 @@ program
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .option('-p, --params <params>', 'Optional | Algolia browseAll params')
   .action(cmd => {
-    runner.scripts.export.start(cmd);
+    commands.export.start(cmd);
   });
 
 // Get Settings
@@ -131,7 +129,7 @@ program
     'Required | Algolia index name'
   )
   .action(cmd => {
-    runner.scripts.getsettings.start(cmd);
+    commands.getsettings.start(cmd);
   });
 
 // Set Settings
@@ -148,7 +146,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia setSettings params')
   .action(cmd => {
-    runner.scripts.setsettings.start(cmd);
+    commands.setsettings.start(cmd);
   });
 
 // Add Rules
@@ -165,7 +163,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia batchRules params')
   .action(cmd => {
-    runner.scripts.addrules.start(cmd);
+    commands.addrules.start(cmd);
   });
 
 // Add Synonyms
@@ -182,7 +180,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia batchSynonyms params')
   .action(cmd => {
-    runner.scripts.addsynonyms.start(cmd);
+    commands.addsynonyms.start(cmd);
   });
 
 // Export Rules
@@ -198,7 +196,7 @@ program
   )
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    runner.scripts.exportrules.start(cmd);
+    commands.exportrules.start(cmd);
   });
 
 // Export Synonyms
@@ -214,7 +212,7 @@ program
   )
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    runner.scripts.exportsynonyms.start(cmd);
+    commands.exportsynonyms.start(cmd);
   });
 
 // Transfer Index
@@ -253,7 +251,7 @@ program
     'Optional | Transformation filepath'
   )
   .action(cmd => {
-    runner.scripts.transferindex.start(cmd);
+    commands.transferindex.start(cmd);
   });
 
 // Transfer Index Config
@@ -292,7 +290,7 @@ program
     'Optional | Algolia batchSynonyms and batchRules params'
   )
   .action(cmd => {
-    runner.scripts.transferindexconfig.start(cmd);
+    commands.transferindexconfig.start(cmd);
   });
 
 // Delete Indices
@@ -309,7 +307,7 @@ program
     'Required | Dry run, will only output what would be done'
   )
   .action(cmd => {
-    runner.scripts.deleteindicespattern.start(cmd);
+    commands.deleteindicespattern.start(cmd);
   });
 
 // Transform Lines
@@ -326,8 +324,17 @@ program
     'Optional | Transformation filepath'
   )
   .action(cmd => {
-    runner.scripts.transformlines.start(cmd);
+    commands.transformlines.start(cmd);
   });
+
+// Interactive command
+program
+  .command('interactive')
+  .alias('shell')
+  .description('Run in an interactive mode')
+  .action(cmd => {
+    commands.interactive.start(cmd);
+  })
 
 // Display command examples
 program
@@ -337,15 +344,6 @@ program
   .action(() => {
     console.log(examples);
   });
-
-// Interactive command
-program
-  .command('interactive')
-  .alias('shell')
-  .description('Run in an interactive mode')
-  .action(cmd => {
-    runner.scripts.interactive.start(cmd)
-  })
 
 // Default Command
 program

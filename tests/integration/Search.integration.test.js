@@ -1,4 +1,4 @@
-const searchScript = require(`${__dirname}/../../scripts/Search.js`);
+const searchScript = require(`${__dirname}/../../commands/Search.js`);
 const algolia = require('algoliasearch');
 
 const appId = process.env.ALGOLIA_TEST_APP_ID;

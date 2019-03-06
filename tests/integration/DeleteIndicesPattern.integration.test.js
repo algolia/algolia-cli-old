@@ -1,4 +1,4 @@
-const deleteIndicesPattern = require('../../scripts/DeleteIndicesPattern');
+const deleteIndicesPattern = require('../../commands/DeleteIndicesPattern');
 const algoliasearch = require('algoliasearch');
 const HttpsAgent = require('agentkeepalive').HttpsAgent;
 const keepaliveAgent = new HttpsAgent({

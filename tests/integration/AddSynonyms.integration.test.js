@@ -1,5 +1,5 @@
 const path = require('path');
-const addSynonymsScript = require(`${__dirname}/../../scripts/AddSynonyms.js`);
+const addSynonymsScript = require(`${__dirname}/../../commands/AddSynonyms.js`);
 const algolia = require('algoliasearch');
 
 const appId = process.env.ALGOLIA_TEST_APP_ID;

@@ -1,4 +1,4 @@
-const transferIndexConfigScript = require(`${__dirname}/../../scripts/TransferIndexConfig.js`);
+const transferIndexConfigScript = require(`${__dirname}/../../commands/TransferIndexConfig.js`);
 const algoliasearch = require('algoliasearch');
 const readLine = require('readline');
 const HttpsAgent = require('agentkeepalive').HttpsAgent;
