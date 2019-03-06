@@ -1,4 +1,4 @@
-const exportSynonymScript = require(`${__dirname}/../../scripts/ExportSynonyms.js`);
+const exportSynonymScript = require(`${__dirname}/../../commands/ExportSynonyms.js`);
 const algolia = require('algoliasearch');
 const path = require('path');
 const fs = require('fs');

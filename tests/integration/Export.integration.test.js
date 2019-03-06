@@ -1,4 +1,4 @@
-const exportScript = require(`${__dirname}/../../scripts/Export.js`);
+const exportScript = require(`${__dirname}/../../commands/Export.js`);
 const fs = require('fs');
 const rimraf = require('rimraf');
 const algolia = require('algoliasearch');

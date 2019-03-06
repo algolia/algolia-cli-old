@@ -1,5 +1,5 @@
 const fs = require('fs');
-const transformLinesScript = require(`${__dirname}/../../scripts/TransformLines.js`);
+const transformLinesScript = require(`${__dirname}/../../commands/TransformLines.js`);
 
 const tempDir = `${__dirname}/../temp`;
 const mocksDir = `${__dirname}/../mocks`;

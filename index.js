@@ -3,22 +3,7 @@
 const program = require('commander');
 const { version } = require('./package.json');
 const chalk = require('chalk');
-
-// SCRIPTS
-
-const searchScript = require('./scripts/Search.js');
-const importScript = require('./scripts/Import.js');
-const exportScript = require('./scripts/Export.js');
-const getSettingsScript = require('./scripts/GetSettings.js');
-const setSettingsScript = require('./scripts/SetSettings.js');
-const addRulesScript = require('./scripts/AddRules.js');
-const addSynonymsScript = require('./scripts/AddSynonyms.js');
-const exportRulesScript = require('./scripts/ExportRules.js');
-const exportSynonymsScript = require('./scripts/ExportSynonyms.js');
-const transferIndexScript = require('./scripts/TransferIndex.js');
-const transferIndexConfigScript = require('./scripts/TransferIndexConfig.js');
-const transformLinesScript = require('./scripts/TransformLines.js');
-const deleteIndicesPatternScript = require('./scripts/DeleteIndicesPattern.js');
+const commands = require('./commands.js');
 
 // DOCS
 
@@ -83,7 +68,7 @@ program
   .option('-p, --params <params>', 'Optional | Algolia search params')
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    searchScript.start(cmd);
+    commands.search.start(cmd);
   });
 
 // Import
@@ -112,7 +97,7 @@ program
   )
   .option('-p, --params <params>', 'Optional | CsvToJson params')
   .action(cmd => {
-    importScript.start(cmd);
+    commands.import.start(cmd);
   });
 
 // Export
@@ -129,7 +114,7 @@ program
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .option('-p, --params <params>', 'Optional | Algolia browseAll params')
   .action(cmd => {
-    exportScript.start(cmd);
+    commands.export.start(cmd);
   });
 
 // Get Settings
@@ -144,7 +129,7 @@ program
     'Required | Algolia index name'
   )
   .action(cmd => {
-    getSettingsScript.start(cmd);
+    commands.getsettings.start(cmd);
   });
 
 // Set Settings
@@ -161,7 +146,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia setSettings params')
   .action(cmd => {
-    setSettingsScript.start(cmd);
+    commands.setsettings.start(cmd);
   });
 
 // Add Rules
@@ -178,7 +163,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia batchRules params')
   .action(cmd => {
-    addRulesScript.start(cmd);
+    commands.addrules.start(cmd);
   });
 
 // Add Synonyms
@@ -195,7 +180,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia batchSynonyms params')
   .action(cmd => {
-    addSynonymsScript.start(cmd);
+    commands.addsynonyms.start(cmd);
   });
 
 // Export Rules
@@ -211,7 +196,7 @@ program
   )
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    exportRulesScript.start(cmd);
+    commands.exportrules.start(cmd);
   });
 
 // Export Synonyms
@@ -227,7 +212,7 @@ program
   )
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    exportSynonymsScript.start(cmd);
+    commands.exportsynonyms.start(cmd);
   });
 
 // Transfer Index
@@ -266,7 +251,7 @@ program
     'Optional | Transformation filepath'
   )
   .action(cmd => {
-    transferIndexScript.start(cmd);
+    commands.transferindex.start(cmd);
   });
 
 // Transfer Index Config
@@ -305,7 +290,7 @@ program
     'Optional | Algolia batchSynonyms and batchRules params'
   )
   .action(cmd => {
-    transferIndexConfigScript.start(cmd);
+    commands.transferindexconfig.start(cmd);
   });
 
 // Delete Indices
@@ -322,7 +307,7 @@ program
     'Required | Dry run, will only output what would be done'
   )
   .action(cmd => {
-    deleteIndicesPatternScript.start(cmd);
+    commands.deleteindicespattern.start(cmd);
   });
 
 // Transform Lines
@@ -339,8 +324,17 @@ program
     'Optional | Transformation filepath'
   )
   .action(cmd => {
-    transformLinesScript.start(cmd);
+    commands.transformlines.start(cmd);
   });
+
+// Interactive command
+program
+  .command('interactive')
+  .alias('shell')
+  .description('Run in an interactive mode')
+  .action(cmd => {
+    commands.interactive.start(cmd);
+  })
 
 // Display command examples
 program

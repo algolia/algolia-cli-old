@@ -1,5 +1,5 @@
 const fs = require('fs');
-const setSettingsScript = require(`${__dirname}/../../scripts/SetSettings.js`);
+const setSettingsScript = require(`${__dirname}/../../commands/SetSettings.js`);
 const algolia = require('algoliasearch');
 
 const tempDir = `${__dirname}/../temp`;

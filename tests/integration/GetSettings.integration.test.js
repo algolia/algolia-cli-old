@@ -1,4 +1,4 @@
-const getSettingsScript = require(`${__dirname}/../../scripts/GetSettings.js`);
+const getSettingsScript = require(`${__dirname}/../../commands/GetSettings.js`);
 const algolia = require('algoliasearch');
 
 const appId = process.env.ALGOLIA_TEST_APP_ID;

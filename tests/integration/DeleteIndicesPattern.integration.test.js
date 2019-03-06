@@ -1,4 +1,4 @@
-const deleteIndicesPattern = require('../../scripts/DeleteIndicesPattern');
+const deleteIndicesPattern = require('../../commands/DeleteIndicesPattern');
 const algoliasearch = require('algoliasearch');
 const randomize = require('randomatic');
 

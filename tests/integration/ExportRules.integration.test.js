@@ -1,4 +1,4 @@
-const exportRulesScript = require(`${__dirname}/../../scripts/ExportRules.js`);
+const exportRulesScript = require(`${__dirname}/../../commands/ExportRules.js`);
 const algolia = require('algoliasearch');
 const path = require('path');
 const fs = require('fs');
