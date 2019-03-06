@@ -39,10 +39,7 @@ const registerDefaultProcessEventListeners = () => {
   // Handle uncaught exceptions
   process.on('uncaughtException', e => {
     process.exitCode = 1;
-    console.log(
-      chalk.white.bgRed('\nUncaught Exception'),
-      chalk.red(`\n${e}`)
-    );
+    console.log(chalk.white.bgRed('\nUncaught Exception'), chalk.red(`\n${e}`));
   });
 };
 
@@ -337,7 +334,7 @@ program
   .description('Run in an interactive mode')
   .action(cmd => {
     commands.interactive.start(cmd);
-  })
+  });
 
 // Display command examples
 program

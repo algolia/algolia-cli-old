@@ -4,10 +4,7 @@ class Interactive {
   parseCommandNames(commandList, ownName) {
     const names = commandList.map(command => command._name);
     // Remove current command name and default command
-    const commandNames = names.filter(name =>
-      name !== ownName &&
-      name !== '*'
-    );
+    const commandNames = names.filter(name => name !== ownName && name !== '*');
     return commandNames;
   }
 
@@ -39,7 +36,9 @@ class Interactive {
       // Prompt user to select a command
       const commandResponse = await inquirer.prompt(commandQuestion);
       // Prepare subsequent questions
-      const selectedCommand = commandList.find(command => command._name === commandResponse.commandChoice);
+      const selectedCommand = commandList.find(
+        command => command._name === commandResponse.commandChoice
+      );
       const validArguments = selectedCommand.options;
       const argumentQuestions = this.getArgumentQuestions(validArguments);
       // Prompt user to input command arguments
@@ -48,7 +47,7 @@ class Interactive {
       const argumentsList = Object.keys(argumentsResponse);
       argumentsList.forEach(arg => {
         if (argumentsResponse[arg] !== '')
-          program[arg] = argumentsResponse[arg];
+          program[arg] = argumentsResponse[arg]; // eslint-disable-line no-param-reassign
       });
       // Execute selected command
       commands[selectedCommand._name].start(program);
@@ -58,4 +57,4 @@ class Interactive {
   }
 }
 
-module.exports = new Interactive;
+module.exports = new Interactive();
