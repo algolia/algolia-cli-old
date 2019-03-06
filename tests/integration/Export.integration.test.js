@@ -1,8 +1,8 @@
-const exportScript = require(`${__dirname}/../../commands/Export.js`);
+const exportCommand = require(`${__dirname}/../../commands/Export.js`);
 const fs = require('fs');
+const path = require('path');
 const rimraf = require('rimraf');
 const algolia = require('algoliasearch');
-const path = require('path');
 
 const users = require('../mocks/users.json');
 const tempDir = path.join(__dirname, '../temp');
@@ -49,7 +49,7 @@ describe('Export command OK', () => {
     });
 
     // Execute export
-    exportScript.start(program);
+    exportCommand.start(program);
   }, 60000);
 
   afterAll(async () => {

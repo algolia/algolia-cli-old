@@ -1,8 +1,8 @@
-const exportSynonymScript = require(`${__dirname}/../../commands/ExportSynonyms.js`);
-const algolia = require('algoliasearch');
-const path = require('path');
+const exportSynonymCommand = require(`${__dirname}/../../commands/ExportSynonyms.js`);
 const fs = require('fs');
+const path = require('path');
 const rimraf = require('rimraf');
+const algolia = require('algoliasearch');
 
 const tempDir = path.join(__dirname, '../temp');
 
@@ -55,7 +55,7 @@ describe('ExportSynonyms command OK', () => {
       }
     });
     // Execute ExportSynonyms
-    await exportSynonymScript.start(program);
+    await exportSynonymCommand.start(program);
   }, 60000);
 
   afterAll(async () => {

@@ -1,8 +1,8 @@
-const exportRulesScript = require(`${__dirname}/../../commands/ExportRules.js`);
-const algolia = require('algoliasearch');
-const path = require('path');
+const exportRulesCommand = require(`${__dirname}/../../commands/ExportRules.js`);
 const fs = require('fs');
+const path = require('path');
 const rimraf = require('rimraf');
+const algolia = require('algoliasearch');
 
 const tempDir = path.join(__dirname, '../temp');
 
@@ -53,7 +53,7 @@ describe('ExportRules command OK', () => {
       }
     });
     // Execute ExportRules
-    await exportRulesScript.start(program);
+    await exportRulesCommand.start(program);
   }, 60000);
 
   afterAll(async () => {

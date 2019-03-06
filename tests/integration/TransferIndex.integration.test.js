@@ -1,7 +1,7 @@
-const transferIndexScript = require(`${__dirname}/../../commands/TransferIndex.js`);
+const transferIndexCommand = require(`${__dirname}/../../commands/TransferIndex.js`);
 const fs = require('fs');
-const algoliasearch = require('algoliasearch');
 const readLine = require('readline');
+const algolia = require('algoliasearch');
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
@@ -10,10 +10,10 @@ const indexName = process.env.ALGOLIA_TEST_INDEX_NAME;
 const altAppId = process.env.ALGOLIA_TEST_ALT_APP_ID;
 const altApiKey = process.env.ALGOLIA_TEST_ALT_API_KEY;
 // Test index
-const client = algoliasearch(appId, apiKey);
+const client = algolia(appId, apiKey);
 const index = client.initIndex(indexName);
 // Alternate test index
-const altClient = algoliasearch(altAppId, altApiKey);
+const altClient = algolia(altAppId, altApiKey);
 const altIndex = altClient.initIndex(indexName);
 
 // Configure test file/directory paths
@@ -70,7 +70,7 @@ describe('TransferIndex command OK', () => {
     });
 
     // Execute transfer
-    transferIndexScript.start(validProgram);
+    transferIndexCommand.start(validProgram);
   }, 60000);
 
   afterAll(async done => {

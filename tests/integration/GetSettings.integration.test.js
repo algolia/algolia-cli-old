@@ -1,4 +1,4 @@
-const getSettingsScript = require(`${__dirname}/../../commands/GetSettings.js`);
+const getSettingsCommand = require(`${__dirname}/../../commands/GetSettings.js`);
 const algolia = require('algoliasearch');
 
 const appId = process.env.ALGOLIA_TEST_APP_ID;
@@ -21,7 +21,7 @@ describe('GetSettings command OK', () => {
     const settings = await index.getSettings();
     const json = JSON.stringify(settings);
     // Execute GetSettings
-    await getSettingsScript.start(program);
+    await getSettingsCommand.start(program);
     // Check if settings we just retrieved match ones retrieved by script
     expect(global.console.log).toHaveBeenLastCalledWith(json);
     done();

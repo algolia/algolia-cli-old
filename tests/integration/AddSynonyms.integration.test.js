@@ -1,5 +1,5 @@
+const addSynonymsCommand = require(`${__dirname}/../../commands/AddSynonyms.js`);
 const path = require('path');
-const addSynonymsScript = require(`${__dirname}/../../commands/AddSynonyms.js`);
 const algolia = require('algoliasearch');
 
 const appId = process.env.ALGOLIA_TEST_APP_ID;
@@ -34,7 +34,7 @@ describe('addSynonyms command OK', () => {
   test('addsynonyms gets successful response with JSON file', async done => {
     global.console.log = jest.fn();
     // Add synonyms then check object properties to validate successful response
-    await addSynonymsScript.start(
+    await addSynonymsCommand.start(
       Object.assign({}, program, { sourcefilepath: synonymsJSONPath })
     );
     expect(global.console.log).toHaveBeenLastCalledWith({
@@ -47,7 +47,7 @@ describe('addSynonyms command OK', () => {
   test('addsynonyms gets successful response with CSV file', async done => {
     global.console.log = jest.fn();
     // Add synonyms then check object properties to validate successful response
-    await addSynonymsScript.start(
+    await addSynonymsCommand.start(
       Object.assign({}, program, { sourcefilepath: synonymsCSVPath })
     );
     expect(global.console.log).toHaveBeenLastCalledWith({

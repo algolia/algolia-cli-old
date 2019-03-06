@@ -1,4 +1,4 @@
-const searchScript = require(`${__dirname}/../../commands/Search.js`);
+const searchCommand = require(`${__dirname}/../../commands/Search.js`);
 const algolia = require('algoliasearch');
 
 const appId = process.env.ALGOLIA_TEST_APP_ID;
@@ -30,7 +30,7 @@ describe('Search command OK', () => {
     const logSpy = jest.spyOn(global.console, 'log');
     const regex = new RegExp(`(${objects[0].id}|${objects[1].id})`);
     // Execute Search
-    await searchScript.start(program);
+    await searchCommand.start(program);
     // Check if settings we just retrieved match ones retrieved by script
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(regex));
     done();

@@ -39,7 +39,10 @@ const registerDefaultProcessEventListeners = () => {
   // Handle uncaught exceptions
   process.on('uncaughtException', e => {
     process.exitCode = 1;
-    console.log(chalk.white.bgRed('\nUncaught Exception:', e));
+    console.log(
+      chalk.white.bgRed('\nUncaught Exception'),
+      chalk.red(`\n${e}`)
+    );
   });
 };
 

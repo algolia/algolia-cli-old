@@ -1,13 +1,13 @@
-const importToAlgolia = require(`${__dirname}/../../commands/Import.js`);
-const algoliasearch = require('algoliasearch');
+const importCommand = require(`${__dirname}/../../commands/Import.js`);
 const readLine = require('readline');
+const algolia = require('algoliasearch');
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
 const apiKey = process.env.ALGOLIA_TEST_API_KEY;
 const indexName = process.env.ALGOLIA_TEST_INDEX_NAME;
 
-const client = algoliasearch(appId, apiKey);
+const client = algolia(appId, apiKey);
 const index = client.initIndex(indexName);
 
 // Configure test file/directory paths
@@ -67,7 +67,7 @@ describe('Import command OK', () => {
     });
 
     // Execute import
-    importToAlgolia.start(program);
+    importCommand.start(program);
   }, 120000); // Allocate 2 mins max for test to run
 
   afterAll(async () => {

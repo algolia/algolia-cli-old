@@ -1,11 +1,11 @@
-const deleteIndicesPattern = require('../../commands/DeleteIndicesPattern');
-const algoliasearch = require('algoliasearch');
+const deleteIndicesPatternCommand = require('../../commands/DeleteIndicesPattern');
 const randomize = require('randomatic');
+const algolia = require('algoliasearch');
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
 const apiKey = process.env.ALGOLIA_TEST_API_KEY;
-const client = algoliasearch(appId, apiKey);
+const client = algolia(appId, apiKey);
 
 describe('DeleteIndicesPattern command OK', () => {
   const randomName = `algolia-cli-deleteindices-${randomize('aA0', 20)}`;
@@ -31,7 +31,7 @@ describe('DeleteIndicesPattern command OK', () => {
       indicesToFind.every(indexName => allIndicesNames.includes(indexName))
     ).toBe(true);
 
-    await deleteIndicesPattern.start({
+    await deleteIndicesPatternCommand.start({
       algoliaappid: process.env.ALGOLIA_TEST_APP_ID,
       algoliaapikey: process.env.ALGOLIA_TEST_API_KEY,
       regexp: new RegExp(`^${randomName}`),

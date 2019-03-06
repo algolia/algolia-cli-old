@@ -1,5 +1,5 @@
+const setSettingsCommand = require(`${__dirname}/../../commands/SetSettings.js`);
 const fs = require('fs');
-const setSettingsScript = require(`${__dirname}/../../commands/SetSettings.js`);
 const algolia = require('algoliasearch');
 
 const tempDir = `${__dirname}/../temp`;
@@ -38,7 +38,7 @@ describe('SetSettings command OK', () => {
   test('setsettings gets successful response', async done => {
     global.console.log = jest.fn();
     // Get a baseline of the settings on the index
-    await setSettingsScript.start(program);
+    await setSettingsCommand.start(program);
     expect(global.console.log).toHaveBeenLastCalledWith({
       taskID: expect.anything(),
       updatedAt: expect.anything(),

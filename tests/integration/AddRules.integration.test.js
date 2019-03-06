@@ -1,5 +1,5 @@
-const path = require('path');
 const addRulesScript = require(`${__dirname}/../../commands/AddRules.js`);
+const path = require('path');
 const algolia = require('algoliasearch');
 
 const rulesDir = path.resolve(process.cwd(), 'tests/mocks/addRules');
