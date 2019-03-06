@@ -3,8 +3,15 @@ const baseScript = new Base();
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const readLine = require('readline');
 
 jest.mock('fs');
+jest.mock('readline');
+
+// Mock Readline
+readLine.clearLine = jest.fn();
+readLine.cursorTo = jest.fn();
+process.stdout.write = jest.fn();
 
 // Mock fs
 const isDirectory = jest
@@ -42,6 +49,18 @@ describe('Base script OK', () => {
     const result = baseScript.validate(invalidProgram, message, params);
     expect(result).toEqual(undefined);
     expect(invalidProgram.help).toHaveBeenCalled();
+    done();
+  });
+
+  /* writeProgress */
+
+  test('writeProgress should output string', done => {
+    const random = Math.floor(Math.random() * 10);
+    const msg = `Message with random number ${random}`;
+    baseScript.writeProgress(msg);
+    expect(readLine.clearLine).toHaveBeenCalled();
+    expect(readLine.cursorTo).toHaveBeenCalled();
+    expect(process.stdout.write).toHaveBeenCalledWith(msg);
     done();
   });
 
@@ -86,7 +105,7 @@ describe('Base script OK', () => {
     const filename = 'test.js';
     const filepath = `${directory}/${filename}`;
     const options = {
-      SOURCE_FILEPATH: filepath,
+      sourceFilepath: filepath,
     };
     baseScript.setSource(options);
     expect(normalizePathSpy).toHaveBeenCalledWith(filepath);
@@ -101,7 +120,7 @@ describe('Base script OK', () => {
       '/Users/username/Documents/Code/practice/path-manipulation';
     const filename = 'test.js';
     const options = {
-      SOURCE_FILEPATH: directory,
+      sourceFilepath: directory,
     };
     fs.readdirSync.mockReturnValueOnce([filename]);
     baseScript.setSource(options);

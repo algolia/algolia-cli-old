@@ -1,12 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
 class SearchScript extends Base {
@@ -56,7 +50,7 @@ class SearchScript extends Base {
       const options = this.parseSearchOptions(params);
 
       // Instantiate Algolia index
-      const client = algolia(appId, apiKey, keepaliveAgent);
+      const client = algolia(appId, apiKey);
       const index = client.initIndex(indexName);
       // Get index settings
       const result = await index.search(query, options);

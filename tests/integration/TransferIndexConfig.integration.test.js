@@ -1,12 +1,6 @@
 const transferIndexConfigScript = require(`${__dirname}/../../commands/TransferIndexConfig.js`);
 const algoliasearch = require('algoliasearch');
 const readLine = require('readline');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
@@ -15,10 +9,10 @@ const indexName = process.env.ALGOLIA_TEST_INDEX_NAME;
 const altAppId = process.env.ALGOLIA_TEST_ALT_APP_ID;
 const altApiKey = process.env.ALGOLIA_TEST_ALT_API_KEY;
 // Test index
-const client = algoliasearch(appId, apiKey, keepaliveAgent);
+const client = algoliasearch(appId, apiKey);
 const index = client.initIndex(indexName);
 // Alternate test index
-const altClient = algoliasearch(altAppId, altApiKey, keepaliveAgent);
+const altClient = algoliasearch(altAppId, altApiKey);
 const altIndex = altClient.initIndex(indexName);
 
 // Configure test file/directory paths
@@ -60,6 +54,7 @@ describe('TransferIndexConfig command OK', () => {
         expect(hitsPerPage).toEqual(7);
         done();
       } else {
+        process.stdout.write('\n');
         readLine.cursorTo(process.stdout, 0);
         process.stdout.write(msg);
       }

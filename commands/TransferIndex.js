@@ -1,18 +1,10 @@
-const readLine = require('readline');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
 class TransferIndexScript extends Base {
   constructor() {
     super();
     // Bind class methods
-    this.writeProgress = this.writeProgress.bind(this);
     this.getIndices = this.getIndices.bind(this);
     this.getTransformations = this.getTransformations.bind(this);
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
@@ -30,24 +22,13 @@ class TransferIndexScript extends Base {
     ];
   }
 
-  writeProgress(count) {
-    readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Records transferred: ~ ${count}`);
-  }
-
   getIndices(options) {
     // Instantiate Algolia indices
-    const sourceClient = algolia(
-      options.sourceAppId,
-      options.sourceApiKey,
-      keepaliveAgent
-    );
+    const sourceClient = algolia(options.sourceAppId, options.sourceApiKey);
     const sourceIndex = sourceClient.initIndex(options.sourceIndexName);
-
     const destinationClient = algolia(
       options.destinationAppId,
-      options.destinationApiKey,
-      keepaliveAgent
+      options.destinationApiKey
     );
     const destinationIndex = destinationClient.initIndex(
       options.destinationIndexName
@@ -93,7 +74,7 @@ class TransferIndexScript extends Base {
             : result.hits;
           await indices.destinationIndex.addObjects(hits);
           hitsCount += result.hits.length;
-          this.writeProgress(hitsCount);
+          this.writeProgress(`Records transferred: ${hitsCount}`);
         } catch (e) {
           throw e;
         }

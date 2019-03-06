@@ -1,16 +1,12 @@
 const importScript = require(`./Import.js`);
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
-const readLine = require('readline');
 const path = require('path');
 const fs = require('fs');
 const { Readable } = require('stream');
 const transform = require('stream-transform');
 const csv = require('csvtojson');
 
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
-jest.mock('readline');
 jest.mock('fs');
 jest.mock('stream-transform');
 jest.mock('csvtojson');
@@ -19,13 +15,6 @@ jest.mock('csvtojson');
 const isDirectory = jest.fn().mockReturnValueOnce(false);
 const isFile = jest.fn().mockReturnValue(true);
 fs.lstatSync.mockReturnValue({ isDirectory, isFile });
-
-// Mock Readline
-readLine.cursorTo = jest.fn();
-process.stdout.write = jest.fn();
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock Algolia
 const initIndex = jest.fn();
@@ -51,32 +40,18 @@ describe('Import script OK', () => {
     done();
   });
 
-  /* writeProgress */
-
-  test('Should write progress with correct count to stdout', done => {
-    const count = 908765;
-    importScript.writeProgress(count);
-    expect(readLine.cursorTo).toHaveBeenCalled();
-    expect(process.stdout.write).toHaveBeenCalledWith(
-      `Records indexed: ${count}`
-    );
-    done();
-  });
-
   /* setIndex */
 
   test('Should set Algolia index instance variable', done => {
     const options = {
-      ALGOLIA_APP_ID: validProgram.algoliaappid,
-      ALGOLIA_API_KEY: validProgram.algoliaapikey,
-      ALGOLIA_INDEX_NAME: validProgram.algoliaindexname,
-      keepaliveAgent: { name: 'keepaliveAgent' },
+      appId: validProgram.algoliaappid,
+      apiKey: validProgram.algoliaapikey,
+      indexName: validProgram.algoliaindexname,
     };
     importScript.setIndex(options);
     expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
-      validProgram.algoliaapikey,
-      expect.any(Object)
+      validProgram.algoliaapikey
     );
     expect(importScript.client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname
@@ -88,7 +63,7 @@ describe('Import script OK', () => {
 
   test('Should apply correct formatRecord method without transformations input param', done => {
     const options = {
-      TRANSFORMATIONS: null,
+      transformations: null,
     };
     importScript.setTransformations(options);
     expect(importScript.formatRecord).toEqual(
@@ -98,12 +73,12 @@ describe('Import script OK', () => {
   });
 
   test('Should apply correct formatRecord method with transformations input param', done => {
-    const TRANSFORMATIONS = path.resolve(
+    const transformations = path.resolve(
       process.cwd(),
       'tests/mocks/users-transformation.js'
     );
-    const method = require(TRANSFORMATIONS);
-    const options = { TRANSFORMATIONS };
+    const method = require(transformations);
+    const options = { transformations };
     importScript.setTransformations(options);
     expect(importScript.formatRecord).toEqual(method);
     done();
@@ -178,8 +153,8 @@ describe('Import script OK', () => {
     importScript.formatRecord = jest.fn();
     importScript.directory = directory;
     importScript.filename = filename;
-    importScript.MAX_CONCURRENCY = 4;
-    importScript.CHUNK_SIZE = 10;
+    importScript.maxConcurrency = 4;
+    importScript.batchSize = 10;
 
     // Run target method to test
     importScript.indexFiles([filename]);

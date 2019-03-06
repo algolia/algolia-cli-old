@@ -1,15 +1,10 @@
 const exportRulesScript = require(`./ExportRules.js`);
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 const path = require('path');
 const fs = require('fs');
 
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 jest.mock('fs');
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock fs
 const isDirectory = jest.fn().mockReturnValue(true);
@@ -53,8 +48,7 @@ describe('ExportRules script OK', () => {
     await exportRulesScript.start(validProgram);
     expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
-      validProgram.algoliaapikey,
-      expect.any(Object)
+      validProgram.algoliaapikey
     );
     expect(client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname
