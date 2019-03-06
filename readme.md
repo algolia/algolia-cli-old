@@ -27,6 +27,8 @@ $ algolia --help
 
 $ algolia --version
 
+$ algolia interactive
+
 $ algolia search -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -q <query> -p <searchParams> -o <outputPath>
 
 $ algolia import -s <sourceFilepath> -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -b <batchSize> -t <transformationFilepath> -m <maxconcurrency> -p <csvToJsonParams>
@@ -96,7 +98,19 @@ or
 algolia -v
 ```
 
-### 3. Search | `search`
+### 3. Interactive | `interactive`
+
+##### Description:
+
+Use Algolia CLI in interactive mode. Get command and argument prompts.
+
+##### Usage:
+
+```shell
+algolia interactive
+```
+
+### 4. Search | `search`
 
 ##### Description:
 
@@ -124,7 +138,7 @@ algolia search -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -q <qu
 - Provided `<outputPath>` path must include file name.
 - See [search parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/) for more documentation about search options.
 
-### 4. Import | `import`
+### 5. Import | `import`
 
 ##### Description:
 
@@ -184,7 +198,7 @@ module.exports = (data,cb) => {
 - If command outputs a `AlgoliaSearchRequestTimeoutError` error, this means a batch of records failed to import. This typically occurs when attempting to import too much data over too slow a network connection. Command will automatically attempt to reduce `<batchSize>` to compensate, and re-try. If issues persist, consider reducing `<maxConcurrency>` and/or `<batchSize>`.
 - If command outputs a `High memory usage` warning, it means the process is consuming a very high percentage of the estimated system heap allocation for the node process. Command will automatically attempt to reduce `<batchSize>` to compensate. If issues persist, consider reducing `<maxConcurrency>` and/or `<batchSize>`.
 
-### 5. Export | `export`
+### 6. Export | `export`
 
 ##### Description:
 
@@ -208,7 +222,7 @@ algolia export -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <ou
 
 - `<outputPath>` must be a directory.
 
-### 6. Get Settings | `getsettings`
+### 7. Get Settings | `getsettings`
 
 ##### Description:
 
@@ -231,7 +245,7 @@ algolia getsettings -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 - To write settings JSON locally, just redirect the output to a file. For example:
 `$ algolia getsettings -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME > ~/Desktop/EXAMPLE_FILE_NAME.json`
 
-### 7. Set Settings | `setsettings`
+### 8. Set Settings | `setsettings`
 
 ##### Description:
 
@@ -297,7 +311,7 @@ module.exports = {
 '{"forwardToReplicas":true}'
 ```
 
-### 8. Add Rules | `addrules`
+### 9. Add Rules | `addrules`
 
 ##### Description:
 
@@ -321,7 +335,7 @@ algolia addrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -s <
 
 - See [batchRules documentation](https://www.algolia.com/doc/api-reference/api-methods/batch-rules/) and [implementing query rules documentation](https://www.algolia.com/doc/guides/managing-results/refine-results/merchandising-and-promoting/in-depth/implementing-query-rules/) for more info.
 
-### 9. Export Rules | `exportrules`
+### 10. Export Rules | `exportrules`
 
 ##### Description:
 
@@ -344,7 +358,7 @@ algolia exportrules -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 
 - `<outputPath>`path must include file name.
 
-### 10. Add Synonyms | `addsynonyms`
+### 11. Add Synonyms | `addsynonyms`
 
 ##### Description:
 
@@ -370,7 +384,7 @@ algolia addsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -
 
 - See [batchSynonyms documentation](https://www.algolia.com/doc/api-reference/api-methods/batch-synonyms/) and [adding synonyms documentation](https://www.algolia.com/doc/guides/managing-results/optimize-search-results/adding-synonyms/) for more info.
 
-### 11. Export Synonyms | `exportsynonyms`
+### 12. Export Synonyms | `exportsynonyms`
 
 ##### Description:
 
@@ -393,7 +407,7 @@ algolia exportsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName
 
 - `<outputPath>`path must include file name.
 
-### 12. Transfer Index | `transferindex`
+### 13. Transfer Index | `transferindex`
 
 ##### Description:
 
@@ -420,7 +434,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 - Command duplicates data and extended settings; does not delete or affect source index.
 - Replica indices and settings not transferred.
 
-### 13. Transfer Index Config | `transferindexconfig`
+### 14. Transfer Index Config | `transferindexconfig`
 
 ##### Description:
 
@@ -446,7 +460,7 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 
 - When transferring synonyms and query rules, `forwardToReplicas`, `replaceExistingSynonyms`, and `clearExistingRules` params will default to false, unless you specify `<configParams>`.
 
-### 14. Delete Indices Pattern | `deleteindicespattern`
+### 15. Delete Indices Pattern | `deleteindicespattern`
 
 ##### Description:
 
@@ -477,7 +491,7 @@ algolia deleteindicespattern -a someAppId -k someApiKey -r '^staging__' -x false
 
 This will delete all indices of the application that are starting with "staging__".
 
-### 15. Transform Lines | `transformlines`
+### 16. Transform Lines | `transformlines`
 
 ##### Description:
 
@@ -550,6 +564,8 @@ algolia examples
 $ algolia --help
 
 $ algolia --version
+
+$ algolia interactive
 
 $ algolia search -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -q 'example query' -p '{"facetFilters":["category:book"]}' -o ~/Desktop/results.json
 
