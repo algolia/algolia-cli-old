@@ -1,23 +1,17 @@
 const fs = require('fs');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
-class AddRulesScript extends Base {
+class SetSettingsScript extends Base {
   constructor() {
     super();
     // Bind class methods
     this.getSource = this.getSource.bind(this);
-    this.parseBatchRulesOptions = this.parseBatchRulesOptions.bind(this);
+    this.parseSetSettingsOptions = this.parseSetSettingsOptions.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia addrules -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p batchRulesParams\n\n';
+      '\nExample: $ algolia setsettings -a algoliaappid -k algoliaapikey -n algoliaindexname -s sourcefilepath -p setsettingsparams\n\n';
     this.params = [
       'algoliaappid',
       'algoliaapikey',
@@ -29,13 +23,13 @@ class AddRulesScript extends Base {
   getSource(path) {
     const filepath = this.normalizePath(path);
     if (!fs.lstatSync(filepath).isFile())
-      throw new Error('Source filepath must target valid rules file.');
+      throw new Error('Source filepath must target valid settings file.');
     return filepath;
   }
 
-  parseBatchRulesOptions(params) {
+  parseSetSettingsOptions(params) {
     try {
-      const options = { forwardToReplicas: false, clearExistingRules: false };
+      const options = { forwardToReplicas: false };
       if (params === null) return options;
       else return JSON.parse(params);
     } catch (e) {
@@ -52,21 +46,21 @@ class AddRulesScript extends Base {
       const appId = program.algoliaappid;
       const apiKey = program.algoliaapikey;
       const indexName = program.algoliaindexname;
-      const sourcefilepath = program.sourcefilepath;
+      const sourceFilepath = program.sourcefilepath;
       const params = program.params || null;
 
-      // Get rules
-      const rulesPath = this.getSource(sourcefilepath);
-      const rulesFile = await fs.readFileSync(rulesPath);
-      const rules = JSON.parse(rulesFile);
+      // Get index settings
+      const settingsPath = this.getSource(sourceFilepath);
+      const settingsFile = await fs.readFileSync(settingsPath);
+      const settings = JSON.parse(settingsFile);
       // Get options
-      const batchRulesOptions = this.parseBatchRulesOptions(params);
+      const settingsOptions = this.parseSetSettingsOptions(params);
 
       // Instantiate Algolia index
-      const client = algolia(appId, apiKey, keepaliveAgent);
+      const client = algolia(appId, apiKey);
       const index = client.initIndex(indexName);
-      // Add rules
-      const result = await index.batchRules(rules, batchRulesOptions);
+      // Set index settings
+      const result = await index.setSettings(settings, settingsOptions);
       return console.log(result);
     } catch (e) {
       throw e;
@@ -74,5 +68,5 @@ class AddRulesScript extends Base {
   }
 }
 
-const addRulesScript = new AddRulesScript();
-module.exports = addRulesScript;
+const setSettingsScript = new SetSettingsScript();
+module.exports = setSettingsScript;

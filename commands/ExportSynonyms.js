@@ -1,15 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
-class ExportRulesScript extends Base {
+class ExportSynonymsScript extends Base {
   constructor() {
     super();
     // Bind class methods
@@ -17,12 +11,12 @@ class ExportRulesScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia exportrules -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath\n\n';
+      '\nExample: $ algolia exportsynonyms -a algoliaappid -k algoliaapikey -n algoliaindexname -o outputpath\n\n';
     this.params = ['algoliaappid', 'algoliaapikey', 'algoliaindexname'];
   }
 
   getOutputPath(outputpath, indexName) {
-    const defaultFilename = `${indexName}-rules.json`;
+    const defaultFilename = `${indexName}-synonyms.json`;
     const defaultFilepath = path.resolve(process.cwd(), defaultFilename);
     // Process output filepath
     const filepath =
@@ -51,11 +45,11 @@ class ExportRulesScript extends Base {
       const filepath = this.getOutputPath(outputpath, indexName);
 
       // Instantiate Algolia index
-      const client = algolia(appId, apiKey, keepaliveAgent);
+      const client = algolia(appId, apiKey);
       const index = client.initIndex(indexName);
       // Get index settings
-      const rules = await index.exportRules();
-      fs.writeFileSync(filepath, JSON.stringify(rules));
+      const synonyms = await index.exportSynonyms();
+      fs.writeFileSync(filepath, JSON.stringify(synonyms));
       return console.log(`Done writing ${filepath}`);
     } catch (e) {
       throw e;
@@ -63,5 +57,5 @@ class ExportRulesScript extends Base {
   }
 }
 
-const exportRulesScript = new ExportRulesScript();
-module.exports = exportRulesScript;
+const exportSynonymsScript = new ExportSynonymsScript();
+module.exports = exportSynonymsScript;

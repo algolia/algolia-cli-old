@@ -1,11 +1,4 @@
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
-const readLine = require('readline');
 const Base = require('./Base.js');
 
 class DeleteIndicesPatternScript extends Base {
@@ -15,11 +8,6 @@ class DeleteIndicesPatternScript extends Base {
     this.message =
       "\nUsage: $ algolia deleteindices -a algoliaappid -k algoliaapikey -r 'regexp for filtering' -x\n\n";
     this.params = ['algoliaappid', 'algoliaapikey', 'regexp', 'dryrun'];
-  }
-
-  writeProgress(count) {
-    readLine.cursorTo(process.stdout, 0);
-    process.stdout.write(`Deleted indices: ${count}`);
   }
 
   removeReplicas({ indices, regexp, dryRun }) {
@@ -65,7 +53,7 @@ class DeleteIndicesPatternScript extends Base {
           deletedIndices++;
 
           if (dryRun === false) {
-            this.writeProgress(deletedIndices);
+            this.writeProgress(`Deleted indices: ${deletedIndices}`);
             const index = this.client.initIndex(indexName);
             const { taskID } = await this.client.deleteIndex(indexName);
             return index.waitTask(taskID);
@@ -85,7 +73,7 @@ class DeleteIndicesPatternScript extends Base {
   }
 
   async deleteIndicesPattern(options) {
-    this.client = algolia(options.appId, options.apiKey, keepaliveAgent);
+    this.client = algolia(options.appId, options.apiKey);
     const { items: indices } = await this.client.listIndexes();
     const regexp = new RegExp(options.regexp);
     await this.removeReplicas({ indices, regexp, dryRun: options.dryRun });

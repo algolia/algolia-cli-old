@@ -1,14 +1,8 @@
-const exportRulesScript = require(`${__dirname}/../../scripts/ExportRules.js`);
-const algolia = require('algoliasearch');
-const path = require('path');
+const exportRulesCommand = require(`${__dirname}/../../commands/ExportRules.js`);
 const fs = require('fs');
+const path = require('path');
 const rimraf = require('rimraf');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
+const algolia = require('algoliasearch');
 
 const tempDir = path.join(__dirname, '../temp');
 
@@ -16,7 +10,7 @@ const appId = process.env.ALGOLIA_TEST_APP_ID;
 const apiKey = process.env.ALGOLIA_TEST_API_KEY;
 const indexName = process.env.ALGOLIA_TEST_INDEX_NAME;
 
-const client = algolia(appId, apiKey, keepaliveAgent);
+const client = algolia(appId, apiKey);
 const index = client.initIndex(indexName);
 
 const program = {
@@ -59,7 +53,7 @@ describe('ExportRules command OK', () => {
       }
     });
     // Execute ExportRules
-    await exportRulesScript.start(program);
+    await exportRulesCommand.start(program);
   }, 60000);
 
   afterAll(async () => {

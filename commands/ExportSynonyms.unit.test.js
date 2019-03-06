@@ -1,15 +1,10 @@
-const exportRulesScript = require(`./ExportRules.js`);
-const HttpsAgent = require('agentkeepalive');
+const exportSynonymsScript = require(`./ExportSynonyms.js`);
 const algolia = require('algoliasearch');
 const path = require('path');
 const fs = require('fs');
 
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 jest.mock('fs');
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock fs
 const isDirectory = jest.fn().mockReturnValue(true);
@@ -18,16 +13,16 @@ fs.writeFileSync = jest.fn();
 
 // Mock Algolia
 const message = 'Caught exception';
-const fakeRules = [
+const fakeSynonyms = [
   {
-    condition: { pattern: 'foo', anchoring: 'contains' },
-    consequence: { userData: { foo: 'bar' } },
-    description: 'Test',
-    objectID: '1550287012823',
+    type: 'altCorrection1',
+    word: 'smartphone',
+    corrections: ['iphone'],
+    objectID: 'smartphone-syn',
   },
 ];
-const exportRules = jest.fn().mockResolvedValueOnce(fakeRules);
-const index = { exportRules };
+const exportSynonyms = jest.fn().mockResolvedValueOnce(fakeSynonyms);
+const index = { exportSynonyms };
 const client = {
   initIndex: jest.fn(),
 };
@@ -41,25 +36,24 @@ const validProgram = {
   outputpath: null,
 };
 
-describe('ExportRules script OK', () => {
+describe('ExportRules synonyms OK', () => {
   /* start */
 
-  test('exportRules and writeFileSync should be called', async done => {
+  test('exportSynonyms and writeFileSync should be called', async done => {
     const filepath = path.resolve(
       process.cwd(),
-      `${validProgram.algoliaindexname}-rules.json`
+      `${validProgram.algoliaindexname}-synonyms.json`
     );
     client.initIndex.mockReturnValueOnce(index);
-    await exportRulesScript.start(validProgram);
+    await exportSynonymsScript.start(validProgram);
     expect(algolia).toHaveBeenCalledWith(
       validProgram.algoliaappid,
-      validProgram.algoliaapikey,
-      expect.any(Object)
+      validProgram.algoliaapikey
     );
     expect(client.initIndex).toHaveBeenCalledWith(
       validProgram.algoliaindexname
     );
-    expect(index.exportRules).toHaveBeenCalled();
+    expect(index.exportSynonyms).toHaveBeenCalled();
     expect(fs.writeFileSync).toHaveBeenCalledWith(filepath, expect.any(String));
     done();
   });
@@ -71,7 +65,7 @@ describe('ExportRules script OK', () => {
         throw new Error(message);
       });
       // Execute method
-      await exportRulesScript.start(validProgram);
+      await exportSynonymsScript.start(validProgram);
       throw new Error('This error should not be reached');
     } catch (e) {
       expect(e.message).toEqual(message);

@@ -1,10 +1,4 @@
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
 class TransferIndexConfigScript extends Base {
@@ -19,9 +13,9 @@ class TransferIndexConfigScript extends Base {
     this.message =
       '\nExample: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -p configParams\n\n';
     this.params = [
-      'algoliaappid',
-      'algoliaapikey',
-      'algoliaindexname',
+      'sourcealgoliaappid',
+      'sourcealgoliaapikey',
+      'sourcealgoliaindexname',
       'destinationalgoliaappid',
       'destinationalgoliaapikey',
     ];
@@ -29,17 +23,11 @@ class TransferIndexConfigScript extends Base {
 
   getIndices(options) {
     // Instantiate Algolia indices
-    const sourceClient = algolia(
-      options.sourceAppId,
-      options.sourceApiKey,
-      keepaliveAgent
-    );
+    const sourceClient = algolia(options.sourceAppId, options.sourceApiKey);
     const sourceIndex = sourceClient.initIndex(options.sourceIndexName);
-
     const destinationClient = algolia(
       options.destinationAppId,
-      options.destinationApiKey,
-      keepaliveAgent
+      options.destinationApiKey
     );
     const destinationIndex = destinationClient.initIndex(
       options.destinationIndexName
@@ -85,13 +73,13 @@ class TransferIndexConfigScript extends Base {
 
       // Config params
       const options = {
-        sourceAppId: program.algoliaappid,
-        sourceApiKey: program.algoliaapikey,
-        sourceIndexName: program.algoliaindexname,
+        sourceAppId: program.sourcealgoliaappid,
+        sourceApiKey: program.sourcealgoliaapikey,
+        sourceIndexName: program.sourcealgoliaindexname,
         destinationAppId: program.destinationalgoliaappid,
         destinationApiKey: program.destinationalgoliaapikey,
         destinationIndexName:
-          program.destinationindexname || program.algoliaindexname,
+          program.destinationindexname || program.sourcealgoliaindexname,
         configParams: program.params || null,
       };
 

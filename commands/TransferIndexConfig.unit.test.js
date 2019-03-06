@@ -1,18 +1,13 @@
 const transferIndexConfigScript = require(`./TransferIndexConfig.js`);
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock user input
 const validProgram = {
-  algoliaappid: 'fake-command-input-1',
-  algoliaapikey: 'fake-command-input-2',
-  algoliaindexname: 'fake-command-input-3',
+  sourcealgoliaappid: 'fake-command-input-1',
+  sourcealgoliaapikey: 'fake-command-input-2',
+  sourcealgoliaindexname: 'fake-command-input-3',
   destinationalgoliaappid: 'fake-command-input-4',
   destinationalgoliaapikey: 'fake-command-input-5',
   destinationindexname: 'fake-command-input-6',
@@ -23,9 +18,9 @@ describe('Transfer Index script OK', () => {
 
   test('getIndices should return algolia indices', done => {
     const mockOptions = {
-      sourceAppId: validProgram.algoliaappid,
-      sourceApiKey: validProgram.algoliaapikey,
-      sourceindexName: validProgram.algoliaindexname,
+      sourceAppId: validProgram.sourcealgoliaappid,
+      sourceApiKey: validProgram.sourcealgoliaapikey,
+      sourceindexName: validProgram.sourcealgoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
@@ -40,14 +35,12 @@ describe('Transfer Index script OK', () => {
     expect(algolia).toHaveBeenNthCalledWith(
       1,
       mockOptions.sourceAppId,
-      mockOptions.sourceApiKey,
-      expect.any(Object)
+      mockOptions.sourceApiKey
     );
     expect(algolia).toHaveBeenNthCalledWith(
       2,
       mockOptions.destinationAppId,
-      mockOptions.destinationApiKey,
-      expect.any(Object)
+      mockOptions.destinationApiKey
     );
     expect(initIndex).toHaveBeenCalledTimes(2);
     expect(initIndex).toHaveBeenNthCalledWith(1, mockOptions.sourceIndexName);
@@ -174,20 +167,18 @@ describe('Transfer Index script OK', () => {
     // Use timeout to defer execution of test assertions
     setTimeout(() => {
       expect(algolia).toHaveBeenCalledWith(
-        validProgram.algoliaappid,
-        validProgram.algoliaapikey,
-        expect.any(Object)
+        validProgram.sourcealgoliaappid,
+        validProgram.sourcealgoliaapikey
       );
       expect(algolia).toHaveBeenCalledWith(
         validProgram.destinationalgoliaappid,
-        validProgram.destinationalgoliaapikey,
-        expect.any(Object)
+        validProgram.destinationalgoliaapikey
       );
       expect(client.initIndex).toHaveBeenCalledWith(
-        validProgram.algoliaindexname
+        validProgram.sourcealgoliaindexname
       );
       expect(client.initIndex).toHaveBeenCalledWith(
-        validProgram.algoliaindexname
+        validProgram.sourcealgoliaindexname
       );
       expect(getSettings).toHaveBeenCalled();
       expect(exportSynonyms).toHaveBeenCalled();

@@ -1,49 +1,27 @@
 const transferIndexScript = require(`./TransferIndex.js`);
 const EventEmitter = require('events');
-const readLine = require('readline');
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 
-jest.mock('readline');
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
-
-// Mock Readline
-readLine.cursorTo = jest.fn();
-process.stdout.write = jest.fn();
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock user input
 const validProgram = {
-  algoliaappid: 'fake-command-input-1',
-  algoliaapikey: 'fake-command-input-2',
-  algoliaindexname: 'fake-command-input-3',
+  sourcealgoliaappid: 'fake-command-input-1',
+  sourcealgoliaapikey: 'fake-command-input-2',
+  sourcealgoliaindexname: 'fake-command-input-3',
   destinationalgoliaappid: 'fake-command-input-4',
   destinationalgoliaapikey: 'fake-command-input-5',
   destinationindexname: 'fake-command-input-6',
 };
 
 describe('Transfer Index script OK', () => {
-  /* writeProgress */
-
-  test('writeProgress should output number of records transferred', done => {
-    const random = Math.floor(Math.random() * 10);
-    transferIndexScript.writeProgress(random);
-    expect(process.stdout.write).toHaveBeenCalledWith(
-      `Records transferred: ~ ${random}`
-    );
-    done();
-  });
-
   /* getIndices */
 
   test('getIndices should set algolia clients and indices', done => {
     const mockOptions = {
-      sourceAppId: validProgram.algoliaappid,
-      sourceApiKey: validProgram.algoliaapikey,
-      sourceIndexName: validProgram.algoliaindexname,
+      sourceAppId: validProgram.sourcealgoliaappid,
+      sourceApiKey: validProgram.sourcealgoliaapikey,
+      sourceIndexName: validProgram.sourcealgoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
@@ -58,14 +36,12 @@ describe('Transfer Index script OK', () => {
     expect(algolia).toHaveBeenNthCalledWith(
       1,
       mockOptions.sourceAppId,
-      mockOptions.sourceApiKey,
-      expect.any(Object)
+      mockOptions.sourceApiKey
     );
     expect(algolia).toHaveBeenNthCalledWith(
       2,
       mockOptions.destinationAppId,
-      mockOptions.destinationApiKey,
-      expect.any(Object)
+      mockOptions.destinationApiKey
     );
     expect(initIndex).toHaveBeenCalledTimes(2);
     expect(initIndex).toHaveBeenNthCalledWith(1, mockOptions.sourceIndexName);
@@ -152,7 +128,9 @@ describe('Transfer Index script OK', () => {
     // Expect script to import data to destination Algolia index in onResult handler
     expect(addObjects).toHaveBeenCalledWith(expect.any(Array));
     // Expect script to output progress in onResult handler
-    expect(transferIndexScript.writeProgress).toHaveBeenCalledWith(2);
+    expect(transferIndexScript.writeProgress).toHaveBeenCalledWith(
+      expect.stringContaining('2')
+    );
     done();
   });
 
@@ -218,9 +196,9 @@ describe('Transfer Index script OK', () => {
     const logSpy = jest.spyOn(global.console, 'log');
     // Mock options
     const options = {
-      sourceAppId: validProgram.algoliaappid,
-      sourceApiKey: validProgram.algoliaapikey,
-      sourceIndexName: validProgram.algoliaindexname,
+      sourceAppId: validProgram.sourcealgoliaappid,
+      sourceApiKey: validProgram.sourcealgoliaapikey,
+      sourceIndexName: validProgram.sourcealgoliaindexname,
       destinationAppId: validProgram.destinationalgoliaappid,
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,

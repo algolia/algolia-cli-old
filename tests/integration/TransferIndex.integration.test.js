@@ -1,13 +1,7 @@
-const transferIndexScript = require(`${__dirname}/../../scripts/TransferIndex.js`);
+const transferIndexCommand = require(`${__dirname}/../../commands/TransferIndex.js`);
 const fs = require('fs');
-const algoliasearch = require('algoliasearch');
 const readLine = require('readline');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
+const algolia = require('algoliasearch');
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
@@ -16,10 +10,10 @@ const indexName = process.env.ALGOLIA_TEST_INDEX_NAME;
 const altAppId = process.env.ALGOLIA_TEST_ALT_APP_ID;
 const altApiKey = process.env.ALGOLIA_TEST_ALT_API_KEY;
 // Test index
-const client = algoliasearch(appId, apiKey, keepaliveAgent);
+const client = algolia(appId, apiKey);
 const index = client.initIndex(indexName);
 // Alternate test index
-const altClient = algoliasearch(altAppId, altApiKey, keepaliveAgent);
+const altClient = algolia(altAppId, altApiKey);
 const altIndex = altClient.initIndex(indexName);
 
 // Configure test file/directory paths
@@ -27,9 +21,9 @@ const dataPath = `${__dirname}/../mocks/users.json`;
 
 // Mock user input
 const validProgram = {
-  algoliaappid: appId,
-  algoliaapikey: apiKey,
-  algoliaindexname: indexName,
+  sourcealgoliaappid: appId,
+  sourcealgoliaapikey: apiKey,
+  sourcealgoliaindexname: indexName,
   destinationalgoliaappid: altAppId,
   destinationalgoliaapikey: altApiKey,
 };
@@ -69,13 +63,14 @@ describe('TransferIndex command OK', () => {
         expect(isUser).toBe(true);
         done();
       } else {
+        process.stdout.write('\n');
         readLine.cursorTo(process.stdout, 0);
         process.stdout.write(msg);
       }
     });
 
     // Execute transfer
-    transferIndexScript.start(validProgram);
+    transferIndexCommand.start(validProgram);
   }, 60000);
 
   afterAll(async done => {

@@ -1,24 +1,9 @@
-#!/usr/bin/env node --max_old_space_size=4096
+#!/usr/bin/env node
 
 const program = require('commander');
 const { version } = require('./package.json');
 const chalk = require('chalk');
-
-// SCRIPTS
-
-const searchScript = require('./scripts/Search.js');
-const importScript = require('./scripts/Import.js');
-const exportScript = require('./scripts/Export.js');
-const getSettingsScript = require('./scripts/GetSettings.js');
-const setSettingsScript = require('./scripts/SetSettings.js');
-const addRulesScript = require('./scripts/AddRules.js');
-const addSynonymsScript = require('./scripts/AddSynonyms.js');
-const exportRulesScript = require('./scripts/ExportRules.js');
-const exportSynonymsScript = require('./scripts/ExportSynonyms.js');
-const transferIndexScript = require('./scripts/TransferIndex.js');
-const transferIndexConfigScript = require('./scripts/transferIndexConfig.js');
-const transformLinesScript = require('./scripts/TransformLines.js');
-const deleteIndicesPatternScript = require('./scripts/DeleteIndicesPattern.js');
+const commands = require('./commands.js');
 
 // DOCS
 
@@ -40,7 +25,6 @@ Examples:
   $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true}}'
   $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
   $ algolia transformlines -s ~/Desktop/example_source.json -o ~/Desktop/example_output.json -t ~/Desktop/example_transformations.js
-  
   $ algolia examples
 `;
 
@@ -49,13 +33,13 @@ Examples:
 const registerDefaultProcessEventListeners = () => {
   // Handle process cancellation
   process.on('SIGINT', () => {
-    process.exitCode = 2;
     console.log(chalk.white.bgYellow('\nCancelled'));
+    process.exit(1);
   });
   // Handle uncaught exceptions
   process.on('uncaughtException', e => {
     process.exitCode = 1;
-    console.log(chalk.white.bgRed('\nUncaught Exception:', e));
+    console.log(chalk.white.bgRed('\nUncaught Exception'), chalk.red(`\n${e}`));
   });
 };
 
@@ -84,7 +68,7 @@ program
   .option('-p, --params <params>', 'Optional | Algolia search params')
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    searchScript.start(cmd);
+    commands.search.start(cmd);
   });
 
 // Import
@@ -113,7 +97,7 @@ program
   )
   .option('-p, --params <params>', 'Optional | CsvToJson params')
   .action(cmd => {
-    importScript.start(cmd);
+    commands.import.start(cmd);
   });
 
 // Export
@@ -130,7 +114,7 @@ program
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .option('-p, --params <params>', 'Optional | Algolia browseAll params')
   .action(cmd => {
-    exportScript.start(cmd);
+    commands.export.start(cmd);
   });
 
 // Get Settings
@@ -145,7 +129,7 @@ program
     'Required | Algolia index name'
   )
   .action(cmd => {
-    getSettingsScript.start(cmd);
+    commands.getsettings.start(cmd);
   });
 
 // Set Settings
@@ -162,7 +146,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia setSettings params')
   .action(cmd => {
-    setSettingsScript.start(cmd);
+    commands.setsettings.start(cmd);
   });
 
 // Add Rules
@@ -179,7 +163,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia batchRules params')
   .action(cmd => {
-    addRulesScript.start(cmd);
+    commands.addrules.start(cmd);
   });
 
 // Add Synonyms
@@ -196,7 +180,7 @@ program
   .option('-s, --sourcefilepath <sourceFilepath>', 'Required | Source filepath')
   .option('-p, --params <params>', 'Optional | Algolia batchSynonyms params')
   .action(cmd => {
-    addSynonymsScript.start(cmd);
+    commands.addsynonyms.start(cmd);
   });
 
 // Export Rules
@@ -212,7 +196,7 @@ program
   )
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    exportRulesScript.start(cmd);
+    commands.exportrules.start(cmd);
   });
 
 // Export Synonyms
@@ -228,7 +212,7 @@ program
   )
   .option('-o, --outputpath <outputPath>', 'Optional | Output filepath')
   .action(cmd => {
-    exportSynonymsScript.start(cmd);
+    commands.exportsynonyms.start(cmd);
   });
 
 // Transfer Index
@@ -239,27 +223,27 @@ program
     'Duplicate the data and settings of an index from one Algolia App to another'
   )
   .option(
-    '-a, --sourceAlgoliaAppId <algoliaAppId>',
+    '-a, --sourcealgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-k, --sourceAlgoliaApiKey <algoliaApiKey>',
+    '-k, --sourcealgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-n, --sourceAlgoliaIndexName <algoliaIndexName>',
+    '-n, --sourcealgoliaindexname <algoliaIndexName>',
     'Required | Algolia index name'
   )
   .option(
-    '-d, --destinationAlgoliaAppId <algoliaAppId>',
+    '-d, --destinationalgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-y, --destinationAlgoliaApiKey <algoliaApiKey>',
+    '-y, --destinationalgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-i, --destinationIndexName <algoliaIndexName>',
+    '-i, --destinationindexname <algoliaIndexName>',
     'Optional | Algolia index name'
   )
   .option(
@@ -267,7 +251,7 @@ program
     'Optional | Transformation filepath'
   )
   .action(cmd => {
-    transferIndexScript.start(cmd);
+    commands.transferindex.start(cmd);
   });
 
 // Transfer Index Config
@@ -278,27 +262,27 @@ program
     'Duplicate the settings, synonyms, and query rules of an index from one Algolia App to another'
   )
   .option(
-    '-a, --sourceAlgoliaAppId <algoliaAppId>',
+    '-a, --sourcealgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-k, --sourceAlgoliaApiKey <algoliaApiKey>',
+    '-k, --sourcealgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-n, --sourceAlgoliaIndexName <algoliaIndexName>',
+    '-n, --sourcealgoliaindexname <algoliaIndexName>',
     'Required | Algolia index name'
   )
   .option(
-    '-d, --destinationAlgoliaAppId <algoliaAppId>',
+    '-d, --destinationalgoliaappid <algoliaAppId>',
     'Required | Algolia app ID'
   )
   .option(
-    '-y, --destinationAlgoliaApiKey <algoliaApiKey>',
+    '-y, --destinationalgoliaapikey <algoliaApiKey>',
     'Required | Algolia API key'
   )
   .option(
-    '-i, --destinationIndexName <algoliaIndexName>',
+    '-i, --destinationindexname <algoliaIndexName>',
     'Optional | Algolia index name'
   )
   .option(
@@ -306,7 +290,7 @@ program
     'Optional | Algolia batchSynonyms and batchRules params'
   )
   .action(cmd => {
-    transferIndexConfigScript.start(cmd);
+    commands.transferindexconfig.start(cmd);
   });
 
 // Delete Indices
@@ -323,7 +307,7 @@ program
     'Required | Dry run, will only output what would be done'
   )
   .action(cmd => {
-    deleteIndicesPatternScript.start(cmd);
+    commands.deleteindicespattern.start(cmd);
   });
 
 // Transform Lines
@@ -340,7 +324,16 @@ program
     'Optional | Transformation filepath'
   )
   .action(cmd => {
-    transformLinesScript.start(cmd);
+    commands.transformlines.start(cmd);
+  });
+
+// Interactive command
+program
+  .command('interactive')
+  .alias('shell')
+  .description('Run in an interactive mode')
+  .action(cmd => {
+    commands.interactive.start(cmd);
   });
 
 // Display command examples

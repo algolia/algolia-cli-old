@@ -1,5 +1,5 @@
+const transformLinesCommand = require(`${__dirname}/../../commands/TransformLines.js`);
 const fs = require('fs');
-const transformLinesScript = require(`${__dirname}/../../scripts/TransformLines.js`);
 
 const tempDir = `${__dirname}/../temp`;
 const mocksDir = `${__dirname}/../mocks`;
@@ -43,7 +43,7 @@ describe('TransformLines command OK', () => {
   });
 
   test('Transform users file', done => {
-    transformLinesScript.start(program);
+    transformLinesCommand.start(program);
     setTimeout(async () => {
       const exists = fs.existsSync(transformedUsersData);
       const isFile = fs.lstatSync(transformedUsersData).isFile();

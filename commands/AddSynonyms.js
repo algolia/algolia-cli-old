@@ -1,11 +1,5 @@
 const fs = require('fs');
 const algolia = require('algoliasearch');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
 const Base = require('./Base.js');
 
 class AddSynonymsScript extends Base {
@@ -80,7 +74,7 @@ class AddSynonymsScript extends Base {
       const batchSynonymsOptions = this.parseBatchSynonymsOptions(params);
 
       // Instantiate Algolia index
-      const client = algolia(appId, apiKey, keepaliveAgent);
+      const client = algolia(appId, apiKey);
       const index = client.initIndex(indexName);
       // Add rules
       const result = await index.batchSynonyms(synonyms, batchSynonymsOptions);

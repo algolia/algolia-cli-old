@@ -1,23 +1,12 @@
 const exportScript = require(`./Export.js`);
 const EventEmitter = require('events');
-const readLine = require('readline');
-const HttpsAgent = require('agentkeepalive');
 const algolia = require('algoliasearch');
 const fs = require('fs');
 const path = require('path');
 
-jest.mock('readline');
-jest.mock('agentkeepalive');
 jest.mock('algoliasearch');
 jest.mock('fs');
 jest.mock('path');
-
-// Mock Readline
-readLine.cursorTo = jest.fn();
-process.stdout.write = jest.fn();
-
-// Mock Keepalive
-HttpsAgent.HttpsAgent = jest.fn();
 
 // Mock fs
 const isDirectory = jest.fn().mockReturnValue(true);
@@ -33,17 +22,6 @@ const validProgram = {
 };
 
 describe('Export script OK', () => {
-  /* writeProgress */
-
-  test('writeProgress should output number of records browsed', done => {
-    const random = Math.floor(Math.random() * 10);
-    exportScript.writeProgress(random);
-    expect(process.stdout.write).toHaveBeenCalledWith(
-      `Records browsed: ~ ${random}`
-    );
-    done();
-  });
-
   /* writeFile */
 
   test('writeFile should call fs.writeFileSync', done => {
@@ -96,11 +74,7 @@ describe('Export script OK', () => {
     browser.emit('end');
     const result = await promise;
     // Assertions
-    expect(algolia).toHaveBeenCalledWith(
-      options.appId,
-      options.apiKey,
-      expect.any(Object)
-    );
+    expect(algolia).toHaveBeenCalledWith(options.appId, options.apiKey);
     expect(client.initIndex).toHaveBeenCalledWith(options.indexName);
     expect(browseAll).toHaveBeenCalledWith('', options.params);
     expect(browserSpy).toHaveBeenCalledWith('result', expect.any(Function));
@@ -134,7 +108,7 @@ describe('Export script OK', () => {
     browser.emit('end');
     await promise;
     // Expect script to output progress in onResult handler
-    expect(exportScript.writeProgress).toHaveBeenCalledWith(expect.any(Number));
+    expect(exportScript.writeProgress).toHaveBeenCalledWith(expect.any(String));
     // Expect script to write data to file in onResult handler
     expect(exportScript.writeFile).toHaveBeenCalledWith(
       expect.any(Array),

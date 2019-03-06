@@ -177,11 +177,12 @@ module.exports = (data,cb) => {
 - JSON files must contain an array of objects.
 - CSV files must have a `.csv` extension.
 - `<transformationFilepath>` requires a path to a transformation file. See [example file](transformations/example-transformations.js).
-- If your system has limited memory resources or if you run into heap allocation errors, consider reducing `<maxconcurrency>` to `1`.
 - Make sure you only import JSON or CSV files. Don't accidentally try to import hidden files like `.DS_Store`, log files, etc. as they will throw an error.
 - Command assumes each file contains an array of JSON objects unless the file extension ends with `.csv`.
 - CSV to JSON conversion performed using [csvtojson](https://www.npmjs.com/package/csvtojson) package.
-- If command returns an `AlgoliaSearchRequestTimeoutError`, consider reducing `<batchSize>` by passing in a value below the default.
+- If no `<batchSize>` is explicitly provided, command will try to determine optimal batch size by estimating average record size, estimating network speed, and calculating a size that should work well given the concurrency.
+- If command outputs a `AlgoliaSearchRequestTimeoutError` error, this means a batch of records failed to import. This typically occurs when attempting to import too much data over too slow a network connection. Command will automatically attempt to reduce `<batchSize>` to compensate, and re-try. If issues persist, consider reducing `<maxConcurrency>` and/or `<batchSize>`.
+- If command outputs a `High memory usage` warning, it means the process is consuming a very high percentage of the estimated system heap allocation for the node process. Command will automatically attempt to reduce `<batchSize>` to compensate. If issues persist, consider reducing `<maxConcurrency>` and/or `<batchSize>`.
 
 ### 5. Export | `export`
 

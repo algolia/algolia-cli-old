@@ -1,19 +1,13 @@
-const importToAlgolia = require(`${__dirname}/../../scripts/Import.js`);
-const algoliasearch = require('algoliasearch');
+const importCommand = require(`${__dirname}/../../commands/Import.js`);
 const readLine = require('readline');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
-const keepaliveAgent = new HttpsAgent({
-  maxSockets: 1,
-  maxKeepAliveRequests: 0, // no limit on max requests per keepalive socket
-  maxKeepAliveTime: 30000, // keepalive for 30 seconds
-});
+const algolia = require('algoliasearch');
 
 // Configure Algolia
 const appId = process.env.ALGOLIA_TEST_APP_ID;
 const apiKey = process.env.ALGOLIA_TEST_API_KEY;
 const indexName = process.env.ALGOLIA_TEST_INDEX_NAME;
 
-const client = algoliasearch(appId, apiKey, keepaliveAgent);
+const client = algolia(appId, apiKey);
 const index = client.initIndex(indexName);
 
 // Configure test file/directory paths
@@ -66,13 +60,14 @@ describe('Import command OK', () => {
         expect(isValidRecord).toBe(true);
         done();
       } else {
+        process.stdout.write('\n');
         readLine.cursorTo(process.stdout, 0);
         process.stdout.write(msg);
       }
     });
 
     // Execute import
-    importToAlgolia.start(program);
+    importCommand.start(program);
   }, 120000); // Allocate 2 mins max for test to run
 
   afterAll(async () => {
