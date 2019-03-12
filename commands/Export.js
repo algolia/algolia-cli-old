@@ -19,10 +19,11 @@ class ExportScript extends Base {
   }
 
   getOutput(outputPath) {
+    // If no outputPath is provided, use directory from which command was invoked
     const outputDir =
       outputPath !== null ? this.normalizePath(outputPath) : process.cwd();
     // Ensure outputPath is a directory
-    if (!fs.lstatSync(outputPath).isDirectory())
+    if (!fs.lstatSync(outputDir).isDirectory())
       throw new Error('Output path must be a directory.');
     return outputDir;
   }
