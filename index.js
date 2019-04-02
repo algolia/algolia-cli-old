@@ -153,7 +153,7 @@ program
 // Add Rules
 program
   .command('addrules')
-  .alias('er')
+  .alias('ar')
   .description('Add query rules to an Algolia index from a JSON file')
   .option('-a, --algoliaappid <algoliaAppId>', 'Required | Algolia app ID')
   .option('-k, --algoliaapikey <algoliaApiKey>', 'Required | Algolia API key')
