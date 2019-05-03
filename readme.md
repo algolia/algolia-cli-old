@@ -429,6 +429,24 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 - `<destinationIndexName>` | Optional | If no destination index name is specified, script will default to creating a new index with the same name as the source index.
 - `<transformationFilepath>` | Optional | The path to any file that exports a function which (1) takes a single object as argument, then (2) returns a transformed object.
 
+##### Example Transformation File:
+
+Simple transformation file for transferring an index:
+
+```javascript
+module.exports = (obj) => {
+  try {
+    const record = {};
+    record.objectID = obj.product_id;
+    record.score = Math.floor(Math.random() * 100);
+    record.formattedNumber = parseInt(obj.integer_formatted_as_string, 10);
+  } catch (e) {
+    console.log('Transformation error:', e.message, e.stack);
+    throw e;
+  }
+}
+```
+
 ##### Notes:
 
 - Command duplicates data and extended settings; does not delete or affect source index.
