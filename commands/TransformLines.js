@@ -38,10 +38,20 @@ class TransformLinesScript extends Base {
   }
 
   setTransformations(transformationFilepath) {
-    // Specify line transformation method
-    this.lineTransformation = transformationFilepath
-      ? require(transformationFilepath)
-      : this.defaultLineTransformation;
+    try {
+      // Set JSON record transformations
+      const transformations = transformationFilepath
+        ? require(this.normalizePath(transformationFilepath))
+        : null;
+      // Validate transformations function input param
+      const valid = transformations && typeof transformations === 'function';
+      // Assign our transformations function using provided custom transformations file if exists
+      this.lineTransformation = valid
+        ? transformations
+        : this.defaultLineTransformation;
+    } catch (e) {
+      throw e;
+    }
   }
 
   // Method to transform an individual file line-by-line

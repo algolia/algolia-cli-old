@@ -41,7 +41,7 @@ class ExportScript extends Base {
     const filename = `algolia-index-${options.indexName}-${fileCount}.json`;
     const filePath = path.resolve(options.outputPath, filename);
     fs.writeFileSync(filePath, JSON.stringify(hits));
-    return console.log(`Done writing ${filename}`);
+    return console.log(`\nDone writing ${filename}`);
   }
 
   exportData(options) {
