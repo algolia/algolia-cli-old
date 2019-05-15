@@ -449,8 +449,8 @@ module.exports = (obj) => {
 
 ##### Notes:
 
-- Command duplicates data and extended settings; does not delete or affect source index.
-- Replica indices and settings not transferred.
+- Command duplicates data and copies settings, synonyms, and rules; does not delete or affect source index.
+- Command does NOT forward settings or synonyms to replicas.
 
 ### 14. Transfer Index Config | `transferindexconfig`
 
