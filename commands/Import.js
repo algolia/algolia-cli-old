@@ -280,7 +280,7 @@ class ImportScript extends Base {
     // them, batch them, index them in Algolia) while imposing a queue so that only so many
     // indexing threads will be run in parallel
     if (filenames.length <= 0) {
-      console.log('Done reading files');
+      console.log('\nDone reading files');
       return;
     }
     // Start new file read stream
