@@ -46,7 +46,9 @@ class TransformLinesScript extends Base {
       // Validate transformations function input param
       const valid = transformations && typeof transformations === 'function';
       // Assign our transformations function using provided custom transformations file if exists
-      this.lineTransformation = valid ? transformations : this.defaultLineTransformation;
+      this.lineTransformation = valid
+        ? transformations
+        : this.defaultLineTransformation;
     } catch (e) {
       throw e;
     }
