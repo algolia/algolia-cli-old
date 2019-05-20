@@ -59,7 +59,7 @@ class TransferIndexConfigScript extends Base {
   async transferIndexConfig(indices, config) {
     // Transfer settings, synonyms, and query rules
     const settings = await indices.sourceIndex.getSettings();
-    delete settings['replicas'];
+    delete settings.replicas;
     const synonyms = await indices.sourceIndex.exportSynonyms();
     const rules = await indices.sourceIndex.exportRules();
     await indices.destinationIndex.setSettings(settings);
