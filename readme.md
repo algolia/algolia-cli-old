@@ -49,7 +49,7 @@ $ algolia exportsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexNa
 
 $ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
 
-$ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
+$ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams> -e <true|false>
 
 $ algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' -x <true|false>
 
@@ -461,7 +461,7 @@ Transfer an index's settings, synonyms, and query rules to another index. Works 
 ##### Usage:
 
 ```shell
-algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams>
+algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams> -e <excludeReplicas>
 ```
 
 ##### Options:
@@ -473,6 +473,7 @@ algolia transferindexconfig -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n 
 - `<destinationAlgoliaApiKey>` | Required
 - `<destinationIndexName>` | Optional | If no destination index name is specified, script will default to targetting an existing index with the same name as the source index.
 - `<configParams>` | Optional | JSON object containing one or both of the following two properties: `batchSynonymsParams` and `batchRulesParams`. Each of those property values may contain a parameters object to be passed to the [batchSynonyms](https://www.algolia.com/doc/api-reference/api-methods/batch-synonyms/) and [batchRules](https://www.algolia.com/doc/api-reference/api-methods/batch-rules/) respectively.
+- `<excludeReplicas>` | Optional | This is a boolean. When `true`, it will exclude the `replicas` setting when copying settings to the destination index. When `false`, it will copy the full settings object. Defaults to `false`.
 
 ##### Notes:
 
@@ -495,7 +496,7 @@ algolia deleteindicespattern -a <algoliaAppId> -k <algoliaApiKey> -r '<regexp>' 
 - `<algoliaAppId>` | Required
 - `<algoliaApiKey>` | Required
 - `<regexp>` | Required | Provide regexes without the leading and trailing slashes
-- `<dryrun>` | Required | This is a boolean, when true it will run in dry mode and show what will be deleted, when false it will really delete the indices. Careful!
+- `<dryrun>` | Required | This is a boolean. When `true` it will run in dry mode and show what will be deleted, when `false` it will really delete the indices. Careful!
 
 ##### Notes:
 
@@ -605,7 +606,7 @@ $ algolia exportsynonyms -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_N
 
 $ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
 
-$ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true,"replaceExistingSynonyms":true},"batchRulesParams":{"forwardToReplicas":true,"clearExistingRules":true}}'
+$ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true,"replaceExistingSynonyms":true},"batchRulesParams":{"forwardToReplicas":true,"clearExistingRules":true}}' -e true
 
 $ algolia deleteindicespattern -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -r '^regex' -x true
 
