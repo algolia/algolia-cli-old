@@ -132,15 +132,19 @@ describe('Transfer Index script OK', () => {
     };
 
     // Execute transfer
-    await transferIndexConfigScript.transferIndexConfig(indices, config, options);
+    await transferIndexConfigScript.transferIndexConfig(
+      indices,
+      config,
+      options
+    );
     expect(getSettings).toHaveBeenCalled();
     expect(exportSynonyms).toHaveBeenCalled();
     expect(exportRules).toHaveBeenCalled();
     expect(setSettings).toHaveBeenCalledWith(
-      expect.objectContaining(settingsWithoutReplicas),
+      expect.objectContaining(settingsWithoutReplicas)
     );
     expect(setSettings).not.toHaveBeenCalledWith(
-      expect.objectContaining(replicaSetting),
+      expect.objectContaining(replicaSetting)
     );
     expect(batchSynonyms).toHaveBeenCalledWith(synonyms, expect.any(Object));
     expect(batchRules).toHaveBeenCalledWith(rules, expect.any(Object));
