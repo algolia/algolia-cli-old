@@ -82,9 +82,10 @@ class TransferIndexConfigScript extends Base {
         destinationIndexName:
           program.destinationindexname || program.sourcealgoliaindexname,
         configParams: program.params || null,
-        excludeReplicas: program.excludereplicas !== undefined
-          ? program.excludereplicas === 'true'
-          : false,
+        excludeReplicas:
+          program.excludereplicas !== undefined
+            ? program.excludereplicas === 'true'
+            : false,
       };
 
       // Configure Algolia clients/indices
