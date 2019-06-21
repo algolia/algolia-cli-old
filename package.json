@@ -1,6 +1,6 @@
 {
   "name": "@algolia/cli",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "description": "A Node CLI tools for manipulating data. Handy for day-to-day Algolia SE work.",
   "license": "ISC",
   "author": "Algolia, Inc. (https://www.algolia.com)",
