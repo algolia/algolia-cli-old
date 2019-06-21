@@ -11,7 +11,7 @@ class TransferIndexConfigScript extends Base {
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -p configParams\n\n';
+      '\nExample: $ algolia transferindexconfig -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -p configParams -e true\n\n';
     this.params = [
       'sourcealgoliaappid',
       'sourcealgoliaapikey',
@@ -47,7 +47,7 @@ class TransferIndexConfigScript extends Base {
 
     const params = JSON.parse(options.configParams);
 
-    // Set provided options
+    // Set provided batchSynonyms and batchRules options
     if (params.batchSynonymsParams)
       config.sOptions = Object.assign({}, params.batchSynonymsParams);
     if (params.batchRulesParams)
@@ -56,11 +56,12 @@ class TransferIndexConfigScript extends Base {
     return config;
   }
 
-  async transferIndexConfig(indices, config) {
+  async transferIndexConfig(indices, config, options) {
     // Transfer settings, synonyms, and query rules
     const settings = await indices.sourceIndex.getSettings();
     const synonyms = await indices.sourceIndex.exportSynonyms();
     const rules = await indices.sourceIndex.exportRules();
+    if (options.excludeReplicas) delete settings.replicas;
     await indices.destinationIndex.setSettings(settings);
     await indices.destinationIndex.batchSynonyms(synonyms, config.sOptions);
     await indices.destinationIndex.batchRules(rules, config.rOptions);
@@ -81,6 +82,9 @@ class TransferIndexConfigScript extends Base {
         destinationIndexName:
           program.destinationindexname || program.sourcealgoliaindexname,
         configParams: program.params || null,
+        excludeReplicas: program.excludereplicas !== undefined
+          ? program.excludereplicas === 'true'
+          : false,
       };
 
       // Configure Algolia clients/indices
@@ -88,7 +92,7 @@ class TransferIndexConfigScript extends Base {
       // Configure batchSynonyms and batchRules options
       const config = this.getConfigOptions(options);
       // Transfer index configuration
-      await this.transferIndexConfig(indices, config);
+      await this.transferIndexConfig(indices, config, options);
 
       return console.log(
         'Index settings, synonyms, and query rules transferred successfully.'
