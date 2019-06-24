@@ -85,8 +85,13 @@ describe('Transfer Index script OK', () => {
       },
     };
 
+    // Mock options
+    const options = {
+      excludeReplicas: true,
+    };
+
     // Execute transfer
-    await transferIndexScript.transferIndexConfig(indices);
+    await transferIndexScript.transferIndexConfig(indices, options);
     expect(getSettings).toHaveBeenCalled();
     expect(exportSynonyms).toHaveBeenCalled();
     expect(exportRules).toHaveBeenCalled();
@@ -203,6 +208,7 @@ describe('Transfer Index script OK', () => {
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
       transformations: null,
+      excludeReplicas: false,
     };
     // Mock instance methods
     transferIndexScript.getIndices = jest.fn(() => 'indices');
@@ -217,7 +223,10 @@ describe('Transfer Index script OK', () => {
     expect(transferIndexScript.getTransformations).toHaveBeenCalledWith(
       options
     );
-    expect(transferIndexScript.transferIndexConfig).toHaveBeenCalled();
+    expect(transferIndexScript.transferIndexConfig).toHaveBeenCalledWith(
+      'indices',
+      options
+    );
     expect(transferIndexScript.transferData).toHaveBeenCalledWith(
       'indices',
       'transformations'
