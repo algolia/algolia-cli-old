@@ -251,6 +251,10 @@ program
     '-t, --transformationfilepath <transformationFilepath>',
     'Optional | Transformation filepath'
   )
+  .option(
+    '-e, --excludereplicas <boolean>',
+    'Optional | Exclude replicas property of settings object'
+  )
   .action(cmd => {
     commands.transferindex.start(cmd);
   });
