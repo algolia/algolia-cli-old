@@ -8,7 +8,7 @@ class TransferIndexScript extends Base {
     this.getIndices = this.getIndices.bind(this);
     this.getTransformations = this.getTransformations.bind(this);
     this.transferIndexConfig = this.transferIndexConfig.bind(this);
-      this.transferData = this.transferData.bind(this);
+    this.transferData = this.transferData.bind(this);
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
