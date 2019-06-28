@@ -12,7 +12,7 @@ class TransferIndexScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia transferindex -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -t transformationfilepath\n\n';
+      '\nExample: $ algolia transferindex -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -t transformationfilepath -e true\n\n';
     this.params = [
       'sourcealgoliaappid',
       'sourcealgoliaapikey',
