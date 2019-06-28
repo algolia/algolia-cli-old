@@ -12,7 +12,7 @@ class TransferIndexScript extends Base {
     this.start = this.start.bind(this);
     // Define validation constants
     this.message =
-      '\nExample: $ algolia transferindex -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -t transformationfilepath\n\n';
+      '\nExample: $ algolia transferindex -a sourcealgoliaappid -k sourcealgoliaapikey -n sourcealgoliaindexname -d destinationalgoliaappid -y destinationalgoliaapikey -i destinationindexname -t transformationfilepath -e true\n\n';
     this.params = [
       'sourcealgoliaappid',
       'sourcealgoliaapikey',
@@ -48,11 +48,12 @@ class TransferIndexScript extends Base {
     return valid ? transformations : null;
   }
 
-  async transferIndexConfig(indices) {
+  async transferIndexConfig(indices, options) {
     // Transfer settings, synonyms, and query rules
     const settings = await indices.sourceIndex.getSettings();
     const synonyms = await indices.sourceIndex.exportSynonyms();
     const rules = await indices.sourceIndex.exportRules();
+    if (options.excludeReplicas) delete settings.replicas;
     await indices.destinationIndex.setSettings(settings);
     await indices.destinationIndex.batchSynonyms(synonyms);
     await indices.destinationIndex.batchRules(rules);
@@ -99,6 +100,10 @@ class TransferIndexScript extends Base {
         destinationIndexName:
           program.destinationindexname || program.sourcealgoliaindexname,
         transformations: program.transformationfilepath || null,
+        excludeReplicas:
+          program.excludereplicas !== undefined
+            ? program.excludereplicas === 'true'
+            : false,
       };
 
       // Configure Algolia clients/indices
@@ -106,7 +111,7 @@ class TransferIndexScript extends Base {
       // Configure transformations
       const formatRecord = this.getTransformations(options);
       // Transfer index configuration
-      await this.transferIndexConfig(indices);
+      await this.transferIndexConfig(indices, options);
       // Transfer data
       const result = await this.transferData(indices, formatRecord);
 

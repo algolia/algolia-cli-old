@@ -47,7 +47,7 @@ $ algolia addsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName>
 
 $ algolia exportsynonyms -a <algoliaAppId> -k <algoliaApiKey> -n <algoliaIndexName> -o <outputPath>
 
-$ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
+$ algolia transferindex -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath> -e <true|false>
 
 $ algolia transferindexconfig -a <sourcealgoliaAppId> -k <sourcealgoliaApiKey> -n <sourcealgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -p <configParams> -e <true|false>
 
@@ -416,7 +416,7 @@ Transfer all data and settings (including synonyms and query rules) from one Alg
 ##### Usage:
 
 ```shell
-algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath>
+algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourceAlgoliaIndexName> -d <destinationAlgoliaAppId> -y <destinationAlgoliaApiKey> -i <destinationIndexName> -t <transformationFilepath> -e <excludeReplicas>
 ```
 
 ##### Options:
@@ -428,6 +428,7 @@ algolia transferindex -a <sourceAlgoliaAppId> -k <sourceAlgoliaApiKey> -n <sourc
 - `<destinationAlgoliaApiKey>` | Required
 - `<destinationIndexName>` | Optional | If no destination index name is specified, script will default to creating a new index with the same name as the source index.
 - `<transformationFilepath>` | Optional | The path to any file that exports a function which (1) takes a single object as argument, then (2) returns a transformed object.
+- `<excludeReplicas>` | Optional | This is a boolean. When `true`, it will exclude the `replicas` setting when copying settings to the destination index. When `false`, it will copy the full settings object. Defaults to `false`.
 
 ##### Example Transformation File:
 
@@ -604,7 +605,7 @@ $ algolia addsynonyms -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME
 
 $ algolia exportsynonyms -a EXAMPLE_APP_ID -k EXAMPLE_API_KEY -n EXAMPLE_INDEX_NAME -o ~/Desktop/example_synonyms.json
 
-$ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js
+$ algolia transferindex -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -t ~/Desktop/example_transformations.js -e true
 
 $ algolia transferindexconfig -a EXAMPLE_SOURCE_APP_ID -k EXAMPLE_SOURCE_API_KEY -n EXAMPLE_SOURCE_INDEX_NAME -d EXAMPLE_DESTINATION_APP_ID -y EXAMPLE_DESTINATION_API_KEY -i EXAMPLE_DESTINATION_INDEX_NAME -p '{"batchSynonymsParams":{"forwardToReplicas":true,"replaceExistingSynonyms":true},"batchRulesParams":{"forwardToReplicas":true,"clearExistingRules":true}}' -e true
 

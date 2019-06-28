@@ -60,7 +60,9 @@ describe('Transfer Index script OK', () => {
 
   test('transferIndexConfig should set algolia clients and indices', async done => {
     // Mock configuration
-    const settings = 'mock_settings';
+    const settings = { name: 'mock_settings', replicas: 'mock_replicas' };
+    const settingsWithoutReplicas = { name: 'mock_settings' };
+    const replicaSetting = { replicas: 'mock_replicas' };
     const synonyms = 'mock_synonyms';
     const rules = 'mock_rules';
     // Mock Algolia source index instance methods
@@ -85,12 +87,20 @@ describe('Transfer Index script OK', () => {
       },
     };
 
+    // Mock options
+    const options = {
+      excludeReplicas: true,
+    };
+
     // Execute transfer
-    await transferIndexScript.transferIndexConfig(indices);
+    await transferIndexScript.transferIndexConfig(indices, options);
     expect(getSettings).toHaveBeenCalled();
     expect(exportSynonyms).toHaveBeenCalled();
     expect(exportRules).toHaveBeenCalled();
-    expect(setSettings).toHaveBeenCalledWith(settings);
+    expect(setSettings).toHaveBeenCalledWith(settingsWithoutReplicas);
+    expect(setSettings).not.toHaveBeenCalledWith(
+      expect.objectContaining(replicaSetting)
+    );
     expect(batchSynonyms).toHaveBeenCalledWith(synonyms);
     expect(batchRules).toHaveBeenCalledWith(rules);
     done();
@@ -203,6 +213,7 @@ describe('Transfer Index script OK', () => {
       destinationApiKey: validProgram.destinationalgoliaapikey,
       destinationIndexName: validProgram.destinationindexname,
       transformations: null,
+      excludeReplicas: false,
     };
     // Mock instance methods
     transferIndexScript.getIndices = jest.fn(() => 'indices');
@@ -217,7 +228,10 @@ describe('Transfer Index script OK', () => {
     expect(transferIndexScript.getTransformations).toHaveBeenCalledWith(
       options
     );
-    expect(transferIndexScript.transferIndexConfig).toHaveBeenCalled();
+    expect(transferIndexScript.transferIndexConfig).toHaveBeenCalledWith(
+      'indices',
+      options
+    );
     expect(transferIndexScript.transferData).toHaveBeenCalledWith(
       'indices',
       'transformations'
