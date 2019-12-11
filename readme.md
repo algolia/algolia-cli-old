@@ -310,6 +310,9 @@ module.exports = {
 ```
 '{"forwardToReplicas":true}'
 ```
+##### Notes:
+- Any index setting parameter needs to be added directly in the file containing the settings object. See [Settings API paraameters documentation](https://www.algolia.com/doc/api-reference/settings-api-parameters/) to find the full list of index settings parameters.
+- forwardToReplicas is currently the only option that can be passed to the settings method as an optional <setSettingsParams> argument.
 
 ### 9. Add Rules | `addrules`
 
