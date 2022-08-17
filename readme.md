@@ -1,3 +1,9 @@
+# [DEPRECATED]
+
+The new official Algolia CLI can be found here: https://github.com/algolia/cli
+
+This repo and npm package are no longer maintained or supported.
+
 # Algolia CLI
 
 A Node CLI tool that makes it easy to perform common data manipulations and interactions with your Algolia app or indices.
